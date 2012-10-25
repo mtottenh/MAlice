@@ -1,0 +1,27 @@
+MAlice Specification
+
+Simple Structures
+<ucharacter> 	::= 'A' | 'B' | .. | 'Y' | 'Z'
+<lcharacter> 	::= 'a' | 'b' | .. | 'y' | 'z'
+<character>		:: = <ucharacter> | <lcharacter>
+<digit>			::= 0 | 1 | .. | 8 | 9
+<number> 		::= <digit> | <digit> <number>
+<alpha-numeric> ::= <character> | <digit>
+<string>		::= <character> | <character> <string>
+<alphastring> 	::= <alpha-numeric> | <alpha-numeric> <astring>
+<seperator> 	::= ',' | '.' | 'and' | 'but' | 'too'
+<terminator>	::= '.' | 'too.
+
+Alice Structures
+<obrace>		::= 'opened'
+<cbrace>		::= 'closed'
+<ident>			::= <string>
+<exp>			::= <ident> | <number> | <char> | <exp> '+' <exp> |
+					<exp> '*' <exp> |	<exp> '%' <exp> | <exp> '-' <exp>
+<declare>		::= <ident> 'was a' <type>
+<assign>		::= <ident> 'became' <exp>
+<return>		::= <exp> 'said Alice'
+<code>			::= <declare> | <assign>
+<codeblock>		::= <code> | <code> <seperator> <codeblock> | 
+				<code> <terminator>
+<function> 		::= <astring> '()' <obrace> <codeblock> <cbrace>
