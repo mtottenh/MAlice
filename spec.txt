@@ -9,13 +9,14 @@ Simple Structures
 <alpha-numeric> ::= <character> | <digit>
 <string>		::= <character> | <character> <string>
 <alphastring> 	::= <alpha-numeric> | <alpha-numeric> <astring>
-<seperator> 	::= ',' | '.' | 'and' | 'but' | 'too'
+<seperator> 	::= ',' | 'and' | 'but' | <terminator>
 <terminator>	::= '.' | 'too.
 
 Alice Structures
 <obrace>		::= 'opened'
 <cbrace>		::= 'closed'
 <ident>			::= <string>
+<type>			::= 'number' | 'letter'
 <exp>			::=  <exp> '+' <exp> | <exp> '-' <exp> | <term>
 <term>			::= <term> '*' <factor> | <term> '/' <factor> | <factor>
 <factor>		::= <ident> | <number>
@@ -23,6 +24,5 @@ Alice Structures
 <assign>		::= <ident> 'became' (<exp> | <char>)
 <return>		::= <exp> 'said Alice'
 <code>			::= <declare> | <assign> | <return>
-<codeblock>		::= <code> | <code> <seperator> <codeblock> | 
-					<code> <terminator>
+<codeblock>		::= <code> <seperator> <codeblock> | <code> <terminator>
 <function> 		::= <astring> '()' <obrace> <codeblock> <cbrace>
