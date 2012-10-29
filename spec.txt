@@ -13,16 +13,15 @@ Simple Structures
 <terminator>	::= '.' | 'too.
 
 Alice Structures
-<obrace>		::= 'opened'
-<cbrace>		::= 'closed'
 <ident>			::= <string>
 <type>			::= 'number' | 'letter'
 <exp>			::=  <exp> '+' <exp> | <exp> '-' <exp> | <term>
 <term>			::= <term> '*' <factor> | <term> '/' <factor> | <factor>
-<factor>		::= <ident> | <number>
+<factor>		::= <value> | '~' <value>
+<value>			::= <ident> | <number>
 <declare>		::= <ident> 'was a' <type>
 <assign>		::= <ident> 'became' (<exp> | <char>)
 <return>		::= <exp> 'said Alice'
 <code>			::= <declare> | <assign> | <return>
 <codeblock>		::= <code> <seperator> <codeblock> | <code> <terminator>
-<function> 		::= <astring> '()' <obrace> <codeblock> <cbrace>
+<function> 		::= <astring> '()' 'opened' <codeblock> 'closed'
