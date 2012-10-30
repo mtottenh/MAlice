@@ -21,3 +21,7 @@ malice_examples
 *.backup
 *.kate-swp
 *.swp
+
+#yacc output files
+*.tab.c
+*.output

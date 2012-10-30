@@ -13,7 +13,7 @@
 %%
 
 Function
-	: String "()" "opened" Codeblock "closed"
+	: STRING "()" "opened" Codeblock "closed"
 	; 
 Exp
 	: Exp '+' Term
@@ -26,46 +26,33 @@ Term
 	| Factor
 	;
 Factor
-	: '~' Value
+	: '~' Value %prec UNARY
 	| Value
 	;
 Value
 	: INTEGER
-	| Identifier
+	| IDENTIFIER
 	;
 Type
 	: "number"
 	| "letter"
 	;
 Declare
-	: "was a" Type
+	: IDENTIFIER "was a" Type
 	;
 Assign
-	: "became" Exp
-	| "became" CHAR
+	: IDENTIFIER "became" Exp
+	| IDENTIFIER "became" CHAR
 	;
 Return
-	: "said Alice"
+	: Exp "said Alice"
 	;
 Code
-	: Identifier Declare
-	| Identifier Assign
-	| Exp Return
+	: Declare
+	| Assign
+	| Return
 	;
 Codeblock
-	: Code Seperator Codeblock
+	: Code SEPARATOR Codeblock
 	| Code TERMINATOR
-	; 
-String
-	: CHAR
-	| String CHAR
-	;
-Seperator
-	: TERMINATOR 
-	| ','
-	| "and"
-	| "but"
-	;
-Identifier
-	: IDENTIFIER
 	;
