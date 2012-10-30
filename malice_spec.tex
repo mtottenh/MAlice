@@ -2,7 +2,7 @@
 \usepackage{a4, fullpage}
 \setlength{\parskip}{0.3cm}
 \setlength{\parindent}{0cm}
-
+\newcommand{\tab}{\hspace*{2em}}
 % This is the preamble section where you can include extra packages etc.
 
 \begin{document}
@@ -63,9 +63,31 @@ Or to display a formula on a line on its own you do this:
 \]
 
 \section{Semantics}
+Operator Precedence
+The operators in MAlice are defined below in increasing order of operator precidence.
 
-TODO LIST
-Operator
+\begin{itemize}
+	\item
+	$|$ Defines the logical bitwise OR operator. 
+	\\ \tab e.g. 3 $|$ 5 = 7
+	\item
+	$\land$ Defines the logical bitwise XOR operator. 
+	\\ \tab e.g. 3 $\land$ 5 = 6
+	\item
+	$\&$ Defines the logical bitwise AND operator. 
+	\\ \tab e.g. 3 $\&$ 5 = 1
+	\item
+	+ - Define Integer Addition and Subtration respectively. 
+	\\ \tab e.g. 3 + 5 = 8 \\ \tab e.g. 3 - 5 = -2
+	\item
+	* / \% Define Integer Multiplication, Division, and Modulo respectively. 
+	\\ \tab e.g. 3 * 5 = 15 \\ \tab e.g. 3 / 5 = 0 \\ \tab e.g. 3 \% 5 = 3
+	\item
+	\textasciitilde  Defines the unary logical NOT operator.
+	\\ \tab e.g. \textasciitilde$ 3 = -4$
+\end{itemize}
+TODO
+
 \begin{enumerate}
 
     \item
