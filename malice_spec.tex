@@ -24,28 +24,35 @@ gramatical structure of the language in Pseudo-Extended-BNF (PSEBNF).
 \section{BNF Grammar} 
 
 \begin{verbatim}
-	Function = String ,  "()" ,  "opened" , Codeblock , "closed" ;
-	Exp = Exp '+' Term | Exp '-' Term | Term ;
-	Term = Term '*' Factor | Term '/' Factor | Factor ;
-	Factor = '~' Value | Value ;
-	Value = Integer | Identifier ;
-	Type = "number" | "letter" ;
-	Declare = "was a" , Type ;
-	Assign = "became" , Exp | "became" , Char ;
-	Return = "said Alice" ;
-	Code = 	Identifier , Declare | Identifier , Assign | Exp , Return ;
-	Codeblock = Code , Separator , Codeblock | Code , Terminator ; 
-	String = {Char} ;
-	Separator = Terminator | ',' | "and" | "but" ; 
-	Identifier = String ;
-	
-	Terminator = "too." | '.' | ',' ;
-	Char = 'a' | 'b' | 'c' | 
-	DigitNoZero =  '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
-	Digit = '0' | DigitNoZero ; 
-	Nat = DigitNoZero , {Digit} ;
-	Integer = '0' | [ '-' ] , Nat ;
+    - Malice Language Structure - 
+    Function    = String ,  "()" ,  "opened" , Codeblock , "closed" ;
+    Exp         = Exp '+' Term | Exp '-' Term | Term ;
+    Term        = Term '*' Factor | Term '/' Factor | Factor ;
+    Factor      = '~' Value | Value ;
+    Value       = Integer | Identifier ;
+    Type        = "number" | "letter" ;
+    Declare     = "was a" , Type ;
+    Assign      = "became" , Exp | "became" , Char ;
+    Return      = "said Alice" ;
+    Code        = Identifier , Declare | Identifier , Assign | Exp , Return ;
+    Codeblock   = Code , Separator , Codeblock | Code , Terminator ; 
+    Separator   = Terminator | ',' | "and" | "but" ; 
+    Identifier  = String ;
+    Terminator  = "too." | '.' | ',' ;
+    
 
+   - Primitives -
+    String      = { Char } ;
+    Integer     = '0' | [ '-' ] , Nat ;
+    Nat         = DigitNoZero , { Digit } ;
+    Digit       = '0' | DigitNoZero ; 
+    DigitNoZero =  '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
+    Char        = 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' | 'j' | 'k' 
+                | 'l' | 'm' | 'n' | 'o' | 'p' | 'q' | 'r' | 's' | 't' | 'u' | 'v'
+                | 'w' | 'x' | 'y' | 'z' | 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G'
+                | 'H' | 'I' | 'J' | 'K' | 'L' | 'M' | 'N' | 'O' | 'P' | 'Q' | 'R'
+                | 'S' | 'T' | 'U' | 'V' | 'W' | 'X' | 'Y' | 'Z' ;
+ 
 \end{verbatim}
 
 To include maths formulas in text put them between \$ symbols like this
@@ -58,7 +65,7 @@ Or to display a formula on a line on its own you do this:
 \section{Semantics}
 
 TODO LIST
-
+Operator
 \begin{enumerate}
 
     \item
@@ -107,7 +114,7 @@ or you can use BibTex but that is probably overkill for now.
   2nd Edition,
   1994.
 \bibitem{Wikipedia}
- 
+\begin{verbatim}	http://en.wikipedia.org/wiki/Extended_Backus%E2%80%93Naur_Form \end{verbatim}
 
 \end{thebibliography}
 
