@@ -1,6 +1,7 @@
 %token CHAR
-%token IDENTIFIER
+%token STRING
 %token INTEGER
+%token SEPERATOR
 %token TERMINATOR
 
 %left '|'
@@ -67,5 +68,5 @@ Seperator
 	| "but"
 	;
 Identifier
-	: IDENTIFIER
+	: STRING
 	;
