@@ -32,7 +32,15 @@ gramatical structure of the language in Pseudo-Extended-BNF (PSEBNF).
 	Type = "number" | "letter" ;
 	Declare = "was a" , Type ;
 	Assign = "became" , Exp | "became" , Char ;
+	Return = "said Alice" ;
+	Code = 	Identifier , Declare | Identifier , Assign | Exp , Return ;
+	Codeblock = Code , Separator , Codeblock | Code , Terminator ; 
+	String = {Char} ;
+	Separator = Terminator | ',' | "and" | "but" ; 
+	Identifier = String ;
 	
+	Terminator = "too." | '.' | ',' ;
+	Char = 'a' | 'b' | 'c' | 
 	DigitNoZero =  '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
 	Digit = '0' | DigitNoZero ; 
 	Nat = DigitNoZero , {Digit} ;
@@ -98,6 +106,8 @@ or you can use BibTex but that is probably overkill for now.
   Addison Wesley, Massachusetts,
   2nd Edition,
   1994.
+\bibitem{Wikipedia}
+ 
 
 \end{thebibliography}
 
