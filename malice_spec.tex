@@ -52,29 +52,6 @@ document will explain the semantics of the logical and numerical operaters in ma
                 | 'S' | 'T' | 'U' | 'V' | 'W' | 'X' | 'Y' | 'Z' | '_' ;
 \end{verbatim}
 \section{Semantics}
-Operator Precedence
-The operators in MAlice are defined below in increasing order of operator precidence.
-\begin{itemize}
-	\item
-	$|$ Defines the logical bitwise OR operator. 
-	\\ \tab e.g. 3 $|$ 5 = 7
-	\item
-	$\land$ Defines the logical bitwise XOR operator. 
-	\\ \tab e.g. 3 $\land$ 5 = 6
-	\item
-	$\&$ Defines the logical bitwise AND operator. 
-	\\ \tab e.g. 3 $\&$ 5 = 1
-	\item
-	+ - Define Integer Addition and Subtration respectively. 
-	\\ \tab e.g. 3 + 5 = 8 \\ \tab e.g. 3 - 5 = -2
-	\item
-	* / \% Define Integer Multiplication, Division, and Modulo respectively. 
-	\\ \tab e.g. 3 * 5 = 15 \\ \tab e.g. 3 / 5 = 0 \\ \tab e.g. 3 \% 5 = 3
-	\item
-	\textasciitilde  Defines the unary logical NOT operator.
-	\\ \tab e.g. \textasciitilde$ 3 = -4$
-\end{itemize}
-
 \subsection{Structure}
 The MAlice language primarily describes a program with a single function 
 that serves as a point of entry. The format of the function below can be
@@ -109,6 +86,68 @@ of an example code block is shown below.
 Note that each statement is separated by either a comma, full stop, or the 
 phrases \emph{'too.', 'and'} or \emph{'but'}. A block of code must be 
 terminated with either a full stop or the phrase \emph{too.}.
+
+\subsection{Data Types}
+
+\subsubsection{\texttt{number}}
+{\bf Range:} +127 to -128 {\bf Memory required:} 8 bits.
+ 
+\tab This data type is similar to the \texttt{int} data type from other 
+programming languages, or a subset of integers from mathematics. In the Alice 
+language, \texttt{number}s are represented in 8 bit two's complement - this
+means they have a range from +127 to -128. The choice to have \texttt{number}s
+represented in two's complement was derived from the sample functions whereby
+all \texttt{number}s used fell within the +127 to -128 range. Additionally, when
+operations such as bitwise NOT were performed, the result suggested that the 
+\texttt{number}s were represented in two's complement format.
+
+\subsubsection{\texttt{letter}}
+
+{\bf Range:} a-z, A-Z {\bf Memory required:} 8 bits.
+
+\tab This data type is similar to the \texttt{char} data type from other
+programming languages, representing a letter or character. Note that this type
+is somewhat restricted in the range of characters that can be represented; Alice
+only supports lower and upper-case letters (a-z and A-Z). This range was deduced
+from the sample functions whereby no numbers or other characters were used in
+\texttt{letter}s. A \texttt{letter} is stored in 8 bits using ASCII 
+representation. The allocation of 8 bits for a \texttt{letter} also allows for
+potential expansion for other characters, such as numbers and other symbols 
+(such as \$).
+
+Also note that the Alice language does not support a \texttt{string} data 
+type, as Alice does not support arrays (and hence could not store an array of
+characters or \texttt{letter}s).
+
+\subsection{Operator Precedence}
+The operators in Alice are defined below in increasing order of operator precidence.
+
+\begin{itemize}
+	\item
+	$|$ Defines the logical bitwise OR operator. 
+	\\ \tab e.g. 3 $|$ 5 = 7
+	\item
+	$\land$ Defines the logical bitwise XOR operator. 
+	\\ \tab e.g. 3 $\land$ 5 = 6
+	\item
+	$\&$ Defines the logical bitwise AND operator. 
+	\\ \tab e.g. 3 $\&$ 5 = 1
+	\item
+	+ - Define Integer Addition and Subtration respectively. 
+	\\ \tab e.g. 3 + 5 = 8 \\ \tab e.g. 3 - 5 = -2
+	\item
+	* / \% Define Integer Multiplication, Division, and Modulo respectively. 
+	\\ \tab e.g. 3 * 5 = 15 \\ \tab e.g. 3 / 5 = 0 \\ \tab e.g. 3 \% 5 = 3
+	\item
+	\textasciitilde  Defines the unary logical NOT operator.
+	\\ \tab e.g. \textasciitilde$ 3 = -4$
+\end{itemize}
+
+\begin{tabular}{|l|l|l|l|l|} \hline
+Operator & Description & Argument Types & Examples & Precedence Level \\ \hline
+mitchell & why & you & burn & village? \\ \hline
+
+\end{tabular}
 
 \subsection{Illegal Operations}
 The purpose of this section is to explain the behaviour of the edge cases of the
@@ -183,3 +222,5 @@ or you can use BibTex but that is probably overkill for now.
 
 
 \end{document}
+
+
