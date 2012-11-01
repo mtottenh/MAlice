@@ -1,4 +1,4 @@
-\documentclass[a4wide, 11pt]{article}
+\documentclass[a4wide, 10pt]{article}
 \usepackage{a4, fullpage}
 \setlength{\parskip}{0.3cm}
 \setlength{\parindent}{0cm}
@@ -16,15 +16,12 @@
 \maketitle            % generates the title from the data above
 
 \section{Introduction}
-
 The goal of this document is to outline an informal language specification for 
 the programming language MAlice. The following sections will outline the rough
-gramatical structure of the language in Pseudo-Extended-BNF (PSEBNF). Then the 
+gramatical structure of the language in Extended-BNF (EBNF). Then the 
 document will explain the semantics, or meaning, of the logical and numerical 
 operaters in malice.
-
 \section{BNF Grammar} 
-
 \begin{verbatim}
     - Malice Language Structure - 
     Function    = String ,  "()" ,  "opened" , Codeblock , "closed" ;
@@ -37,12 +34,13 @@ operaters in malice.
     Declare     = "was a" , Type ;
     Assign      = "became" , Exp | "became" , Char ;
     Return      = "said Alice" ;
-    Code        = Identifier , Declare | Identifier , Assign | Exp , Return ;
+    BuiltInFunc = "Ate" | "Drank" ;
+    Code        = Identifier , Declare | Identifier , Assign | Exp , Return  
+                | Identifier , BuiltInFunc ;
     Codeblock   = Code , Separator , Codeblock | Code , Terminator ; 
     Separator   = Terminator | ',' | "and" | "but" ; 
     Identifier  = String ;
     Terminator  = "too." | '.' | ',' ;
-    
 
    - Primitives -
     String      = { Char } ;
@@ -54,19 +52,10 @@ operaters in malice.
                 | 'l' | 'm' | 'n' | 'o' | 'p' | 'q' | 'r' | 's' | 't' | 'u' | 'v'
                 | 'w' | 'x' | 'y' | 'z' | 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G'
                 | 'H' | 'I' | 'J' | 'K' | 'L' | 'M' | 'N' | 'O' | 'P' | 'Q' | 'R'
-                | 'S' | 'T' | 'U' | 'V' | 'W' | 'X' | 'Y' | 'Z' | '_' ;
- 
 \end{verbatim}
-The structure of a malice program:
-	- main entry point
-	- opening braces
-	- defining variables
-	- producing output/returning from main
-
 \section{Semantics}
 Operator Precedence
 The operators in MAlice are defined below in increasing order of operator precidence.
-
 \begin{itemize}
 	\item
 	$|$ Defines the logical bitwise OR operator. 
@@ -86,27 +75,60 @@ The operators in MAlice are defined below in increasing order of operator precid
 	\item
 	\textasciitilde  Defines the unary logical NOT operator.
 	\\ \tab e.g. \textasciitilde$ 3 = -4$
-\end{itemize}
-TODO
-
-\begin{enumerate}
-    \item
-    Explain operators 
-    \item
-    Explain legal operations    
-Legal operations
     
-    
-\end{enumerate}
-
-And here is a bulleted list.
-
-\begin{itemize}
-
-    \item
-    The parts of the list are called items here too.
     
 \end{itemize}
+
+\subsection{Illegal Operations}
+The purpose of this section is to explain the behaviour of the edge cases of the
+MAlice langugae.
+
+\subsubsection{Divide by zero}
+a devide by zero operations is going to be valid Alice syntax, as in the compiler
+will allow for these statements and let the processor generate a runtime error.
+
+
+\subsubsection{Numerical operators}
+As MAlice is a stronly typed language, numerical operators can only have 
+arguments of type number. any other type used with a numerical operator produces
+a compile time type error this can be seen in the output for ex02.alice:
+
+
+\subsubsection{Integer Overflow}
+As integers are represented in an 8 bit two's compliment format there is a 
+large chance for integer overflow to occur. Overflow should not be caught by the
+compiler. it is up to the implementation on how to handle integer overflow, at 
+runtime this language spec document will treat integer overflow as undefined 
+behaviour.
+
+
+\subsubsection{Variable Declaration}
+variables in malice are declared by the BNF rules as above.
+Malice is staticly typed, once a varible has been declared in a MAlice program 
+it cannot then be redeclared. similarly you cannot introduce a variable without 
+a type and expect the compiler to infer its type from an assignment statement for
+example the follwing is invalid malice syntax
+
+\texttt{wrong was a number.\\wrong was a letter.}
+
+similarly variables cannot be re-declared even if they have the same type so the
+following is also invalid.
+
+\texttt{ wrong was a number then wrong was a number.}
+
+Syntatic errors such as this are caught at compile time.
+
+
+\subsubsection{Assignment}
+Assignment follows the strict typing of MAlice, so a variable of type letter 
+cannot take on a value of type number.
+
+
+\subsubsection{Built in function}
+Eating Drinking and talking: 
+
+
+
 
 Finally for this document, if you want to include a reference
 then you put it into a \texttt{thebibliography\{...\}}
