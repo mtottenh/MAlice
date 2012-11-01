@@ -19,16 +19,19 @@
 
 The goal of this document is to outline an informal language specification for 
 the programming language MAlice. The following sections will outline the rough
-gramatical structure of the language in Pseudo-Extended-BNF (PSEBNF). 
+gramatical structure of the language in Pseudo-Extended-BNF (PSEBNF). Then the 
+document will explain the semantics, or meaning, of the logical and numerical 
+operaters in malice.
 
 \section{BNF Grammar} 
 
 \begin{verbatim}
     - Malice Language Structure - 
     Function    = String ,  "()" ,  "opened" , Codeblock , "closed" ;
-    Exp         = Exp '+' Term | Exp '-' Term | Term ;
-    Term        = Term '*' Factor | Term '/' Factor | Factor ;
-    Factor      = '~' Value | Value ;
+    LogExp      = LogExp , '&' , Exp |  LogExp , '|' , Exp | LogExp , '^' , Exp | Exp ;
+    Exp         = Exp , '+' , Term | Exp , '-' , Term | Term ;
+    Term        = Term , '*' , Factor | Term , '/' , Factor | Factor ;
+    Factor      = '~' , Value | Value ;
     Value       = Integer | Identifier ;
     Type        = "number" | "letter" ;
     Declare     = "was a" , Type ;
@@ -46,21 +49,19 @@ gramatical structure of the language in Pseudo-Extended-BNF (PSEBNF).
     Integer     = '0' | [ '-' ] , Nat ;
     Nat         = DigitNoZero , { Digit } ;
     Digit       = '0' | DigitNoZero ; 
-    DigitNoZero =  '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
+    DigitNoZero = '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
     Char        = 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' | 'j' | 'k' 
                 | 'l' | 'm' | 'n' | 'o' | 'p' | 'q' | 'r' | 's' | 't' | 'u' | 'v'
                 | 'w' | 'x' | 'y' | 'z' | 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G'
                 | 'H' | 'I' | 'J' | 'K' | 'L' | 'M' | 'N' | 'O' | 'P' | 'Q' | 'R'
-                | 'S' | 'T' | 'U' | 'V' | 'W' | 'X' | 'Y' | 'Z' ;
+                | 'S' | 'T' | 'U' | 'V' | 'W' | 'X' | 'Y' | 'Z' | '_' ;
  
 \end{verbatim}
-
-To include maths formulas in text put them between \$ symbols like this
-$f(x) = x \times 5$.
-Or to display a formula on a line on its own you do this:
-\[
-    g(y) = y^2
-\]
+The structure of a malice program:
+	- main entry point
+	- opening braces
+	- defining variables
+	- producing output/returning from main
 
 \section{Semantics}
 Operator Precedence
@@ -89,22 +90,8 @@ The operators in MAlice are defined below in increasing order of operator precid
 TODO
 
 \begin{enumerate}
-
     \item
-    Figure out opperator precidence
-    
-    \item
-    Make sure the gammar is left recursive
-    
-    \item
-    Finish PSEBNF spec
-
-    \item
-    Use BNF with Scanning techniques 
-    
-    \item
-     explain operators
-
+    Explain operators 
     \item
     Explain legal operations    
     
