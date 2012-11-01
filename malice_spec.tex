@@ -55,19 +55,42 @@ gramatical structure of the language in Pseudo-Extended-BNF (PSEBNF).
  
 \end{verbatim}
 
-To include maths formulas in text put them between \$ symbols like this
-$f(x) = x \times 5$.
-Or to display a formula on a line on its own you do this:
-\[
-    g(y) = y^2
-\]
-
 \section{Semantics}
 
 \subsection{Data Types}
 
+\subsubsection{\texttt{number}}
+{\bf Range:} +127 to -128 {\bf Memory required:} 8 bits.
+ 
+\tab This data type is similar to the \texttt{int} data type from other 
+programming languages, or a subset of integers from mathematics. In the Alice 
+language, \texttt{number}s are represented in 8 bit two's complement - this
+means they have a range from +127 to -128. The choice to have \texttt{number}s
+represented in two's complement was derived from the sample functions whereby
+all \texttt{number}s used fell within the +127 to -128 range. Additionally, when
+operations such as bitwise NOT were performed, the result suggested that the 
+\texttt{number}s were represented in two's complement format.
+
+\subsubsection{\texttt{letter}}
+
+{\bf Range:} a-z, A-Z {\bf Memory required:} 8 bits.
+
+\tab This data type is similar to the \texttt{char} data type from other
+programming languages, representing a letter or character. Note that this type
+is somewhat restricted in the range of characters that can be represented; Alice
+only supports lower and upper-case letters (a-z and A-Z). This range was deduced
+from the sample functions whereby no numbers or other characters were used in
+\texttt{letter}s. A \texttt{letter} is stored in 8 bits using ASCII 
+representation. The allocation of 8 bits for a \texttt{letter} also allows for
+potential expansion for other characters, such as numbers and other symbols 
+(such as \$).
+
+Also note that the Alice language does not support a \texttt{string} data 
+type, as Alice does not support arrays (and hence could not store an array of
+characters or \texttt{letter}s.
+
 \subsection{Operator Precedence}
-The operators in MAlice are defined below in increasing order of operator precidence.
+The operators in Alice are defined below in increasing order of operator precidence.
 
 \begin{itemize}
 	\item
