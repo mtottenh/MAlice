@@ -19,13 +19,12 @@
 The goal of this document is to outline an informal language specification for 
 the programming language MAlice. The following sections will outline the rough
 gramatical structure of the language in Extended-BNF (EBNF). Then the 
-document will explain the semantics, or meaning, of the logical and numerical 
-operaters in malice.
+document will explain the semantics of the logical and numerical operaters in malice.
 \section{BNF Grammar} 
 \begin{verbatim}
-    - Malice Language Structure - 
     Function    = String ,  "()" ,  "opened" , Codeblock , "closed" ;
-    LogExp      = LogExp , '&' , Exp |  LogExp , '|' , Exp | LogExp , '^' , Exp | Exp ;
+    LogExp      = LogExp , '&' , Exp |  LogExp , '|' , Exp 
+                | LogExp , '^' , Exp | Exp ;
     Exp         = Exp , '+' , Term | Exp , '-' , Term | Term ;
     Term        = Term , '*' , Factor | Term , '/' , Factor | Factor ;
     Factor      = '~' , Value | Value ;
@@ -41,8 +40,6 @@ operaters in malice.
     Separator   = Terminator | ',' | "and" | "but" ; 
     Identifier  = String ;
     Terminator  = "too." | '.' | ',' ;
-
-   - Primitives -
     String      = { Char } ;
     Integer     = '0' | [ '-' ] , Nat ;
     Nat         = DigitNoZero , { Digit } ;
@@ -52,6 +49,7 @@ operaters in malice.
                 | 'l' | 'm' | 'n' | 'o' | 'p' | 'q' | 'r' | 's' | 't' | 'u' | 'v'
                 | 'w' | 'x' | 'y' | 'z' | 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G'
                 | 'H' | 'I' | 'J' | 'K' | 'L' | 'M' | 'N' | 'O' | 'P' | 'Q' | 'R'
+                | 'S' | 'T' | 'U' | 'V' | 'W' | 'X' | 'Y' | 'Z' | '_' ;
 \end{verbatim}
 \section{Semantics}
 Operator Precedence
@@ -75,9 +73,42 @@ The operators in MAlice are defined below in increasing order of operator precid
 	\item
 	\textasciitilde  Defines the unary logical NOT operator.
 	\\ \tab e.g. \textasciitilde$ 3 = -4$
-    
-    
 \end{itemize}
+
+\subsection{Structure}
+The MAlice language primarily describes a program with a single function 
+that serves as a point of entry. The format of the function below can be
+compared to the 'main' function seen in languages like C and Java.
+
+\begin{verbatim}
+    The looking-glass hatta ()
+\end{verbatim}
+
+The function is then enclosed within a block, denoted by the syntax below.
+\begin{verbatim}
+    opened
+        code
+    closed
+\end{verbatim}
+
+The code between the \emph{opened} and \emph{closed} blocks consist of 
+declaration and assignment statements followed by a return statement, 
+often in this respective order although this isn't strictly enforced. The
+function however must only contain a single return statement. The structure
+of an example code block is shown below.
+
+
+\begin{table}[h]
+\begin{tabular}{l l}
+\tab meaningoflife was a number. & \verb|Declaration| \\
+\tab meaningoflife became 42. & \verb|Assignment| \\
+\tab meaningoflife said Alice. & \verb|Return| \\
+\end{tabular}
+\end{table}
+  
+Note that each statement is separated by either a comma, full stop, or the 
+phrases \emph{'too.', 'and'} or \emph{'but'}. A block of code must be 
+terminated with either a full stop or the phrase \emph{too.}.
 
 \subsection{Illegal Operations}
 The purpose of this section is to explain the behaviour of the edge cases of the
