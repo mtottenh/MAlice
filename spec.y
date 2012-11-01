@@ -15,7 +15,13 @@
 
 Function
 	: String "()" "opened" Codeblock "closed"
-	; 
+	;
+LogExp
+	: LogExp '&' Exp 
+	| LogExp '|' Exp 
+	| LogExp '^' Exp
+	| Exp
+	;
 Exp
 	: Exp '+' Term
 	| Exp '-' Term
@@ -27,7 +33,7 @@ Term
 	| Factor
 	;
 Factor
-	: '~' Value
+	: '~' Value %prec UNARY
 	| Value
 	;
 Value
@@ -42,7 +48,7 @@ Declare
 	: "was a" Type
 	;
 Assign
-	: "became" Exp
+	: "became" LogExp
 	| "became" CHAR
 	;
 Return
@@ -51,7 +57,7 @@ Return
 Code
 	: Identifier Declare
 	| Identifier Assign
-	| Exp Return
+	| LogExp Return
 	;
 Codeblock
 	: Code Seperator Codeblock
