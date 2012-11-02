@@ -6,7 +6,7 @@ char		[a-zA-Z]
 string 		{char}[a-zA-Z0-9]*
 integer		[0-9]+
 terminator	[.(too.)]
-seperator	[,(and)(but){terminator}]
+seperator	[,(and)(but)(then){terminator}]
 
 %%
 
