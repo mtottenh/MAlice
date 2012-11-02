@@ -4,7 +4,6 @@
 \setlength{\parskip}{0.3cm}
 \setlength{\parindent}{0cm}
 \newcommand{\tab}{\hspace*{2em}}
-% This is the preamble section where you can include extra packages etc.
 
 \begin{document}
 
@@ -19,8 +18,8 @@
 \section{Introduction}
 The goal of this document is to outline an informal language specification for 
 the programming language MAlice. The following sections will outline the rough
-gramatical structure of the language in Extended-BNF (EBNF) \cite{Wikipedia}. 
-Then the document will explain the semantics of the logical and numerical operaters in malice.
+grammatical structure of the language in Extended-BNF (EBNF) \cite{Wikipedia},
+followed by a description of the language structure and semantics.
 
 \section{BNF Grammar} 
 \begin{verbatim}
@@ -58,7 +57,7 @@ Then the document will explain the semantics of the logical and numerical operat
 \subsection{Structure}
 The MAlice language primarily describes a program with a single function 
 that serves as a point of entry. The format of the function below can be
-compared to the 'main' function seen in languages like C and Java.
+compared to the '\texttt{main}' function seen in languages such as C and Java.
 
 \begin{verbatim}
     The looking-glass hatta ()  //Function entry point
@@ -94,14 +93,14 @@ Note that each statement is separated by either a \emph{',', '.', 'too.',
 
 \subsubsection{\texttt{number}}
 \label{sec:number}
-{\bf Range:} +127 to -128 {\bf Memory required:} 8 bits.
+{\bf Range:} -128 to +127 {\bf Memory required:} 8 bits.
  
 \tab This data type is similar to the \texttt{int} data type from other 
 programming languages, or a subset of integers from mathematics. In the MAlice 
 language, \texttt{number}s are represented in 8 bit two's complement - this
-means they have a range from +127 to -128. The choice to have \texttt{number}s
+means they have a range from -127 to +128. The choice to have \texttt{number}s
 represented in two's complement was derived from the sample functions whereby
-all \texttt{number}s used fell within the +127 to -128 range. Additionally, when
+all \texttt{number}s used fell within the -128 to +127 range. Additionally, when
 operations such as bitwise NOT were performed, the result suggested that the 
 \texttt{number}s were represented in two's complement format.
 
@@ -111,13 +110,13 @@ operations such as bitwise NOT were performed, the result suggested that the
 
 \tab This data type is similar to the \texttt{char} data type from other
 programming languages, representing a letter or character. Note that this type
-is somewhat restricted in the range of characters that can be represented; MAlice
-only supports lower and upper-case letters (a-z and A-Z). This range was deduced
-from the sample functions whereby no numbers or other characters were used in
-\texttt{letter}s. A \texttt{letter} is stored in 8 bits using ASCII 
+is somewhat restricted in the range of characters that can be represented; 
+MAlice only supports lower and upper-case letters (a-z and A-Z). This range was 
+deduced from the sample functions whereby no numbers or other characters were 
+used in \texttt{letter}s. A \texttt{letter} is stored in 8 bits using ASCII 
 representation. The allocation of 8 bits for a \texttt{letter} also allows for
-potential expansion for other characters, such as numbers and other symbols 
-(such as \$).
+potential future expansion for other characters, such as numbers and other 
+symbols (for example, \$).
 
 Also note that the MAlice language does not support a \texttt{string} data 
 type, as MAlice does not support arrays (and hence could not store an array of
@@ -127,7 +126,8 @@ characters or \texttt{letter}s).
 The operators contained in the MAlice language are described in the below table.
 Note that in the table, when a \texttt{number} is given as an acceptable type,
 anything (for example, an expression) that evaluates to a number is also
-acceptable.
+acceptable. In the case of \texttt{ate} and \texttt{drank}, the value contained
+within the \texttt{identifier} must evaluate to a \texttt{number}.
 
 The precedence levels are given in ascending order, and all operators are left
 recursive. Left recursion is preferable to right recursion in this instance as,
@@ -174,48 +174,45 @@ $\mathtt{\sim}$ & Performs logical NOT & $\mathtt{\sim}$ $\texttt{number}$
 \end{tabular}
 
 \subsection{Illegal Operations}
-The purpose of this section is to explain the behaviour of the edge cases of the
-MAlice langugae.
 
-\subsubsection{Divide by zero}
-A divide by zero operation will be valid under MAlice syntax, although the
+\subsubsection{Divide By Zero}
+A divide by zero operation is valid under MAlice syntax, although the
 semantics will cause the program to throw a runtime error.
 
-
 \subsubsection{Numerical operators}
-As MAlice is a stronly typed language, numerical operators can only have 
-arguments of type number. Any other type used with a numerical operator
-produces a compile time 'type error'. This can be seen in the output for ex02.alice:
+As MAlice is a strongly typed language, numerical operators can only have 
+arguments of type \texttt{number}. Any other type used with a numerical operator
+produces a compile time 'type error'. This can be seen in the output for 
+ex02.alice:
 
+\texttt{Type clash for binary operator '+' on line 5. One type is 'number' and 
+the other is 'letter'.}
 
 \subsubsection{Integer Overflow}
-As integers are represented as an 8 bit 'Two's Complement' format there is 
-a large chance for integer overflow to occur. Overflow should not be caught
+As integers are represented in an 8 bit 'two's complement', format there is 
+a high chance for integer overflow to occur. Overflow will not be caught
 by the compiler. It is up to the implementation on how to handle integer 
 overflow at runtime. This language spec document will treat integer 
 overflow as undefined behaviour and will ignore it where necessary.
 
-
 \subsubsection{Variable Declaration}
 Variables in MAlice are declared by the BNF rules as above. The MAlice 
-language is statically typed, so once a variable has been declared in an
-MAlice program, it cannot then be redeclared. Similarly you cannot introduce
-a variable without first declaring a type for it.The following example is
-invalid MAlice syntax.
+language is statically typed, so once a variable has been declared in a
+MAlice program, it cannot then be redeclared. Similarly, you cannot introduce
+a variable without first declaring its type. The following example is
+invalid MAlice syntax:
 
 \texttt{\tab wrong was a number.\\ \tab wrong was a letter.}
 
-The following is also invalid due to a redeclaration of a variable.
+The following is also invalid due to a redeclaration of a variable:
 
 \texttt{\tab wrong was a number then wrong was a number.} 
 
-Syntatic errors such as this are caught at compile time.
-
+Syntactic errors such as this are caught at compile time.
 
 \subsubsection{Assignment}
-Assignment follows the strict typing of MAlice, so a variable of type letter 
-cannot take on a value of type number.
-
+Assignment follows the strict typing of MAlice, so a variable of type 
+\texttt{letter} cannot take on a value of type \texttt{number}.
 
 \subsubsection{Built in function}
 Eating Drinking and talking: 
