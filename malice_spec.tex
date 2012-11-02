@@ -19,8 +19,9 @@
 \section{Introduction}
 The goal of this document is to outline an informal language specification for 
 the programming language MAlice. The following sections will outline the rough
-gramatical structure of the language in Extended-BNF (EBNF). Then the 
-document will explain the semantics of the logical and numerical operaters in MAlice.
+gramatical structure of the language in Extended-BNF (EBNF) \cite{Wikipedia}. 
+Then the document will explain the semantics of the logical and numerical operaters in malice.
+
 \section{BNF Grammar} 
 \begin{verbatim}
     Function    = "The looking-glass hatta" ,  "()" ,  "opened" , 
@@ -128,35 +129,53 @@ Also note that the MAlice language does not support a \texttt{string} data
 type, as MAlice does not support arrays (and hence could not store an array of
 characters or \texttt{letter}s).
 
-\subsection{Operator Precedence}
-The operators in MAlice are defined below in increasing order of operator precidence.
+\subsection{Operators}
+The operators contained in the MAlice language are described in the below table.
+Note that in the table, when a \texttt{number} is given as an acceptable type,
+anything (for example, an expression) that evaluates to a number is also
+acceptable.
 
-\begin{itemize}
-	\item
-	$|$ Defines the logical bitwise OR operator.\footnote{The logical 
-		operators shown here are applied on Two's Complement values. See
-		section ~\ref{sec:number}} 
-	\\ \tab e.g. 3 $|$ 5 = 7
-	\item
-	$\land$ Defines the logical bitwise XOR operator. 
-	\\ \tab e.g. 3 $\land$ 5 = 6
-	\item
-	$\&$ Defines the logical bitwise AND operator. 
-	\\ \tab e.g. 3 $\&$ 5 = 1
-	\item
-	+ - Define Integer Addition and Subtration respectively. 
-	\\ \tab e.g. 3 + 5 = 8 \\ \tab e.g. 3 - 5 = -2
-	\item
-	* / \% Define Integer Multiplication, Division, and Modulo respectively. 
-	\\ \tab e.g. 3 * 5 = 15 \\ \tab e.g. 3 / 5 = 0 \\ \tab e.g. 3 \% 5 = 3
-	\item
-	\textasciitilde  Defines the unary logical NOT operator.
-	\\ \tab e.g. \textasciitilde$ 3 = -4$
-\end{itemize}
+The precedence levels are given in ascending order, and all operators are left
+recursive. Left recursion is preferable to right recursion in this instance as,
+although both can be used in an LALR grammar, the left recursive method often
+leads to a smaller stack depth during the evaluation stage of the parser.
+\cite{eac}
 
 \begin{tabular}{|l|l|l|l|l|} \hline
 Operator & Description & Argument Types & Examples & Precedence Level \\ \hline
-mitchell & why & you & burn & village? \\ \hline
+$\texttt{ate}$ & Increments the value of an identifier 
+& $\texttt{identifier ate}$ & $\texttt{x ate}$ & 1 
+\\ \hline
+
+$\texttt{drank}$ & Drecrements the value of an identifier 
+& $\texttt{identifier drank}$ & $\texttt{x drank}$ & 1 \\ \hline
+
+$|$ & Performs bitwise OR & $\texttt{number $|$ number}$ & $\texttt{3 $|$ 5}$ 
+& 2 \\ \hline
+
+$\land$ & Performs bitwise XOR & $\texttt{number $\land$ number}$ 
+& $\texttt{3 $\land$ 5}$ & 2 \\ \hline
+
+$\&$ & Performs bitwise AND & $\texttt{number $\&$ number}$ & $\texttt{3 $|$ 5}$ 
+& 2 \\ \hline
+
++ & Performs arithmetic addition & $\texttt{number + number}$ & $\texttt{3 + 5}$
+ & 3 \\ \hline
+
+- & Performs arithmetic subtraction & $\texttt{number - number}$ 
+& $\texttt{3 - 5}$ & 3 \\ \hline
+
+* & Performs arithmetic multiplication & $\texttt{number * number}$ 
+& $\texttt{3 * 5}$ & 4 \\ \hline
+
+/ & Performs arithmetic division & $\texttt{number / number}$ 
+& $\texttt{3 / 5}$ & 4 \\ \hline
+
+\% & Performs arithmetic modulo & $\texttt{number $\%$ number}$ 
+& $\texttt{3 $\%$ 5}$ & 4 \\ \hline
+
+$\mathtt{\sim}$ & Performs logical NOT & $\mathtt{\sim}$ $\texttt{number}$
+ & $\mathtt{\sim}$ 3 & 5 \\ \hline
 
 \end{tabular}
 
@@ -207,27 +226,17 @@ cannot take on a value of type number.
 \subsubsection{Built in function}
 Eating Drinking and talking: 
 
-
-
-
-Finally for this document, if you want to include a reference
-then you put it into a \texttt{thebibliography\{...\}}
-environment (see below in source file) and then 
-cite it like this \cite{lamport94}
-(you will need to run \texttt{latex} twice to get it to process the citation),
-or you can use BibTex but that is probably overkill for now.
-
 \begin{thebibliography}{9}
-
-\bibitem{lamport94}
-  Leslie Lamport,
-  \emph{\LaTeX: A Document Preparation System}.
-  Addison Wesley, Massachusetts,
-  2nd Edition,
-  1994.
 \bibitem{Wikipedia}
 \begin{verbatim}	http://en.wikipedia.org/wiki/Extended_Backus%E2%80%93Naur_Form \end{verbatim}
 
+
+\bibitem{eac}
+  Keith D. Cooper and Linda Torczon,
+  \emph{Engineering a Compiler}, section 3.5.4.
+  Morgan Kaufmann, Massachusetts,
+  2nd Edition,
+  2012.
 \end{thebibliography}
 
 
