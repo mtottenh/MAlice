@@ -23,7 +23,8 @@ gramatical structure of the language in Extended-BNF (EBNF). Then the
 document will explain the semantics of the logical and numerical operaters in malice.
 \section{BNF Grammar} 
 \begin{verbatim}
-    Function    = String ,  "()" ,  "opened" , Codeblock , "closed" ;
+    Function    = "The looking-glass hatta" ,  "()" ,  "opened" , 
+                   Codeblock , "closed" ;
     LogExp      = LogExp , '&' , Exp |  LogExp , '|' , Exp 
                 | LogExp , '^' , Exp | Exp ;
     Exp         = Exp , '+' , Term | Exp , '-' , Term | Term ;
@@ -82,9 +83,9 @@ structure of an example code block is shown in Table~\ref{tab:code}.
 
 \begin{table}[h]
 \begin{tabular}{l l}
-\verb|   meaningoflife was a number.| & \verb|Declaration| \\
-\verb|   meaningoflife became 42.| & \verb|Assignment| \\
-\verb|   meaningoflife said Alice.| & \verb|Print| \\
+\verb|   meaningoflife was a number.| & \verb|//Declaration| \\
+\verb|   meaningoflife became 42.| & \verb|//Assignment| \\
+\verb|   meaningoflife said Alice.| & \verb|//Print| \\
 \end{tabular}
 \caption{Example of code from the MAlice language.}
 \label{tab:code}

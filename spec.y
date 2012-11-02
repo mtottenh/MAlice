@@ -16,6 +16,12 @@
 Function
 	: STRING "()" "opened" Codeblock "closed"
 	; 
+LogExp
+	: LogExp '&' Exp 
+	| LogExp '|' Exp
+	| LogExp '^' Exp
+	| Exp
+	;
 Exp
 	: Exp '+' Term
 	| Exp '-' Term
@@ -46,7 +52,7 @@ Assign
 	| STRING "became" CHAR
 	;
 Return
-	: Exp "said Alice"
+	: LogExp "said Alice"
 	;
 BuiltInFunc
 	: STRING "drank"
@@ -57,6 +63,7 @@ Code
 	| Assign
 	| Return
 	| BuiltInFunc
+	|
 	;
 Codeblock
 	: Code SEPARATOR Codeblock
