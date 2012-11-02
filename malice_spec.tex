@@ -18,9 +18,8 @@
 \section{Introduction}
 The goal of this document is to outline an informal language specification for 
 the programming language MAlice. The following sections will outline the rough
-gramatical structure of the language in Extended-BNF (EBNF). Then the 
-document will explain the semantics of the logical and numerical operaters in 
-malice.
+gramatical structure of the language in Extended-BNF (EBNF) \cite{Wikipedia}. 
+Then the document will explain the semantics of the logical and numerical operaters in malice.
 \section{BNF Grammar} 
 \begin{verbatim}
     Function    = String ,  "()" ,  "opened" , Codeblock , "closed" ;
@@ -127,7 +126,10 @@ anything (for example, an expression) that evaluates to a number is also
 acceptable.
 
 The precedence levels are given in ascending order, and all operators are left
-recursive. 
+recursive. Left recursion is preferable to right recursion in this instance as,
+although both can be used in an LALR grammar, the left recursive method often
+leads to a smaller stack depth during the evaluation stage of the parser.
+\cite{eac}
 
 \begin{tabular}{|l|l|l|l|l|} \hline
 Operator & Description & Argument Types & Examples & Precedence Level \\ \hline
@@ -226,16 +228,16 @@ cite it like this \cite{lamport94}
 or you can use BibTex but that is probably overkill for now.
 
 \begin{thebibliography}{9}
-
-\bibitem{lamport94}
-  Leslie Lamport,
-  \emph{\LaTeX: A Document Preparation System}.
-  Addison Wesley, Massachusetts,
-  2nd Edition,
-  1994.
 \bibitem{Wikipedia}
 \begin{verbatim}	http://en.wikipedia.org/wiki/Extended_Backus%E2%80%93Naur_Form \end{verbatim}
 
+
+\bibitem{eac}
+  Keith D. Cooper and Linda Torczon,
+  \emph{Engineering a Compiler}, section 3.5.4.
+  Morgan Kaufmann, Massachusetts,
+  2nd Edition,
+  2012.
 \end{thebibliography}
 
 
