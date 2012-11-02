@@ -1,3 +1,8 @@
+%{
+#include <stdio.h>
+#include <string.h>
+%}
+
 %token CHAR
 %token STRING
 %token INTEGER
@@ -76,3 +81,21 @@ Seperator
 Identifier
 	: STRING
 	;
+
+%%
+main()
+{
+ return(yyparse());
+}
+
+yyerror(s)
+char *s;
+{
+  fprintf(stderr, "%s\n",s);
+}
+
+yywrap()
+{
+  return(1);
+}
+
