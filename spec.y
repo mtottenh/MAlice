@@ -1,7 +1,8 @@
 %token CHAR
-%token IDENTIFIER
+%token STRING
 %token INTEGER
 %token TERMINATOR
+%token SEPARATOR
 
 %left '|'
 %left '^'
@@ -31,26 +32,31 @@ Factor
 	;
 Value
 	: INTEGER
-	| IDENTIFIER
+	| STRING
 	;
 Type
 	: "number"
 	| "letter"
 	;
 Declare
-	: IDENTIFIER "was a" Type
+	: STRING "was a" Type
 	;
 Assign
-	: IDENTIFIER "became" Exp
-	| IDENTIFIER "became" CHAR
+	: STRING "became" Exp
+	| STRING "became" CHAR
 	;
 Return
 	: Exp "said Alice"
+	;
+BuiltInFunc
+	: STRING "drank"
+	| STRING "ate"
 	;
 Code
 	: Declare
 	| Assign
 	| Return
+	| BuiltInFunc
 	;
 Codeblock
 	: Code SEPARATOR Codeblock

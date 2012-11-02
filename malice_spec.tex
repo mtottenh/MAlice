@@ -1,5 +1,6 @@
 \documentclass[a4wide, 10pt]{article}
 \usepackage{a4, fullpage}
+\usepackage{graphicx}
 \setlength{\parskip}{0.3cm}
 \setlength{\parindent}{0cm}
 \newcommand{\tab}{\hspace*{2em}}
@@ -57,39 +58,46 @@ The MAlice language primarily describes a program with a single function
 that serves as a point of entry. The format of the function below can be
 compared to the 'main' function seen in languages like C and Java.
 
+\begin{figure}[h!]
 \begin{verbatim}
     The looking-glass hatta ()
 \end{verbatim}
+\caption{The 'main' function.}
+\end{figure}
 
 The function is then enclosed within a block, denoted by the syntax below.
+\begin{figure}[h!]
 \begin{verbatim}
     opened
         code
     closed
 \end{verbatim}
+\caption{Opening and closing statements for a code block.}
+\end{figure}
 
 The code between the \emph{opened} and \emph{closed} blocks consist of 
-declaration and assignment statements followed by a return statement, 
-often in this respective order although this isn't strictly enforced. The
-function however must only contain a single return statement. The structure
-of an example code block is shown below.
-
+declaration and assignment statements followed by a print statement, 
+often in this respective order although this isn't strictly enforced. The 
+structure of an example code block is shown in Table~\ref{tab:code}.
 
 \begin{table}[h]
 \begin{tabular}{l l}
-\tab meaningoflife was a number. & \verb|Declaration| \\
-\tab meaningoflife became 42. & \verb|Assignment| \\
-\tab meaningoflife said Alice. & \verb|Return| \\
+\verb|   meaningoflife was a number.| & \verb|Declaration| \\
+\verb|   meaningoflife became 42.| & \verb|Assignment| \\
+\verb|   meaningoflife said Alice.| & \verb|Print| \\
 \end{tabular}
+\caption{Example of code from the MAlice language.}
+\label{tab:code}
 \end{table}
   
-Note that each statement is separated by either a comma, full stop, or the 
-phrases \emph{'too.', 'and'} or \emph{'but'}. A block of code must be 
-terminated with either a full stop or the phrase \emph{too.}.
+Note that each statement is separated by either a \emph{',', '.', 'too.',
+ 'and'} or \emph{'but'}. A block of code must be terminated with either a 
+ \emph{'.'} or \emph{'too.'}.
 
 \subsection{Data Types}
 
 \subsubsection{\texttt{number}}
+\label{sec:number}
 {\bf Range:} +127 to -128 {\bf Memory required:} 8 bits.
  
 \tab This data type is similar to the \texttt{int} data type from other 
@@ -124,7 +132,9 @@ The operators in Alice are defined below in increasing order of operator precide
 
 \begin{itemize}
 	\item
-	$|$ Defines the logical bitwise OR operator. 
+	$|$ Defines the logical bitwise OR operator.\footnote{The logical 
+		operators shown here are applied on Two's Complement values. See
+		section ~\ref{sec:number}} 
 	\\ \tab e.g. 3 $|$ 5 = 7
 	\item
 	$\land$ Defines the logical bitwise XOR operator. 
