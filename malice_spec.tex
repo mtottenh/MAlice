@@ -17,7 +17,7 @@
 
 \section{Introduction}
 The goal of this document is to outline an informal language specification for 
-the programming language MAlice. The following sections will outline the rough
+the programming language MAlice. The following sections will outline the
 grammatical structure of the language in Extended-BNF (EBNF) \cite{Wikipedia},
 followed by a description of the language structure and semantics.
 
@@ -47,12 +47,16 @@ followed by a description of the language structure and semantics.
     Nat         = DigitNoZero , { Digit } ;
     Digit       = '0' | DigitNoZero ; 
     DigitNoZero = '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9' ;
+\end{verbatim}
+\clearpage
+\begin{verbatim}
     Char        = 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' | 'j' | 'k' 
                 | 'l' | 'm' | 'n' | 'o' | 'p' | 'q' | 'r' | 's' | 't' | 'u' | 'v'
                 | 'w' | 'x' | 'y' | 'z' | 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G'
                 | 'H' | 'I' | 'J' | 'K' | 'L' | 'M' | 'N' | 'O' | 'P' | 'Q' | 'R'
                 | 'S' | 'T' | 'U' | 'V' | 'W' | 'X' | 'Y' | 'Z' | '_' ;
 \end{verbatim}
+
 \section{Semantics}
 \subsection{Structure}
 The MAlice language primarily describes a program with a single function 
@@ -66,14 +70,14 @@ compared to the '\texttt{main}' function seen in languages such as C and Java.
 The function is then enclosed within a block, denoted by the syntax below.
 \begin{verbatim}
     opened
-        \\code
+        //code
     closed
 \end{verbatim}
 
 The code between the \emph{opened} and \emph{closed} blocks consist of 
 declaration and assignment statements followed by a print statement, 
 often in this respective order although this isn't strictly enforced. The 
-structure of an example code block is shown in Table~\ref{tab:code}.
+structure of an example code block is shown below:
 
 \begin{table}[h]
 \begin{tabular}{l l}
@@ -98,7 +102,7 @@ Note that each statement is separated by either a \emph{',', '.', 'too.',
 \tab This data type is similar to the \texttt{int} data type from other 
 programming languages, or a subset of integers from mathematics. In the MAlice 
 language, \texttt{number}s are represented in 8 bit two's complement - this
-means they have a range from -127 to +128. The choice to have \texttt{number}s
+means they have a range from -128 to +127. The choice to have \texttt{number}s
 represented in two's complement was derived from the sample functions whereby
 all \texttt{number}s used fell within the -128 to +127 range. Additionally, when
 operations such as bitwise NOT were performed, the result suggested that the 
@@ -213,9 +217,6 @@ Syntactic errors such as this are caught at compile time.
 \subsubsection{Assignment}
 Assignment follows the strict typing of MAlice, so a variable of type 
 \texttt{letter} cannot take on a value of type \texttt{number}.
-
-\subsubsection{Built in function}
-Eating Drinking and talking: 
 
 \begin{thebibliography}{9}
 \bibitem{Wikipedia}
