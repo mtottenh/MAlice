@@ -116,47 +116,55 @@ representation. The allocation of 8 bits for a \texttt{letter} also allows for
 potential expansion for other characters, such as numbers and other symbols 
 (such as \$).
 
-Also note that the Alice language does not support a \texttt{string} data 
-type, as Alice does not support arrays (and hence could not store an array of
+Also note that the MAlice language does not support a \texttt{string} data 
+type, as MAlice does not support arrays (and hence could not store an array of
 characters or \texttt{letter}s).
 
-\subsection{Operator Precedence}
-The operators in Alice are defined below in increasing order of operator precidence.
+\subsection{Operators}
+The operators contained in the MAlice language are described in the below table.
+Note that in the table, when a \texttt{number} is given as an acceptable type,
+anything (for example, an expression) that evaluates to a number is also
+acceptable.
 
-\begin{itemize}
-	\item
-	$|$ Defines the logical bitwise OR operator. 
-	\\ \tab e.g. 3 $|$ 5 = 7
-	\item
-	$\land$ Defines the logical bitwise XOR operator. 
-	\\ \tab e.g. 3 $\land$ 5 = 6
-	\item
-	$\&$ Defines the logical bitwise AND operator. 
-	\\ \tab e.g. 3 $\&$ 5 = 1
-	\item
-	+ - Define Integer Addition and Subtration respectively. 
-	\\ \tab e.g. 3 + 5 = 8 \\ \tab e.g. 3 - 5 = -2
-	\item
-	* / \% Define Integer Multiplication, Division, and Modulo respectively. 
-	\\ \tab e.g. 3 * 5 = 15 \\ \tab e.g. 3 / 5 = 0 \\ \tab e.g. 3 \% 5 = 3
-	\item
-	\textasciitilde  Defines the unary logical NOT operator.
-	\\ \tab e.g. $\mathtt{\sim}$ 3 = -4
-\end{itemize}
+The precedence levels are given in ascending order, and all operators are left
+recursive. 
 
 \begin{tabular}{|l|l|l|l|l|} \hline
 Operator & Description & Argument Types & Examples & Precedence Level \\ \hline
-$\texttt{ate}$ (Increment) & & & & \\ \hline
-$\texttt{drank}$ (Decrement) & & & & \\ \hline
-$|$ (Logical OR) & & & & \\ \hline
-$\land$ (Logical XOR) & & & & \\ \hline
-\& (Logical AND) & & & & \\ \hline
-+ (Arithmetic addition) & & & & \\ \hline
-- (Arithmetic subtraction) & & & & \\ \hline
-* (Arithmetic multiplication) & & & & \\ \hline
-/ (Arithmetic division) & & & & \\ \hline
-\% (Arithmetic modulo) & & & & \\ \hline
-$\mathtt{\sim}$ (Logical NOT) & & & & \\ \hline
+$\texttt{ate}$ & Increments the value of an identifier 
+& $\texttt{identifier ate}$ & $\texttt{x ate}$ & 1 
+\\ \hline
+
+$\texttt{drank}$ & Drecrements the value of an identifier 
+& $\texttt{identifier drank}$ & $\texttt{x drank}$ & 1 \\ \hline
+
+$|$ & Performs bitwise OR & $\texttt{number $|$ number}$ & $\texttt{3 $|$ 5}$ 
+& 2 \\ \hline
+
+$\land$ & Performs bitwise XOR & $\texttt{number $\land$ number}$ 
+& $\texttt{3 $\land$ 5}$ & 2 \\ \hline
+
+$\&$ & Performs bitwise AND & $\texttt{number $\&$ number}$ & $\texttt{3 $|$ 5}$ 
+& 2 \\ \hline
+
++ & Performs arithmetic addition & $\texttt{number + number}$ & $\texttt{3 + 5}$
+ & 3 \\ \hline
+
+- & Performs arithmetic subtraction & $\texttt{number - number}$ 
+& $\texttt{3 - 5}$ & 3 \\ \hline
+
+* & Performs arithmetic multiplication & $\texttt{number * number}$ 
+& $\texttt{3 * 5}$ & 4 \\ \hline
+
+/ & Performs arithmetic division & $\texttt{number / number}$ 
+& $\texttt{3 / 5}$ & 4 \\ \hline
+
+\% & Performs arithmetic modulo & $\texttt{number $\%$ number}$ 
+& $\texttt{3 $\%$ 5}$ & 4 \\ \hline
+
+$\mathtt{\sim}$ & Performs logical NOT & $\mathtt{\sim}$ $\texttt{number}$
+ & $\mathtt{\sim}$ 3 & 5 \\ \hline
+
 \end{tabular}
 
 \subsection{Illegal Operations}
