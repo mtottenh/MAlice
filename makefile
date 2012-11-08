@@ -1,11 +1,12 @@
-all: lex lexcomp
+all: lex spec
 
 lex: spec.l 
 	lex spec.l
 
-lexcomp: lex.yy.c
+spec: lex.yy.c
 	gcc $^ -ll -o $@
 
-clean: rm -rf lex.yy.c spec
+clean: 
+	rm lex.yy.c spec
 
 .PHONY: clean all
