@@ -2,33 +2,40 @@
 //#include "y.tab.h"
 #include <stdio.h>
 
-#define CHAR 0
-#define STRING 1
-#define INTEGER 2
-#define TERMINATOR 3
-#define SEPERATOR 4
+#define CHAR 1
+#define STRING 2
+#define INTEGER 3
+#define TERMINATOR 4
+#define SEPERATOR 5
 
 %}
-
+%option nounput yylineno
 char		[a-zA-Z]
-seperator	("and"|"but"|"then")
+seperator	(","|"and"|"but"|"then")
 string 		{char}[a-zA-Z0-9]*
 integer		[0-9]+
 terminator	(too)?\.
-
+whitespace	[ \t]+  
 %%
 
-{char}			{ return CHAR; }
-{seperator}		{ return SEPERATOR; }
-{string}		{ return STRING; }
-{integer}		{ return INTEGER; }
+  /*need to formulate rules for ( ) * / % ^ & | - _ ~ to be turned into tokens*/
+{char}		{ return CHAR; }
+{seperator}	{ return SEPERATOR; }
+{string}	{ return STRING; }
+{integer}	{ return INTEGER; }
 {terminator} 	{ return TERMINATOR; }
-.|\n			{ fprintf(stderr, "Unrecognised token :%s at: %d", 
-									yytext, yylineno ); }
+{whitespace}	/* ignore any whitespace */
+.		{ fprintf(stderr, "Line: %d Unrecognised token :%s\n", 
+								yylineno, yytext ); }
 
 %%
 
 main()
 {
-	fprintf(stderr, "%d", yylex());
+	int type;
+	do {
+		type = yylex();
+		fprintf(stderr, "Line: %d Varname: %s Type: %d\n",yylineno,yytext,type);
+	} while(type != 0);
+	
 }

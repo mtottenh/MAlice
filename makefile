@@ -1,7 +1,7 @@
 all: lex lexcomp
 
 lex: spec.l 
-	lex spec.l
+	lex --yylineno spec.l
 
 lexcomp: lex.yy.c
 	gcc $^ -ll -o $@
