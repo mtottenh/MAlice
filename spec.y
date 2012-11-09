@@ -18,9 +18,35 @@
 
 %%
 
-Function
-	: String "()" "opened" Codeblock "closed"
+DeclarationList
+	: Declaration DeclarationList
+	| Declaration
 	;
+
+Declaration
+	: VarDeclaration
+	| Function
+	| Procedure
+	;
+
+Function
+	: "The room" Identifier "(" ParamList ") contained a" Type Codeblock
+	;
+
+Procedure
+	:  "The looking-glass" Identifier "(" ParamList ")" Codeblock
+	;
+
+ParamList
+	: Paramater
+	| Paramater ',' ParamList
+	;
+Paramater
+	: Type Identifier
+	;
+
+/* Brackets Relational Operators
+*/
 LogExp
 	: LogExp '&' Exp 
 	| LogExp '|' Exp 
@@ -39,42 +65,62 @@ Term
 	;
 Factor
 	: '~' Value %prec UNARY
+	| '-' Value %prec UNARY
 	| Value
 	;
 Value
 	: INTEGER
 	| Identifier
 	;
+/* Add Array/String type */
 Type
 	: "number"
 	| "letter"
+	| "spider" Type
 	;
-Declare
-	: "was a" Type
+
+VarDeclaration
+	: Identifier "was a" Type
 	;
-Assign
-	: "became" LogExp
-	| "became" CHAR
+
+/* Array Initialisation/lval/rval, Result of functions*/
+Assignment
+	: Identifier "became" LogExp
+	| Identifier "became" CHAR
 	;
-Return
+
+/* Clean up the 'print' grammar, to include spoke, also it only works with logExp*/
+Print
 	: "said Alice"
 	;
-Code
-	: Identifier Declare
-	| Identifier Assign
-	| LogExp Return
+
+/* Add rules for Conditoinals/loop/ArrayAcess/FuncandProcedureCalls
+ * user input / null statement / 
+ *  */
+Statement
+	: VarDeclaration
+	| Assignment
+	| LogExp Print
 	;
+
+/* Clean up codeblock grammar, there must be a way to collapse statement line/list */
+
 Codeblock
-	: Code Seperator Codeblock
-	| Code TERMINATOR
+	: "opened" StatementList "closed"
 	; 
-String
-	: CHAR
-	| String CHAR
+
+StatementList
+	: StatementLine StatementList
+	| StatementLine
 	;
-Seperator
-	: TERMINATOR 
-	| ','
+
+StatementLine
+	: Statement Separator StatementLine
+	| Statement TERMINATOR
+	;
+
+Separator
+	: ','
 	| "and"
 	| "but"
 	;
