@@ -7,6 +7,9 @@ spec: lex.yy.c
 	gcc $^ -ll -o $@
 
 clean: 
-	rm lex.yy.c spec
+	rm -f lex.yy.c 
+	rm -f spec
+	rm -f y.tab.c
+	rm -f y.output
 
 .PHONY: clean all
