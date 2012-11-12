@@ -8,6 +8,20 @@
 %token INTEGER
 %token SEPERATOR
 %token TERMINATOR
+%token MINUS
+%token PLUS
+%token MULT
+%token DIV
+%token MOD 
+%token XOR
+%token AND
+%token OR
+%token NOT
+%token OBRACKET
+%token CBRACKET
+%token USCORE
+%token OBRACE
+%token CBRACE 
 
 %left '|'
 %left '^'
