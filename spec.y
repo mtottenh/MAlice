@@ -44,11 +44,11 @@ Declaration
 	;
 
 Function
-	: "The room" Identifier "(" ParamList ") contained a" Type Codeblock
+	: "The room" Identifier OBRACKET ParamList CBRACKET "contained a" Type Codeblock
 	;
 
 Procedure
-	:  "The looking-glass" Identifier "(" ParamList ")" Codeblock
+	:  "The looking-glass" Identifier OBRACKET ParamList CBRACKET Codeblock
 	;
 
 ParamList
@@ -62,24 +62,24 @@ Paramater
 /* Brackets Relational Operators
 */
 LogExp
-	: LogExp '&' Exp 
-	| LogExp '|' Exp 
-	| LogExp '^' Exp
+	: LogExp AND Exp 
+	| LogExp OR Exp 
+	| LogExp XOR Exp
 	| Exp
 	;
 Exp
-	: Exp '+' Term
-	| Exp '-' Term
+	: Exp PLUS Term
+	| Exp MINUS Term
 	| Term
 	;
 Term
-	: Term '*' Factor
-	| Term '/' Factor
+	: Term MULT Factor
+	| Term DIV Factor
 	| Factor
 	;
 Factor
-	: '~' Value %prec UNARY
-	| '-' Value %prec UNARY
+	: NOT Value %prec UNARY
+	| MINUS Value %prec UNARY
 	| Value
 	;
 Value
@@ -120,7 +120,7 @@ Statement
 /* Clean up codeblock grammar, there must be a way to collapse statement line/list */
 
 Codeblock
-	: "opened" StatementList "closed"
+	: OBRACE StatementList CBRACE
 	; 
 
 StatementList

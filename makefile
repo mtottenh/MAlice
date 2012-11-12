@@ -1,10 +1,13 @@
+CC = gcc
+CFLAGS  = -Wall -pedantic -std=c99 -g -O0
+
 all: yacc lex scanner
 
 lex: spec.l
-	lex --yylineno spec.l
+	lex -v --yylineno spec.l
 
 scanner: lex.yy.c y.tab.h
-	gcc $^ -ll -o $@
+	$(CC) $(CFLAGS) $^ -ll -o $@
 
 yacc: spec.y
 	yacc --defines spec.y
