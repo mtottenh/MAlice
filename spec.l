@@ -28,24 +28,30 @@ whitespace	[ \t]+
 {string}	{ tokenpos += yyleng; return STRING; }
 {integer}	{ tokenpos += yyleng; return INTEGER; }
 {terminator} 	{ tokenpos += yyleng; return TERMINATOR; }
-{whitespace}	/* ignore any whitespace */
-\n		{ lineno++; tokenpos = 0; }
-.		{ fprintf(stderr, "Line: %d Unrecognised token :%s\n", 
-								yylineno, yytext ); }
+{whitespace}	{ tokenpos += yyleng;} /* ignore any whitespace */
+\n.*		{ strncpy(linebuf, yytext+1,sizeof(linebuf));
+			 /*save the next line*/
+		  lineno++; yyless(1); tokenpos = 0; } 
+			/*rescan all but the \n*/
+.		{ tokenpos += yyleng; yyerror("Lexer Error");}
+
+  /* fprintf(stderr, "Line: %d Unrecognised token :%s\n", 
+          yylineno, yytext ); } */
 
 %%
 
 void yyerror (char *s) {
-	printf("Line %d: %s:\n%s\n", lineno, s, linebuf);
-	printf("%*s\n", 1+tokenpos, "^");
+	fprintf(stderr, "%d: %s:\n%s\n", lineno, s, linebuf);
+	fprintf(stderr, "%*s\n", tokenpos, "^");
 }
 
 main()
 {
 	int type;
+	/* need to figure out how to get line1 recognized */
 	do {
 		type = yylex();
-		fprintf(stderr, "Line: %d Varname: %s Type: %d\n",lineno,yytext,type);
+		fprintf(stderr, "%d: Token: %s Type:%d\n",lineno,yytext,type);
 	} while(type != 0);
 	
 }

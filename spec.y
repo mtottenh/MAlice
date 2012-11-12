@@ -95,12 +95,12 @@ Print
 	;
 
 /* Add rules for Conditoinals/loop/ArrayAcess/FuncandProcedureCalls
- * user input / null statement / 
+ * user input / null statement / fix LoxExp print to be more generatlised 
  *  */
 Statement
-	: VarDeclaration
-	| Assignment
-	| LogExp Print
+	: VarDeclaration Separator
+	| Assignment Separator
+	| LogExp Print Separator
 	;
 
 /* Clean up codeblock grammar, there must be a way to collapse statement line/list */
@@ -110,15 +110,15 @@ Codeblock
 	; 
 
 StatementList
-	: StatementLine StatementList
-	| StatementLine
+	: Statement Separator StatementList
+	| Statement 
 	;
-
+/*
 StatementLine
-	: Statement Separator StatementLine
-	| Statement TERMINATOR
+	: Statement StatementLine
+	| Statement
 	;
-
+*/
 Separator
 	: ','
 	| "and"
