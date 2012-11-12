@@ -110,7 +110,7 @@ Codeblock
 	; 
 
 StatementList
-	: Statement Separator StatementList
+	: Statement StatementList
 	| Statement 
 	;
 /*
@@ -121,6 +121,7 @@ StatementLine
 */
 Separator
 	: ','
+	| TERMINATOR
 	| "and"
 	| "but"
 	;
