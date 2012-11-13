@@ -54,8 +54,8 @@ ProcedureDec
 	;
 
 ParamListDec
-	: Paramater {/*create a std::vector */}
-	| Paramater ',' ParamList { /* $$ = param_vector.pushback($1)*/}
+	: ParamaterDec {/*create a std::vector */}
+	| ParamaterDec ',' ParamListDec { /* $$ = param_vector.pushback($1)*/}
 	;
 ParamaterDec
 	: Type Identifier {/**/}
@@ -67,7 +67,8 @@ LogExp
 	: LogExp AND Exp {}
 	| LogExp OR Exp  {}
 	| LogExp XOR Exp {}
-	| Exp
+	| OBRACKET LogExp CBRACKET {}
+	| Exp {}
 	;
 Exp
 	: Exp PLUS Term {}
@@ -98,6 +99,7 @@ Type
 
 VarDeclaration
 	: Identifier "was a" Type {/*add id to sym table*/}
+	| Identifier "had" Identifier Type {/*arrays init*/}
 	;
 
 /* Array Initialisation/lval/rval, Result of functions*/
@@ -108,7 +110,7 @@ Assignment
 	;
 
 ArrayVal
-	: arrayName index
+	: Identifier '\'' 's' Value "piece" {/*value is an index*/}
 	;
  
 /* Clean up the 'print' grammar, to include spoke, also it only works with logExp*/
@@ -126,26 +128,24 @@ Statement
 	| Conditional {}
 	| Loop {}
 	| FuncCall {}
-	| ProcCall {}
+/*	| ProcCall {}*/
 	| ProcedureDec {}
 	| FunctionDec {}
 	| Null {}
+	| Increment
+	| Decrement
 	| Codeblock {$$ = $1}
       /*| Generalise Print */
 	| Assignment Separator {}
 	| LogExp Print Separator {}
-	| Identifier Print Separator {}
 	| StringLit Print Separator {}
 	;
 
 StringLit
-	: \" STRING \" 
+	: '\"' STRING '\"' 
 	;
 
-ProcCall
-	: Identifier OBRACKET ParamList CBRACKET 
-	{/*Need to add error checking for correct # and type of params*/ }
-	;
+
 FuncCall 
 	: Identifier OBRACKET ParamList CBRACKET {}
 	;
@@ -154,8 +154,7 @@ ParamList
 	| Paramater
 	;
 Paramater
-	: ProcCall {}
-	| FuncCall {}
+	: FuncCall {}
 	| Identifier {}
 	| StringLit {}
 	;
@@ -163,22 +162,33 @@ Read
 	: "what was" Identifier "?"
 	;
 Loop 
-	:
+	: "eventually" OBRACKET Test CBRACKET "because" StatementList "enough times"
 	;
 Null
 	: "."
 	;
-	
+
+Test
+	: Exp "==" Exp /*fill in rest later*/
+	;
+
+Increment
+	: Identifier "ate"
+	;
+
+Decrement
+	: Identifier "drank"
+	;	
 Conditional
-	: "perhaps" OBRACKET Test CBRACKET so Statement or Statement "because Alice was unsure which"
-	| "either" OBRACKET Test CBRACKET so Statement or Statement "because Alice was unsure which"
+	: "perhaps" OBRACKET Test CBRACKET "so" Statement "or" Statement "because Alice was unsure which"
+	| "either" OBRACKET Test CBRACKET "so" Statement "or" Statement "because Alice was unsure which"
 	;
 Codeblock
 	: OBRACE StatementList CBRACE {/* create new scoping symtable + vector*/}
 	; 
 
 StatementList
-	: Statement StatementList {}
+	: StatementList Statement {}
 	| Statement {}
 	;
 
