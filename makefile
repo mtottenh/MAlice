@@ -3,14 +3,14 @@ CFLAGS  = -Wall -pedantic -std=c99 -g -O0
 
 all: yacc lex scanner
 
-lex: spec.l
-	lex -v --yylineno spec.l
+lex: lexer.l
+	lex -v --yylineno lexer.l
 
 scanner: lex.yy.c y.tab.h
 	$(CC) $(CFLAGS) $^ -ll -o $@
 
-yacc: spec.y
-	yacc --defines spec.y
+yacc: grammar.y
+	yacc --defines grammar.y
 
 clean: 
 	rm -f lex.yy.c 
