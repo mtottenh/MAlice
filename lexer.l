@@ -54,14 +54,14 @@ void yyerror (char *s) {
 	fprintf(stderr, "%d: %s:\n%s\n", lineno, s, linebuf);
 	fprintf(stderr, "%*s\n", tokenpos, "^");
 }
-
+/*
 main()
 {
 	int type;
-	/* need to figure out how to get line1 recognized */
+	/* need to figure out how to get line1 recognized 
 	do {
 		type = yylex();
 		fprintf(stderr, "%d: Token: %s Type:%d\n",lineno,yytext,type);
 	} while(type != 0);
 	
-}
+}*/

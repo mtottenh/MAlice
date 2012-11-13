@@ -1,6 +1,7 @@
 %{
 #include <stdio.h>
 #include <string.h>
+extern int yyerror();
 %}
 
 %token CHAR
@@ -134,7 +135,7 @@ Statement
 	| Null {}
 	| Increment
 	| Decrement
-	| Codeblock {$$ = $1}
+	| Codeblock {$$ = $1;}
       /*| Generalise Print */
 	| Assignment Separator {}
 	| LogExp Print Separator {}
@@ -208,7 +209,7 @@ main()
 {
  return(yyparse());
 }
-
+/*
 yyerror(s)
 char *s;
 {
@@ -219,4 +220,4 @@ yywrap()
 {
   return(1);
 }
-
+*/
