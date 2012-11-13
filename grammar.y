@@ -4,25 +4,24 @@
 extern int yyerror();
 %}
 
-%token CHAR
-%token STRING
-%token INTEGER
-%token SEPERATOR
-%token TERMINATOR
-%token MINUS
-%token PLUS
-%token MULT
-%token DIV
-%token MOD 
-%token XOR
-%token AND
-%token OR
-%token NOT
-%token OBRACKET
-%token CBRACKET
+/* Type Tokens */
+%token TCHAR TSTRING TPTR TNUMBER  
+/* Alice Keywords */
+%token WAS A PROCEDURE FUNC BECAME
+
+/* Primitives */
+%token CHAR STRING INTEGER
+%token SEPARATOR TERMINATOR
+/*Operators */
+%token MINUS PLUS MULT DIV MOD 
+%token XOR AND OR NOT
+/* bracket and braces */
+%token OBRACKET CBRACKET ARRINDO ARRINDC
 %token USCORE
-%token OBRACE
-%token CBRACE 
+%token OBRACE CBRACE 
+
+/*Built in functions */
+%token PRINT
 
 %left '|'
 %left '^'
@@ -31,6 +30,10 @@ extern int yyerror();
 %left '*' '/' '%'
 %left UNARY
 
+%union {
+	char *string;
+	int val;
+}
 %%
 
 DeclarationList
@@ -39,24 +42,25 @@ DeclarationList
 	;
 
 Declaration
-	: VarDeclaration { /*$$ = $1*/ }
+	: VarDeclaration { printf("IT WORKED");/*$$ = $1*/ }
 	| FunctionDec	 { /*$$ = $1*/ }
 	| ProcedureDec     { /*$$ = $1*/ }
 	;
 
 FunctionDec
-	: "The room" Identifier OBRACKET ParamListDec CBRACKET "contained a" Type Codeblock
+	: FUNC Identifier OBRACKET ParamListDec CBRACKET "contained a" Type Codeblock
 	{/*$$ = new funcNode($2,$7,$8,$4) name/type/body/args*/}
 	;
 
 ProcedureDec
-	:  "The looking-glass" Identifier OBRACKET ParamListDec CBRACKET Codeblock
+	:  PROCEDURE Identifier OBRACKET ParamListDec CBRACKET Codeblock
 	{ /*$$ = new procNode( $2,$6,$4) name/body/args */ }
 	;
 
 ParamListDec
 	: ParamaterDec {/*create a std::vector */}
 	| ParamaterDec ',' ParamListDec { /* $$ = param_vector.pushback($1)*/}
+	| ;
 	;
 ParamaterDec
 	: Type Identifier {/**/}
@@ -92,39 +96,38 @@ Value
 	;
 /* Add Array/String type */
 Type
-	: "number" {}
-	| "letter" {}
-	| "sentence" {}
-	| "spider" Type {}
+	: TNUMBER {}
+	| TCHAR {}
+	| TSTRING {}
+	| TPTR Type {}
 	;
 
 VarDeclaration
-	: Identifier "was a" Type {/*add id to sym table*/}
+	: Identifier WAS A Type {printf("Var Declared");/*add id to sym table*/}
 	| Identifier "had" Identifier Type {/*arrays init*/}
 	;
 
 /* Array Initialisation/lval/rval, Result of functions*/
 Assignment
-	: Identifier "became" LogExp   {/*update value in symbol table*/}
-	| Identifier "became" CHAR	{/*also need to check errors*/}
-	| Identifier "became" ArrayVal
+	: Identifier BECAME LogExp   {/*update value in symbol table*/}
+	| Identifier BECAME CHAR {/*also need to check errors*/}
+	| Identifier BECAME ArrayVal
 	;
 
 ArrayVal
-	: Identifier '\'' 's' Value "piece" {/*value is an index*/}
+	: Identifier ARRINDO Value ARRINDC {/*value is an index*/}
 	;
  
-/* Clean up the 'print' grammar, to include spoke, also it only works with logExp*/
-Print
-	: "spoke" 	{/**/}
-	| "said Alice"  {/**/}
+/*Print Token matches said allice and spoke*/
+Print 
+	: PRINT  {/**/}
 	;
 
 /* Add rules for Conditoinals/loop/ArrayAcess/FuncandProcedureCalls
  * user input / null statement / fix LoxExp print to be more generatlised 
  *  */
 Statement
-	: VarDeclaration Separator {}
+	: VarDeclaration Separator {printf("Variable Declared\n");} 
 	| Read {}
 	| Conditional {}
 	| Loop {}
@@ -135,7 +138,7 @@ Statement
 	| Null {}
 	| Increment
 	| Decrement
-	| Codeblock {$$ = $1;}
+	| Codeblock {}
       /*| Generalise Print */
 	| Assignment Separator {}
 	| LogExp Print Separator {}
@@ -194,20 +197,20 @@ StatementList
 	;
 
 Separator
-	: ',' {}
-	| TERMINATOR {}
-	| "and" {}
-	| "but" {}
+	: TERMINATOR {}
+	| SEPARATOR { printf("WE GOT A SEPARATOR?");}
 	;
 
 Identifier
-	: STRING {}
+	: STRING {printf("New Identifier: %s\n", yyval);}
+	/* CHAR {printf("we got a char\n");} */
 	;
 
 %%
 main()
 {
- return(yyparse());
+ int node = yyparse();
+ return node;
 }
 /*
 yyerror(s)
