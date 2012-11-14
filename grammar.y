@@ -167,17 +167,17 @@ Read
 	: "what was" Identifier "?"
 	;
 Loop
-	: "eventually" OBRACKET Test CBRACKET "because" StatementList "enough times"
+	: "eventually" OBRACKET Predicate CBRACKET "because" StatementList "enough times"
 	;
 Null
 	: "."
 	;
 
-Test
+Predicate
 	: Exp "==" Exp /*fill in rest later*/
 	| Exp "||" Exp
 	| Exp "&&" Exp
-	| OBRACKET Test CBRACKET
+	| OBRACKET Predicate CBRACKET
 	;
 
 Increment
@@ -188,8 +188,8 @@ Decrement
 	: Identifier DEC
 	;	
 Conditional
-	: "perhaps" OBRACKET Test CBRACKET "so" Statement "or" Statement "because Alice was unsure which"
-	| "either" OBRACKET Test CBRACKET "so" Statement "or" Statement "because Alice was unsure which"
+	: "perhaps" OBRACKET Predicate CBRACKET "so" Statement "or" Statement "because Alice was unsure which"
+	| "either" OBRACKET Predicate CBRACKET "so" Statement "or" Statement "because Alice was unsure which"
 	;
 Codeblock
 	: OBRACE StatementList CBRACE {/* create new scoping symtable + vector*/}
