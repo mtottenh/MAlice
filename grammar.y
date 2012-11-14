@@ -19,7 +19,7 @@ EVENTUALLY BECAUSE ENOUGHTIMES THEN ELSE IF ENDIF MAYBE
 %token MINUS PLUS MULT DIV MOD 
 %token XOR AND OR NOT
 /* Logical operators */
-%token LAND LOR LEQU LNOT
+%token LAND LOR LEQU LNOT LGTHAN LGTHANEQ LLTHAN LLTHANEQ
 /* bracket and braces */
 %token OBRACKET CBRACKET ARRINDO ARRINDC
 %token USCORE
@@ -185,9 +185,15 @@ Predicate
 	| LNOT OBRACKET Predicate CBRACKET
 	| OBRACKET Predicate CBRACKET
 	;
+
 PredPrime
 	: BitExp LEQU BitExp
+	| BitExp LLTHAN BitExp
+	| BitExp LLTHANEQ BitExp
+	| BitExp LGTHAN BitExp
+	| BitExp LGTHANEQ BitExp
 	;
+
 Increment
 	: Identifier INC
 	;
@@ -195,14 +201,17 @@ Increment
 Decrement
 	: Identifier DEC
 	;	
+
 Conditional
 	: IF OBRACKET Predicate CBRACKET THEN Statement Maybe
 	;
+
 Maybe
 	: ELSE Statement ENDIF
 	| ENDIF
 	| ELSE MAYBE OBRACKET Predicate CBRACKET Maybe
 	;
+
 Codeblock
 	: OBRACE StatementList CBRACE {/* create new scoping symtable + vector*/}
 	; 
