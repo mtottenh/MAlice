@@ -7,7 +7,8 @@ extern int yyerror();
 /* Type Tokens */
 %token TCHAR TSTRING TPTR TNUMBER  
 /* Alice Keywords */
-%token WAS A PROCEDURE FUNC BECAME INC DEC	
+%token WAS A PROCEDURE FUNC BECAME INC DEC CONTAINEDA HAD WHATWAS QUESTIONMARK
+	EVENTUALLY BECAUSE ENOUGHTIMES PERHAPS SO ORKEYWORD EITHER UNSUREALICE
 
 /* Primitives */
 %token CHAR STRING INTEGER
@@ -15,6 +16,8 @@ extern int yyerror();
 /*Operators */
 %token MINUS PLUS MULT DIV MOD 
 %token XOR AND OR NOT
+/* Logical operators */
+%token LAND LOR LEQU
 /* bracket and braces */
 %token OBRACKET CBRACKET ARRINDO ARRINDC
 %token USCORE
@@ -48,7 +51,7 @@ Declaration
 	;
 
 FunctionDec
-	: FUNC Identifier OBRACKET ParamListDec CBRACKET "contained a" Type Codeblock
+	: FUNC Identifier OBRACKET ParamListDec CBRACKET CONTAINEDA Type Codeblock
 	{/*$$ = new funcNode($2,$7,$8,$4) name/type/body/args*/}
 	;
 
@@ -105,7 +108,7 @@ Type
 
 VarDeclaration
 	: Identifier WAS A Type {printf("Var Declared");/*add id to sym table*/}
-	| Identifier "had" Identifier Type {/*arrays init*/}
+	| Identifier HAD Identifier Type {/*arrays init*/}
 	;
 
 /* Array Initialisation/lval/rval, Result of functions*/
@@ -164,19 +167,19 @@ Paramater
 	| StringLit {}
 	;
 Read
-	: "what was" Identifier "?"
+	: WHATWAS Identifier QUESTIONMARK
 	;
 Loop
-	: "eventually" OBRACKET Predicate CBRACKET "because" StatementList "enough times"
+	: EVENTUALLY OBRACKET Predicate CBRACKET BECAUSE StatementList ENOUGHTIMES
 	;
 Null
 	: "."
 	;
 
 Predicate
-	: Exp "==" Exp /*fill in rest later*/
-	| Exp "||" Exp
-	| Exp "&&" Exp
+	: Exp LEQU Exp
+	| Exp LOR Exp
+	| Exp LAND Exp
 	| OBRACKET Predicate CBRACKET
 	;
 
@@ -188,8 +191,8 @@ Decrement
 	: Identifier DEC
 	;	
 Conditional
-	: "perhaps" OBRACKET Predicate CBRACKET "so" Statement "or" Statement "because Alice was unsure which"
-	| "either" OBRACKET Predicate CBRACKET "so" Statement "or" Statement "because Alice was unsure which"
+	: PERHAPS OBRACKET Predicate CBRACKET SO Statement ORKEYWORD Statement UNSUREALICE
+	| EITHER OBRACKET Predicate CBRACKET SO Statement ORKEYWORD Statement UNSUREALICE
 	;
 Codeblock
 	: OBRACE StatementList CBRACE {/* create new scoping symtable + vector*/}

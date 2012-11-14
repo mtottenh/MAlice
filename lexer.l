@@ -28,6 +28,25 @@ letter		  { tokenpos += yyleng; return TCHAR; }
 a		  { tokenpos += yyleng; return A;	  }
 ate		  { tokenpos += yyleng; return INC;	  }
 drank 		  { tokenpos += yyleng; return DEC;	  }
+"contained a"     { tokenpos += yyleng; return CONTAINEDA; }
+had		  { tokenpos += yyleng; return HAD; }
+"what was"	  { tokenpos += yyleng; return WHATWAS; }
+\?		  { tokenpos += yyleng; return QUESTIONMARK; }
+eventually	  { tokenpos += yyleng; return EVENTUALLY; }
+because		  { tokenpos += yyleng; return BECAUSE; }
+"enough times" 	  { tokenpos += yyleng; return ENOUGHTIMES; }
+perhaps		  { tokenpos += yyleng; return PERHAPS; }
+so		  { tokenpos += yyleng; return SO; }
+or		  { tokenpos += yyleng; return ORKEYWORD; }
+either		  { tokenpos += yyleng; return EITHER; }
+"because Alice was unsure which" { tokenpos += yyleng; return UNSUREALICE; }
+
+ /* logical operators (e.g. used in loop predicates) */
+
+&&		 { tokenpos += yyleng; return LAND; }
+\|\|		 { tokenpos += yyleng; return LOR; }
+==		 { tokenpos += yyleng; return LEQU; }
+
 
  /* functions and procedurs*/
 "The room"	  { tokenpos += yyleng;  return FUNC; }
