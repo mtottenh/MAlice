@@ -1,10 +1,18 @@
 %{
 #include "y.tab.h"
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 
+#define YY_NO_INPUT
+
+extern char *strdup(const char *s);
+extern int fileno(FILE *stream);
+void yyerror(char *s);
 int lineno = 1;
 char linebuf[500];
 int tokenpos = 0;
+
 %}
 
 %option nounput yylineno
@@ -85,9 +93,7 @@ _		{ tokenpos += yyleng; return USCORE; }
 \)		{ tokenpos += yyleng; return CBRACKET; }
 
 {whitespace}	{ tokenpos += yyleng;} /* ignore any whitespace */
-\n.*		{ strncpy(linebuf, yytext+1,sizeof(linebuf));
-			 /*save the next line*/
-		  lineno++; yyless(0); tokenpos = 0; } 
+\n.*		{ strncpy(linebuf, yytext+1,sizeof(linebuf)); lineno++; yyless(1); tokenpos = 0; } 
 			/*rescan all but the \n*/
 .		{ tokenpos += yyleng; yyerror("Lexer Error");}
 
@@ -98,7 +104,7 @@ void yyerror (char *s) {
 	fprintf(stderr, "%d: %s:\n%s\n", lineno, s, linebuf);
 	fprintf(stderr, "%*s\n", tokenpos, "^");
 }
-/*
+ /*
 main()
 {
 	int type;

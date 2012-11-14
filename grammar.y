@@ -1,7 +1,9 @@
 %{
 #include <stdio.h>
 #include <string.h>
-extern int yyerror();
+extern void yyerror(char*);
+extern int yylex();
+
 %}
 
 /* Type Tokens */
@@ -46,36 +48,36 @@ DeclarationList
 
 Declaration
 	: VarDeclaration { printf("IT WORKED");/*$$ = $1*/ }
-	| FunctionDec	 { /*$$ = $1*/ }
+	| FunctionDec	 {  }
 	| ProcedureDec     { /*$$ = $1*/ }
 	;
 
 FunctionDec
 	: FUNC Identifier OBRACKET ParamListDec CBRACKET CONTAINEDA Type Codeblock
 	{/*$$ = new funcNode($2,$7,$8,$4) name/type/body/args*/}
+	| FUNC Identifier OBRACKET CBRACKET CONTAINEDA Type Codeblock {}
 	;
 
 ProcedureDec
 	:  PROCEDURE Identifier OBRACKET ParamListDec CBRACKET Codeblock
 	{ /*$$ = new procNode( $2,$6,$4) name/body/args */ }
+	|  PROCEDURE Identifier OBRACKET CBRACKET Codeblock {}
 	;
 
 ParamListDec
 	: ParamaterDec {/*create a std::vector */}
 	| ParamaterDec ',' ParamListDec { /* $$ = param_vector.pushback($1)*/}
-	| ;
 	;
 ParamaterDec
 	: Type Identifier {/**/}
 	;
 
-/* Brackets Relational Operators
-*/
-LogExp
-	: LogExp AND Exp {}
-	| LogExp OR Exp  {}
-	| LogExp XOR Exp {}
-	| OBRACKET LogExp CBRACKET {}
+  /* Brackets Relational Operators*/
+BitExp
+	: BitExp AND Exp {}
+	| BitExp OR Exp  {}
+	| BitExp XOR Exp {}
+	| OBRACKET BitExp CBRACKET {}
 	| Exp {}
 	;
 Exp
@@ -113,7 +115,7 @@ VarDeclaration
 
 /* Array Initialisation/lval/rval, Result of functions*/
 Assignment
-	: Identifier BECAME LogExp   {/*update value in symbol table*/}
+	: Identifier BECAME BitExp   {/*update value in symbol table*/}
 	| Identifier BECAME CHAR {/*also need to check errors*/}
 	| Identifier BECAME ArrayVal
 	;
@@ -135,7 +137,7 @@ Statement
 	| Read {}
 	| Conditional {}
 	| Loop {}
-	| FuncCall {}
+	| Call {}
 /*	| ProcCall {}*/
 	| ProcedureDec {}
 	| FunctionDec {}
@@ -145,7 +147,7 @@ Statement
 	| Codeblock {}
       /*| Generalise Print */
 	| Assignment Separator {}
-	| LogExp Print Separator {}
+	| BitExp Print Separator {}
 	| StringLit Print Separator {}
 	;
 
@@ -154,7 +156,7 @@ StringLit
 	;
 
 
-FuncCall 
+Call 
 	: Identifier OBRACKET ParamList CBRACKET {}
 	;
 ParamList
@@ -162,7 +164,7 @@ ParamList
 	| Paramater
 	;
 Paramater
-	: FuncCall {}
+	: Call {}
 	| Identifier {}
 	| StringLit {}
 	;
@@ -209,12 +211,12 @@ Separator
 	;
 
 Identifier
-	: STRING {printf("New Identifier: %s\n", yyval);}
+	: STRING {printf("New Identifier: %s\n", yyval.string);}
 	/* CHAR {printf("we got a char\n");} */
 	;
 
 %%
-main()
+int main()
 {
  int node = yyparse();
  return node;
