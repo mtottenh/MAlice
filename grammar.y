@@ -166,7 +166,7 @@ Paramater
 Read
 	: "what was" Identifier "?"
 	;
-Loop 
+Loop
 	: "eventually" OBRACKET Test CBRACKET "because" StatementList "enough times"
 	;
 Null
@@ -175,6 +175,9 @@ Null
 
 Test
 	: Exp "==" Exp /*fill in rest later*/
+	| Exp "||" Exp
+	| Exp "&&" Exp
+	| OBRACKET Test CBRACKET
 	;
 
 Increment
