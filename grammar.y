@@ -7,7 +7,7 @@ extern int yyerror();
 /* Type Tokens */
 %token TCHAR TSTRING TPTR TNUMBER  
 /* Alice Keywords */
-%token WAS A PROCEDURE FUNC BECAME
+%token WAS A PROCEDURE FUNC BECAME INC DEC	
 
 /* Primitives */
 %token CHAR STRING INTEGER
@@ -83,6 +83,7 @@ Exp
 Term
 	: Term MULT Factor {}
 	| Term DIV Factor {}
+	| Term MOD Factor {}
 	| Factor {}
 	;
 Factor
@@ -136,8 +137,8 @@ Statement
 	| ProcedureDec {}
 	| FunctionDec {}
 	| Null {}
-	| Increment
-	| Decrement
+	| Increment Separator {}
+	| Decrement Separator {}
 	| Codeblock {}
       /*| Generalise Print */
 	| Assignment Separator {}
@@ -177,11 +178,11 @@ Test
 	;
 
 Increment
-	: Identifier "ate"
+	: Identifier INC
 	;
 
 Decrement
-	: Identifier "drank"
+	: Identifier DEC
 	;	
 Conditional
 	: "perhaps" OBRACKET Test CBRACKET "so" Statement "or" Statement "because Alice was unsure which"

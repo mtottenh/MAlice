@@ -10,7 +10,7 @@ int tokenpos = 0;
 %option nounput yylineno
 char		[a-zA-Z]
 separator	(,|and|but|then)
-string 		{char}[a-zA-Z0-9]*
+string 		{char}[a-zA-Z0-9_]*
 integer		[0-9]+
 terminator	(too)?\.
 whitespace	[ \t]+  
@@ -25,6 +25,9 @@ was	 	  { tokenpos += yyleng; return WAS; }
 number		  { tokenpos += yyleng; return TNUMBER; }
 letter		  { tokenpos += yyleng; return TCHAR; }
 a		  { tokenpos += yyleng; return A;	  }
+ate		  { tokenpos += yyleng; return INC;	  }
+drank 		  { tokenpos += yyleng; return DEC;	  }
+
  /* functions and procedurs*/
 "The room"	  { tokenpos += yyleng;  return FUNC; }
 "The looking-glass" {tokenpos += yyleng; return PROCEDURE; }
