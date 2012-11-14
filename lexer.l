@@ -14,9 +14,10 @@ string 		{char}[a-zA-Z0-9_]*
 integer		[0-9]+
 terminator	(too)?\.
 whitespace	[ \t]+  
-
+%s INIT
 %%
-
+ /* Start state */
+ 
   /*need to formulate rules for ( ) * / % ^ & | - _ ~ to be turned into tokens*/
 
  /* Keywords */
@@ -67,7 +68,7 @@ _		{ tokenpos += yyleng; return USCORE; }
 {whitespace}	{ tokenpos += yyleng;} /* ignore any whitespace */
 \n.*		{ strncpy(linebuf, yytext+1,sizeof(linebuf));
 			 /*save the next line*/
-		  lineno++; yyless(1); tokenpos = 0; } 
+		  lineno++; yyless(0); tokenpos = 0; } 
 			/*rescan all but the \n*/
 .		{ tokenpos += yyleng; yyerror("Lexer Error");}
 
