@@ -40,14 +40,16 @@ drank 		  { tokenpos += yyleng; return DEC;	  }
 had		  { tokenpos += yyleng; return HAD; }
 "what was"	  { tokenpos += yyleng; return WHATWAS; }
 \?		  { tokenpos += yyleng; return QUESTIONMARK; }
+\!		  { tokenpos += yyleng; return LNOT; }
 eventually	  { tokenpos += yyleng; return EVENTUALLY; }
 because		  { tokenpos += yyleng; return BECAUSE; }
 "enough times" 	  { tokenpos += yyleng; return ENOUGHTIMES; }
-perhaps		  { tokenpos += yyleng; return PERHAPS; }
-so		  { tokenpos += yyleng; return SO; }
-or		  { tokenpos += yyleng; return ORKEYWORD; }
-either		  { tokenpos += yyleng; return EITHER; }
-"because Alice was unsure which" { tokenpos += yyleng; return UNSUREALICE; }
+perhaps		  { tokenpos += yyleng; return IF; }
+so		  { tokenpos += yyleng; return THEN; }
+or		  { tokenpos += yyleng; return ELSE; }
+either		  { tokenpos += yyleng; return IF; }
+maybe		  { tokenpos += yyleng; return MAYBE; }
+"because Alice was unsure which" { tokenpos += yyleng; return ENDIF; }
 
  /* logical operators (e.g. used in loop predicates) */
 

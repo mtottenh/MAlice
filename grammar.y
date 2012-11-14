@@ -10,7 +10,7 @@ extern int yylex();
 %token TCHAR TSTRING TPTR TNUMBER  
 /* Alice Keywords */
 %token WAS A PROCEDURE FUNC BECAME INC DEC CONTAINEDA HAD WHATWAS QUESTIONMARK
-	EVENTUALLY BECAUSE ENOUGHTIMES PERHAPS SO ORKEYWORD EITHER UNSUREALICE
+EVENTUALLY BECAUSE ENOUGHTIMES THEN ELSE IF ENDIF MAYBE
 
 /* Primitives */
 %token CHAR STRING INTEGER
@@ -19,7 +19,7 @@ extern int yylex();
 %token MINUS PLUS MULT DIV MOD 
 %token XOR AND OR NOT
 /* Logical operators */
-%token LAND LOR LEQU
+%token LAND LOR LEQU LNOT
 /* bracket and braces */
 %token OBRACKET CBRACKET ARRINDO ARRINDC
 %token USCORE
@@ -74,9 +74,9 @@ ParamaterDec
 
   /* Brackets Relational Operators*/
 BitExp
-	: BitExp AND Exp {}
-	| BitExp OR Exp  {}
-	| BitExp XOR Exp {}
+	: Exp AND BitExp {}
+	| Exp OR BitExp  {}
+	| Exp XOR BitExp {}
 	| OBRACKET BitExp CBRACKET {}
 	| Exp {}
 	;
@@ -179,12 +179,15 @@ Null
 	;
 
 Predicate
-	: Exp LEQU Exp
-	| Exp LOR Exp
-	| Exp LAND Exp
+	: PredPrime LOR Predicate
+	| PredPrime LAND Predicate
+	| PredPrime
+	| LNOT OBRACKET Predicate CBRACKET
 	| OBRACKET Predicate CBRACKET
 	;
-
+PredPrime
+	: BitExp LEQU BitExp
+	;
 Increment
 	: Identifier INC
 	;
@@ -193,8 +196,12 @@ Decrement
 	: Identifier DEC
 	;	
 Conditional
-	: PERHAPS OBRACKET Predicate CBRACKET SO Statement ORKEYWORD Statement UNSUREALICE
-	| EITHER OBRACKET Predicate CBRACKET SO Statement ORKEYWORD Statement UNSUREALICE
+	: IF OBRACKET Predicate CBRACKET THEN Statement Maybe
+	;
+Maybe
+	: ELSE Statement ENDIF
+	| ENDIF
+	| ELSE MAYBE OBRACKET Predicate CBRACKET Maybe
 	;
 Codeblock
 	: OBRACE StatementList CBRACE {/* create new scoping symtable + vector*/}

@@ -21,7 +21,14 @@ malice_examples
 *.backup
 *.kate-swp
 *.swp
+.nfs*
 
 #ignore yacc/lex stuff
 *.output
 *.tab.c
+*.yy.c
+*.tab.h
+
+#ignore binaries
+parser
+scanner
