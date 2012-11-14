@@ -20,7 +20,6 @@ char		[a-zA-Z]
 separator	(,|and|but|then)
 string 		{char}[a-zA-Z0-9_]*
 integer		[0-9]+
-terminator	(too)?\.
 whitespace	[ \t]+  
 %s INIT
 %%
@@ -29,6 +28,7 @@ whitespace	[ \t]+
   /*need to formulate rules for ( ) * / % ^ & | - _ ~ to be turned into tokens*/
 
  /* Keywords */
+too 		  { tokenpos += yyleng; return TOO;}
 became	 	  { tokenpos += yyleng; return BECAME; }
 was	 	  { tokenpos += yyleng; return WAS; }
 number		  { tokenpos += yyleng; return TNUMBER; }
@@ -80,7 +80,7 @@ closed		 { tokenpos += yyleng; return CBRACE; }
 		   return STRING; }
 
 {integer}	{ tokenpos += yyleng; return INTEGER; }
-{terminator} 	{ tokenpos += yyleng; return TERMINATOR; }
+\.	 	{ tokenpos += yyleng; return NULLTOK; }
 \+		{ tokenpos += yyleng; return PLUS; }
 -		{ tokenpos += yyleng; return MINUS; }
 \*		{ tokenpos += yyleng; return MULT; }
@@ -95,7 +95,8 @@ _		{ tokenpos += yyleng; return USCORE; }
 \)		{ tokenpos += yyleng; return CBRACKET; }
 
 {whitespace}	{ tokenpos += yyleng;} /* ignore any whitespace */
-\n.*		{ strncpy(linebuf, yytext+1,sizeof(linebuf)); lineno++; yyless(1); tokenpos = 0; } 
+\n.*		{ strncpy(linebuf, yytext+1,sizeof(linebuf)); 
+		  lineno++; yyless(1); tokenpos = 0; } 
 			/*rescan all but the \n*/
 .		{ tokenpos += yyleng; yyerror("Lexer Error");}
 

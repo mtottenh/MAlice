@@ -10,11 +10,11 @@ extern int yylex();
 %token TCHAR TSTRING TPTR TNUMBER  
 /* Alice Keywords */
 %token WAS A PROCEDURE FUNC BECAME INC DEC CONTAINEDA HAD WHATWAS QUESTIONMARK
-EVENTUALLY BECAUSE ENOUGHTIMES THEN ELSE IF ENDIF MAYBE
+EVENTUALLY BECAUSE ENOUGHTIMES THEN ELSE IF ENDIF MAYBE TOO
 
 /* Primitives */
 %token CHAR STRING INTEGER
-%token SEPARATOR TERMINATOR
+%token SEPARATOR TERMINATOR NULLTOK
 /*Operators */
 %token MINUS PLUS MULT DIV MOD 
 %token XOR AND OR NOT
@@ -47,7 +47,7 @@ DeclarationList
 	;
 
 Declaration
-	: VarDeclaration { printf("IT WORKED");/*$$ = $1*/ }
+	: VarDeclaration { /*$$ = $1*/ }
 	| FunctionDec	 {  }
 	| ProcedureDec     { /*$$ = $1*/ }
 	;
@@ -118,8 +118,10 @@ Assignment
 	: Identifier BECAME BitExp   {/*update value in symbol table*/}
 	| Identifier BECAME CHAR {/*also need to check errors*/}
 	| Identifier BECAME ArrayVal
+	| ArrayVal BECAME BitExp
+	| ArrayVal BECAME CHAR
 	;
-
+/* change value to be bit exp */
 ArrayVal
 	: Identifier ARRINDO Value ARRINDC {/*value is an index*/}
 	;
@@ -133,7 +135,7 @@ Print
  * user input / null statement / fix LoxExp print to be more generatlised 
  *  */
 Statement
-	: VarDeclaration Separator {printf("Variable Declared\n");} 
+	: VarDeclaration Separator {} 
 	| Read {}
 	| Conditional {}
 	| Loop {}
@@ -141,7 +143,7 @@ Statement
 /*	| ProcCall {}*/
 	| ProcedureDec {}
 	| FunctionDec {}
-	| Null {}
+	| NULLTOK {}
 	| Increment Separator {}
 	| Decrement Separator {}
 	| Codeblock {}
@@ -173,9 +175,6 @@ Read
 	;
 Loop
 	: EVENTUALLY OBRACKET Predicate CBRACKET BECAUSE StatementList ENOUGHTIMES
-	;
-Null
-	: "."
 	;
 
 Predicate
@@ -218,16 +217,16 @@ Codeblock
 
 StatementList
 	: StatementList Statement {}
-	| Statement {}
+	| Statement{}
 	;
 
 Separator
-	: TERMINATOR {}
-	| SEPARATOR { printf("WE GOT A SEPARATOR?");}
+	: NULLTOK {}
+	| SEPARATOR {}
 	;
 
 Identifier
-	: STRING {printf("New Identifier: %s\n", yyval.string);}
+	: STRING {printf("ID: %s\n", yyval.string);}
 	/* CHAR {printf("we got a char\n");} */
 	;
 
