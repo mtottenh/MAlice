@@ -1,6 +1,7 @@
 #ifndef _NODE_HPP_
 #define _NODE_HPP_
 #include <iostream>
+#include <vector>
 class Node;
 class NStatement;
 class NExpression;
@@ -17,11 +18,13 @@ typedef std::vector<NVariableDeclaration *> ViarableList;
 /* Top level Base Class */
 class Node {
 private:
-	string name;
+	std::string name;
+	std::vector<Node *> children;
 public :
-	virtual Node() { name = "Node";}
+	Node() { name = "Node";}
 	virtual ~Node() {}
-	virtual print() {cout << name;}
+	virtual int print() const {std::cout << name; return 1;}
+	std::vector<Node *> getChildren() const { return children;}
 };
 
 class NExpression : public Node {
@@ -65,7 +68,7 @@ class NConditional : public NStatement {
 class NInput : public NStatement {
 };
 
-class NLoop : public NStatment {
+class NLoop : public NStatement {
 };
 class NInc  : public NStatement {};
 class NDec : public NStatement {};
