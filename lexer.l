@@ -109,7 +109,7 @@ void yyerror (char *s) {
 	fprintf(stderr, "%d: %s:\n%s\n", lineno, s, linebuf);
 	fprintf(stderr, "%*s\n", tokenpos, "^");
 }
- /*
+/*
 main()
 {
 	int type;
@@ -118,5 +118,5 @@ main()
 		type = yylex();
 		fprintf(stderr, "%d: Token: %s Type:%d\n",lineno,yytext,type);
 	} while(type != 0);
-	
+	fprintf(stderr, "Beginning lex");
 }*/

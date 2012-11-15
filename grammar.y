@@ -1,7 +1,7 @@
 %{
 #include <stdio.h>
 #include <string.h>
-#include "node.h"
+//#include "node.h"
 extern void yyerror(char*);
 extern int yylex();
 
@@ -15,7 +15,7 @@ EVENTUALLY BECAUSE ENOUGHTIMES THEN ELSE IF ENDIF MAYBE TOO
 
 /* Primitives */
 %token CHAR STRING INTEGER
-%token SEPARATOR NULLTOK COMMA QUOT QUOTE
+%token SEPARATOR NULLTOK COMMA QUOTE
 /*Operators */
 %token MINUS PLUS MULT DIV MOD 
 %token XOR AND OR NOT
@@ -43,7 +43,7 @@ DeclarationList
 	;
 
 Declaration
-	: VarDeclaration { /*$$ = $1*/ }
+	: VarDeclaration Separator { /*$$ = $1*/ }
 	| FunctionDec	 {  }
 	| ProcedureDec     { /*$$ = $1*/ }
 	;
@@ -105,7 +105,7 @@ Type
 	;
 
 VarDeclaration
-	: Identifier WAS A Type {printf("Var Declared");/*add id to sym table*/}
+	: Identifier WAS A Type {printf("Var Declared\n");/*add id to sym table*/}
 	| Identifier HAD Identifier Type {/*arrays init*/}
 	;
 
@@ -131,7 +131,7 @@ Print
  * user input / fix LoxExp print to be more generatlised 
  *  */
 Statement
-	: VarDeclaration Separator {} 
+	: VarDeclaration Separator {printf("Statement end\n");} 
 	| Read {}
 	| Conditional {}
 	| Loop {}
@@ -151,7 +151,6 @@ Statement
 StringLit
 	: QUOTE STRING QUOTE 
 	;
-
 
 Call 
 	: Identifier OBRACKET ParamList CBRACKET {}
@@ -223,7 +222,6 @@ Separator
 
 Identifier
 	: STRING {printf("ID: %s\n", yyval.string);}
-	/* CHAR {printf("we got a char\n");} */
 	;
 
 %%
