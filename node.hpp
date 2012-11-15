@@ -19,7 +19,7 @@ class Node {
 private:
 	string name;
 public :
-	virtual Node() { name = "Node"
+	virtual Node() { name = "Node";}
 	virtual ~Node() {}
 	virtual print() {cout << name;}
 };
