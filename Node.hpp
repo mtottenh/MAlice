@@ -41,7 +41,7 @@ class NChar 	: public NExpression {
 class NIdentifier : public NExpression {
 };
 
-/* Fix this class */
+/* Fix this class - could also be expression?*/
 class NMethodCall : public NStatement {
 };
 
@@ -51,12 +51,16 @@ public:
 };
 
 class NAssignment : public NStatement {
+ NExpression *rhs;
+ Node *lhs;
 };
 
 class NCodeBlock : public NStatement {
+    /* add code to add a child */
 };
 
 class NVariableDeclaration : public NStatement {
+ NCodeBlock *block;
 };
 
 /*class NExpressio nStatement*/
