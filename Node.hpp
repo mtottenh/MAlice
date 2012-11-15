@@ -74,10 +74,17 @@ public:
 class NDeclarationBlock : public Node {
 public:
  std::vector<Node *> declarations;
+ NExpression *rhs;
+ Node *lhs;
+};
+
+class NCodeBlock : public NStatement {
+    /* add code to add a child */
 };
 class NVariableDeclaration : public NStatement {
 public:
 	NVariableDeclaration() { name = "Declaration"; }
+ NCodeBlock *block;
 };
 
 /*class NExpressio nStatement*/
@@ -85,6 +92,7 @@ public:
 class NFunctionDeclaration : public NStatement {
 public:
 	NFunctionDeclaration () { name = "FuncDec"; }
+
 };
 
 class NConditional : public NStatement {
