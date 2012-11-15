@@ -17,7 +17,7 @@ typedef std::vector<NVariableDeclaration *> ViarableList;
 
 /* Top level Base Class */
 class Node {
-public:
+private:
 	std::string name;
 	std::vector<Node *> children;
 	Node() { name = "Node";}
@@ -28,31 +28,20 @@ public:
 };
 
 class NExpression : public Node {
-public:
-	NExpression() { name = "Exp" ;}
 };
 
 class NStatement : public Node {
-public:
-	NStatement () { name = "Stat"; }
 };
 
 
 class NInteger : public NExpression {
-public:
-	NInteger() { name = "Int"; }
 };
-class NChar : public NExpression {
-	public:
-	 NChar() { name = "Char";}
+class NChar 	: public NExpression {
 };
 class NIdentifier : public NExpression {
-	public:
-	NIdentifier() { name = "ID"; }
-//	NIdentifier(char *a) { name = strdup(a);
 };
 
-/* Fix this class - could also be expression?*/
+/* Fix this class */
 class NMethodCall : public NStatement {
 };
 
@@ -62,24 +51,12 @@ public:
 };
 
 class NAssignment : public NStatement {
-public:
- NExpression *rhs;
- Node *lhs;
- NAssignment() { name = "Assignment";}
 };
 
 class NCodeBlock : public NStatement {
-public:
-	NCodeBlock() { name = "block"; }
-    /* add code to add a child */
 };
-class NDeclarationBlock : public Node {
-public:
- std::vector<Node *> declarations;
-};
+
 class NVariableDeclaration : public NStatement {
-public:
-	NVariableDeclaration() { name = "Declaration"; }
 };
 
 /*class NExpressio nStatement*/
@@ -108,9 +85,6 @@ class NLoop : public NStatement {
 };
 class NInc  : public NStatement {};
 class NDec : public NStatement {};
-class NPrint : public NStatement { 
-public:
-	NPrint() { name = "Print"; }
-};
+class NPrint : public NStatement {};
 class NString : public NExpression {};
 #endif

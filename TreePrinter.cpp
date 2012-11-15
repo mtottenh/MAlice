@@ -47,7 +47,7 @@ int treePrinter::print() {
 /* used for some basic testing 
 int main () {
 	cout << "START AST PRINTER TEST" << endl;;
-	treePrinter t(new NExpression);
+	treePrinter t(new Node);
 	t.print();
 	cout << endl << "END AST PRINTER TEST" << endl;
 	return 0;
