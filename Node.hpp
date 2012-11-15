@@ -20,7 +20,6 @@ class Node {
 public:
 	std::string name;
 	std::vector<Node *> children;
-public :
 	Node() { name = "Node";}
 	virtual ~Node() {}
 	virtual int print() const {std::cout << name; return 1;}
