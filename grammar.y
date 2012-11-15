@@ -10,29 +10,39 @@ extern int yylex();
 /* Type Tokens */
 %token TCHAR TSTRING TPTR TNUMBER  
 /* Alice Keywords */
-%token OF WAS A PROCEDURE FUNC BECAME INC DEC CONTAINEDA HAD WHATWAS QUESTIONMARK
+%token <token> OF WAS A PROCEDURE FUNC BECAME INC DEC CONTAINEDA HAD WHATWAS QUESTIONMARK
 EVENTUALLY BECAUSE ENOUGHTIMES THEN ELSE IF ENDIF MAYBE TOO
 
 /* Primitives */
 %token CHAR STRING INTEGER STRINGLIT
 %token SEPARATOR NULLTOK COMMA QUOTE
 /*Operators */
-%token MINUS PLUS MULT DIV MOD 
-%token XOR AND OR NOT
+%token <token> MINUS PLUS MULT DIV MOD 
+%token <token> XOR AND OR NOT
 /* Logical operators */
-%token LAND LOR LEQU LNOT LGTHAN LGTHANEQ LLTHAN LLTHANEQ
+%token <token> LAND LOR LEQU LNOT LGTHAN LGTHANEQ LLTHAN LLTHANEQ
 /* bracket and braces */
-%token OBRACKET CBRACKET ARRINDO ARRINDC
-%token OBRACE CBRACE 
+%token <token> OBRACKET CBRACKET ARRINDO ARRINDC
+%token <token> USCORE
+%token <token> OBRACE CBRACE 
 
 /*Built in functions */
-%token PRINT
+%token <token> PRINT
 
 %left UNARY
 
 %union {
-	char *string;
-	int val;
+	std::string *string;
+	int token;
+	Node *node;
+	NCodeBlock *block;
+	NExpression *exp;
+	NStatement *stat;
+	NIdentifier *id;
+	NVariableDeclaration *var_dec;
+	std::vector<NVariableDeclaration *> *paramlist;
+	std::vector<NStatement *> *statlist;
+	
 }
 %%
 
