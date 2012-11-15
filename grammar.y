@@ -10,11 +10,11 @@ extern int yylex();
 /* Type Tokens */
 %token TCHAR TSTRING TPTR TNUMBER  
 /* Alice Keywords */
-%token WAS A PROCEDURE FUNC BECAME INC DEC CONTAINEDA HAD WHATWAS QUESTIONMARK
+%token OF WAS A PROCEDURE FUNC BECAME INC DEC CONTAINEDA HAD WHATWAS QUESTIONMARK
 EVENTUALLY BECAUSE ENOUGHTIMES THEN ELSE IF ENDIF MAYBE TOO
 
 /* Primitives */
-%token CHAR STRING INTEGER
+%token CHAR STRING INTEGER STRINGLIT
 %token SEPARATOR NULLTOK COMMA QUOTE
 /*Operators */
 %token MINUS PLUS MULT DIV MOD 
@@ -23,7 +23,6 @@ EVENTUALLY BECAUSE ENOUGHTIMES THEN ELSE IF ENDIF MAYBE TOO
 %token LAND LOR LEQU LNOT LGTHAN LGTHANEQ LLTHAN LLTHANEQ
 /* bracket and braces */
 %token OBRACKET CBRACKET ARRINDO ARRINDC
-%token USCORE
 %token OBRACE CBRACE 
 
 /*Built in functions */
@@ -117,6 +116,11 @@ Assignment
 	| ArrayVal BECAME BitExp
 	| ArrayVal BECAME CHAR
 	;
+
+VarDeclarationAssignment
+	: VarDeclaration OF INTEGER
+	;
+
 /* change value to be bit exp */
 ArrayVal
 	: Identifier ARRINDO Value ARRINDC {/*value is an index*/}
@@ -132,6 +136,7 @@ Print
  *  */
 Statement
 	: VarDeclaration Separator {printf("Statement end\n");} 
+	| VarDeclarationAssignment Separator {}
 	| Read {}
 	| Conditional {}
 	| Loop {}
@@ -145,11 +150,7 @@ Statement
       /*| Generalise Print */
 	| Assignment Separator {}
 	| BitExp Print Separator {}
-	| StringLit Print Separator {}
-	;
-
-StringLit
-	: QUOTE STRING QUOTE 
+	| STRINGLIT Print Separator {}
 	;
 
 Call 
@@ -162,7 +163,7 @@ ParamList
 Paramater
 	: Call {}
 	| Identifier {}
-	| StringLit {}
+	| STRINGLIT {}
 	;
 Read
 	: WHATWAS Identifier QUESTIONMARK

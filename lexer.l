@@ -18,8 +18,9 @@ int tokenpos = 0;
 %option nounput yylineno
 char		[a-zA-Z]
 separator	(and|but|then)
-string 		{char}[a-zA-Z0-9_]*
 integer		[0-9]+
+string 		{char}[a-zA-Z0-9_]*
+litstring   ["][a-zA-Z0-9_\\\\]*["]
 whitespace	[ \t]+  
 %s INIT
 %%
@@ -50,6 +51,7 @@ or		  { tokenpos += yyleng; return ELSE; }
 either		  { tokenpos += yyleng; return IF; }
 maybe		  { tokenpos += yyleng; return MAYBE; }
 "because Alice was unsure which" { tokenpos += yyleng; return ENDIF; }
+of		{tokenpos += yyleng; return OF; }
 
  /* logical operators (e.g. used in loop predicates) */
 
@@ -79,10 +81,12 @@ closed		 { tokenpos += yyleng; return CBRACE; }
 {string}	 { tokenpos += yyleng; yylval.string = strdup(yytext);
 		   return STRING; }
 
+{litstring}	{ tokenpos += yyleng; yylval.string = strdup(yytext);
+			return STRINGLIT; }
+
 {integer}	{ tokenpos += yyleng; return INTEGER; }
 \.	 	{ tokenpos += yyleng; return NULLTOK; }
 \,		{ tokenpos += yyleng; return COMMA;	}
-\"		{ tokenpos += yyleng; return QUOTE; }
 \+		{ tokenpos += yyleng; return PLUS; }
 -		{ tokenpos += yyleng; return MINUS; }
 \*		{ tokenpos += yyleng; return MULT; }
@@ -91,7 +95,6 @@ closed		 { tokenpos += yyleng; return CBRACE; }
 \^		{ tokenpos += yyleng; return XOR; }
 &		{ tokenpos += yyleng; return AND; }
 \|		{ tokenpos += yyleng; return OR; }
-_		{ tokenpos += yyleng; return USCORE; }
 ~		{ tokenpos += yyleng; return NOT; }
 \(		{ tokenpos += yyleng; return OBRACKET; }
 \)		{ tokenpos += yyleng; return CBRACKET; }
@@ -118,5 +121,4 @@ main()
 		type = yylex();
 		fprintf(stderr, "%d: Token: %s Type:%d\n",lineno,yytext,type);
 	} while(type != 0);
-	fprintf(stderr, "Beginning lex");
 }*/
