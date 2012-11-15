@@ -1,6 +1,7 @@
 %{
 #include <stdio.h>
 #include <string.h>
+#include "node.h"
 extern void yyerror(char*);
 extern int yylex();
 
