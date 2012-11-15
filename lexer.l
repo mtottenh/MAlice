@@ -17,7 +17,7 @@ int tokenpos = 0;
 
 %option nounput yylineno
 char		[a-zA-Z]
-separator	(,|and|but|then)
+separator	(and|but|then)
 string 		{char}[a-zA-Z0-9_]*
 integer		[0-9]+
 whitespace	[ \t]+  
@@ -81,6 +81,8 @@ closed		 { tokenpos += yyleng; return CBRACE; }
 
 {integer}	{ tokenpos += yyleng; return INTEGER; }
 \.	 	{ tokenpos += yyleng; return NULLTOK; }
+\,		{ tokenpos += yyleng; return COMMA;	}
+\"		{ tokenpos += yyleng; return QUOTE; }
 \+		{ tokenpos += yyleng; return PLUS; }
 -		{ tokenpos += yyleng; return MINUS; }
 \*		{ tokenpos += yyleng; return MULT; }

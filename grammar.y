@@ -14,7 +14,7 @@ EVENTUALLY BECAUSE ENOUGHTIMES THEN ELSE IF ENDIF MAYBE TOO
 
 /* Primitives */
 %token CHAR STRING INTEGER
-%token SEPARATOR TERMINATOR NULLTOK
+%token SEPARATOR NULLTOK COMMA QUOT QUOTE
 /*Operators */
 %token MINUS PLUS MULT DIV MOD 
 %token XOR AND OR NOT
@@ -28,11 +28,6 @@ EVENTUALLY BECAUSE ENOUGHTIMES THEN ELSE IF ENDIF MAYBE TOO
 /*Built in functions */
 %token PRINT
 
-%left '|'
-%left '^'
-%left '&'
-%left '+' '-'
-%left '*' '/' '%'
 %left UNARY
 
 %union {
@@ -66,7 +61,7 @@ ProcedureDec
 
 ParamListDec
 	: ParamaterDec {/*create a std::vector */}
-	| ParamaterDec ',' ParamListDec { /* $$ = param_vector.pushback($1)*/}
+	| ParamaterDec COMMA ParamListDec { /* $$ = param_vector.pushback($1)*/}
 	;
 ParamaterDec
 	: Type Identifier {/**/}
@@ -131,8 +126,8 @@ Print
 	: PRINT  {/**/}
 	;
 
-/* Add rules for Conditoinals/loop/ArrayAcess/FuncandProcedureCalls
- * user input / null statement / fix LoxExp print to be more generatlised 
+/* Add rules for /ArrayAcess/FuncandProcedureCalls
+ * user input / fix LoxExp print to be more generatlised 
  *  */
 Statement
 	: VarDeclaration Separator {} 
@@ -140,7 +135,6 @@ Statement
 	| Conditional {}
 	| Loop {}
 	| Call {}
-/*	| ProcCall {}*/
 	| ProcedureDec {}
 	| FunctionDec {}
 	| NULLTOK {}
@@ -154,7 +148,7 @@ Statement
 	;
 
 StringLit
-	: '\"' STRING '\"' 
+	: QUOTE STRING QUOTE 
 	;
 
 
@@ -162,7 +156,7 @@ Call
 	: Identifier OBRACKET ParamList CBRACKET {}
 	;
 ParamList
-	: Paramater ',' ParamList
+	: Paramater COMMA ParamList
 	| Paramater
 	;
 Paramater
@@ -223,6 +217,7 @@ StatementList
 Separator
 	: NULLTOK {}
 	| SEPARATOR {}
+	| COMMA {}
 	;
 
 Identifier
