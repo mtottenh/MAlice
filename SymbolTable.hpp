@@ -2,7 +2,8 @@
 #define SYMBOLTABLE_HPP
 
 #include <boost/unordered_map.hpp>  
-#include "Node.hpp"
+#include <boost/functional/hash.hpp>  
+#include "Node.hpp" /* change to Node.hpp */
 
 /*
  * Symbol table for variables and identifiers contained within a MAlice program.
