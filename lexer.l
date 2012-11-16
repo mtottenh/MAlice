@@ -14,7 +14,7 @@ void yyerror(char *s);
 int lineno = 1;
 char linebuf[500];
 int tokenpos = 0;
-
+char error_message[] = {"Lexer Error"};
 %}
 
 %option nounput yylineno
@@ -115,7 +115,7 @@ closed		 { tokenpos += yyleng; return CBRACE; }
 [\n].*		{ strncpy(linebuf, yytext+1,sizeof(linebuf)); 
 		  lineno++; yyless(1); tokenpos = 0; } 
 			/*rescan all but the \n*/
-.		{ tokenpos += yyleng; yyerror("Lexer Error");}
+.		{ tokenpos += yyleng; yyerror(error_message);}
 
 
 %%
@@ -128,9 +128,8 @@ void yyerror (char *s) {
 main()
 {
 	int type;
-	 need to figure out how to get line1 recognized 
 	do {
 		type = yylex();
 		fprintf(stderr, "%d: Token: %s Type:%d\n",lineno,yytext,type);
 	} while(type != 0);
-}*/
+ }*/

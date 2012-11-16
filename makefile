@@ -1,5 +1,5 @@
 CC = g++
-CFLAGS = -Wall -pedantic -std=c99 -g -O0
+CFLAGS = -Wall -pedantic -g -O0
 YFLAGS = --verbose --debug --defines
 LFLAGS = --yylineno
 
