@@ -93,8 +93,9 @@ public:
 		name = "FuncDec"; 
 		children.push_back(block);
 	}
+
 	int print() const {
-		std::cout << name ;
+		std::cout << "FUNC NODE:" ;
 		return 1;
 	}
 };
