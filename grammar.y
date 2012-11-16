@@ -10,8 +10,9 @@ extern int yylex();
 /* Type Tokens */
 %token TCHAR TSTRING TPTR TNUMBER  
 /* Alice Keywords */
-%token OF WAS A PROCEDURE FUNC BECAME INC DEC CONTAINEDA HAD WHATWAS QUESTIONMARK
-EVENTUALLY BECAUSE ENOUGHTIMES THEN ELSE IF ENDIF MAYBE TOO
+%token OF WAS A PROCEDURE FUNC BECAME INC DEC CONTAINEDA HAD WHATWAS 
+QUESTIONMARK EVENTUALLY BECAUSE ENOUGHTIMES THEN ELSE IF ENDIF MAYBE TOO
+FOUND
 
 /* Primitives */
 %token CHAR STRING INTEGER STRINGLIT
@@ -43,6 +44,7 @@ DeclarationList
 
 Declaration
 	: VarDeclaration Separator { /*$$ = $1*/ }
+	| VarDeclarationAssignment Separator {}
 	| FunctionDec	 {  }
 	| ProcedureDec     { /*$$ = $1*/ }
 	;
@@ -94,6 +96,7 @@ Factor
 Value
 	: INTEGER {}
 	| Identifier {}
+	| Call {}
 	;
 /* Add Array/String type */
 Type
@@ -118,7 +121,7 @@ Assignment
 	;
 
 VarDeclarationAssignment
-	: VarDeclaration OF INTEGER
+	: VarDeclaration OF INTEGER {printf("and assigned\n");}
 	;
 
 /* change value to be bit exp */
@@ -131,16 +134,20 @@ Print
 	: PRINT  {/**/}
 	;
 
+Return
+	: FOUND BitExp
+	;
+
 /* Add rules for /ArrayAcess/FuncandProcedureCalls
  * user input / fix LoxExp print to be more generatlised 
  *  */
 Statement
-	: VarDeclaration Separator {printf("Statement end\n");} 
+	: VarDeclaration Separator {} 
 	| VarDeclarationAssignment Separator {}
 	| Read {}
 	| Conditional {}
 	| Loop {}
-	| Call {}
+	| Call Separator {}
 	| ProcedureDec {}
 	| FunctionDec {}
 	| NULLTOK {}
@@ -148,13 +155,16 @@ Statement
 	| Decrement Separator {}
 	| Codeblock {}
       /*| Generalise Print */
-	| Assignment Separator {}
+	| Assignment Separator {printf("Variable assigned\n");}
 	| BitExp Print Separator {}
 	| STRINGLIT Print Separator {}
+	| CHAR Print Separator {}
+	| Return Separator {}
 	;
 
 Call 
 	: Identifier OBRACKET ParamList CBRACKET {}
+	| Identifier OBRACKET CBRACKET {printf("Called\n");}
 	;
 ParamList
 	: Paramater COMMA ParamList
@@ -203,7 +213,7 @@ Conditional
 Maybe
 	: ELSE Statement ENDIF
 	| ENDIF
-	| ELSE MAYBE OBRACKET Predicate CBRACKET Maybe
+	| ELSE MAYBE OBRACKET Predicate CBRACKET THEN Statement Maybe
 	;
 
 Codeblock

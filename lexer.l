@@ -18,9 +18,10 @@ int tokenpos = 0;
 %option nounput yylineno
 char		[a-zA-Z]
 separator	(and|but|then)
-integer		[0-9]+
+integer		[-]?[0-9]+
+charlit		['][^'][']
+stringlit   ["][^"]*["]
 string 		{char}[a-zA-Z0-9_]*
-litstring   ["][a-zA-Z0-9_\\\\]*["]
 whitespace	[ \t]+  
 %s INIT
 %%
@@ -34,6 +35,7 @@ became	 	  { tokenpos += yyleng; return BECAME; }
 was	 	  { tokenpos += yyleng; return WAS; }
 number		  { tokenpos += yyleng; return TNUMBER; }
 letter		  { tokenpos += yyleng; return TCHAR; }
+sentence	{ tokenpos += yyleng; return TSTRING; }
 a		  { tokenpos += yyleng; return A;	  }
 ate		  { tokenpos += yyleng; return INC;	  }
 drank 		  { tokenpos += yyleng; return DEC;	  }
@@ -52,12 +54,16 @@ either		  { tokenpos += yyleng; return IF; }
 maybe		  { tokenpos += yyleng; return MAYBE; }
 "because Alice was unsure which" { tokenpos += yyleng; return ENDIF; }
 of		{tokenpos += yyleng; return OF; }
-
+"Alice found"		{tokenpos += yyleng; return FOUND; }
  /* logical operators (e.g. used in loop predicates) */
 
 &&		 { tokenpos += yyleng; return LAND; }
 \|\|		 { tokenpos += yyleng; return LOR; }
 ==		 { tokenpos += yyleng; return LEQU; }
+\<		 { tokenpos += yyleng; return LLTHAN; }
+\<=		 { tokenpos += yyleng; return LLTHANEQ; }
+\>=		 { tokenpos += yyleng; return LGTHANEQ; }
+\>		 { tokenpos += yyleng; return LGTHAN; }
 
 
  /* functions and procedurs*/
@@ -72,6 +78,10 @@ piece		{ tokenpos += yyleng; return ARRINDC; }
   /* Char literals */
 \'.\'		{ tokenpos +=yyleng; return CHAR; }
 
+  /* String literals */
+{stringlit}		{ tokenpos += yyleng; yylval.string = strdup(yytext);
+					return STRINGLIT; }
+
  /* Scope blocks */
 opened		 { tokenpos += yyleng; return OBRACE; }
 closed		 { tokenpos += yyleng; return CBRACE; }
@@ -80,9 +90,6 @@ closed		 { tokenpos += yyleng; return CBRACE; }
 
 {string}	 { tokenpos += yyleng; yylval.string = strdup(yytext);
 		   return STRING; }
-
-{litstring}	{ tokenpos += yyleng; yylval.string = strdup(yytext);
-			return STRINGLIT; }
 
 {integer}	{ tokenpos += yyleng; return INTEGER; }
 \.	 	{ tokenpos += yyleng; return NULLTOK; }
@@ -109,7 +116,7 @@ closed		 { tokenpos += yyleng; return CBRACE; }
 %%
 
 void yyerror (char *s) {
-	fprintf(stderr, "%d: %s:\n%s\n", lineno, s, linebuf);
+	fprintf(stderr, "line %d: pos %d %s:\n%s\n", lineno, tokenpos, s, linebuf);
 	fprintf(stderr, "%*s\n", tokenpos, "^");
 }
 /*
