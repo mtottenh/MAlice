@@ -12,11 +12,17 @@ int treePrinter::print() {
 	while(!printList.empty()) {
 		const Node *temp = printList.front();
 		printList.pop();
-		temp->print(); 
-		const std::vector<Node *> children = temp->getChildren();
-		for (int i = 0; i< children.size(); i++){
-			printList.push(children[i]);
+		if (temp != NULL) {
+			temp->print(); 
+			const std::vector<Node *> children = temp->getChildren();
+			cout << "Current Node has: " << children.size() << " children" << endl;
+			for (int i = 0; i< children.size(); i++){
+				if(children[i] != temp) {
+					printList.push(children[i]);
+				}
 		}
+	
+}
 	}
 };
 
