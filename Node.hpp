@@ -63,11 +63,15 @@ public:
 };
 
 class NAssignment : public NStatement {
+public:
  NExpression *rhs;
  Node *lhs;
+ NAssignment() { name = "Assignment";}
 };
 
 class NCodeBlock : public NStatement {
+public:
+	NCodeBlock() { name = "block"; }
     /* add code to add a child */
 };
 class NDeclarationBlock : public Node {
@@ -75,6 +79,8 @@ public:
  std::vector<Node *> declarations;
 };
 class NVariableDeclaration : public NStatement {
+public:
+	NVariableDeclaration() { name = "Declaration"; }
 };
 
 /*class NExpressio nStatement*/
@@ -103,6 +109,9 @@ class NLoop : public NStatement {
 };
 class NInc  : public NStatement {};
 class NDec : public NStatement {};
-class NPrint : public NStatement {};
+class NPrint : public NStatement { 
+public:
+	NPrint() { name = "Print"; }
+};
 class NString : public NExpression {};
 #endif
