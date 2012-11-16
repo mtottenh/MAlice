@@ -1,13 +1,15 @@
 %{
-#include "y.tab.h"
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
+#include "Node.hpp"
 
+#include <iostream>
+#include <stdio.h>
+#include <string>
+#include <stdlib.h>
+#include "y.tab.h"
 #define YY_NO_INPUT
 
-extern char *strdup(const char *s);
-extern int fileno(FILE *stream);
+//extern char *strdup(const char *s);
+//extern int fileno(FILE *stream);
 void yyerror(char *s);
 int lineno = 1;
 char linebuf[500];
@@ -75,7 +77,7 @@ piece		{ tokenpos += yyleng; return ARRINDC; }
  /* Scope blocks */
 opened		 { tokenpos += yyleng; return OBRACE; }
 closed		 { tokenpos += yyleng; return CBRACE; }
-{separator}	 { tokenpos += yyleng; yylval.string=strdup(yytext);
+{separator}	 { tokenpos += yyleng; yylval.string = strdup(yytext);
 		    return SEPARATOR; }
 
 {string}	 { tokenpos += yyleng; yylval.string = strdup(yytext);
