@@ -1,4 +1,4 @@
-#include "node.hpp"
+#include "Node.hpp"
 #include "TreePrinter.hpp"
 #include <queue>
 #include <iostream>
@@ -23,7 +23,7 @@ int treePrinter::print() {
 /* used for some basic testing 
 int main () {
 	cout << "START AST PRINTER TEST" << endl;;
-	treePrinter t(new Node);
+	treePrinter t(new NExpression);
 	t.print();
 	cout << endl << "END AST PRINTER TEST" << endl;
 	return 0;
