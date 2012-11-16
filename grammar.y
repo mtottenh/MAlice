@@ -97,6 +97,7 @@ Value
 	: INTEGER {}
 	| Identifier {}
 	| Call {}
+	| ArrayVal {}
 	;
 /* Add Array/String type */
 Type
@@ -107,21 +108,21 @@ Type
 	;
 
 VarDeclaration
-	: Identifier WAS A Type {printf("Var Declared\n");/*add id to sym table*/}
-	| Identifier HAD Identifier Type {/*arrays init*/}
+	: Identifier WAS A Type {printf("Var Declared\n");}
+	| Identifier HAD BitExp Type {printf("Array Declared\n"); }
 	;
 
-/* Array Initialisation/lval/rval, Result of functions*/
 Assignment
-	: Identifier BECAME BitExp   {/*update value in symbol table*/}
-	| Identifier BECAME CHAR {/*also need to check errors*/}
-	| Identifier BECAME ArrayVal
+	: Identifier BECAME CHAR {/*also need to check errors*/}
+	| Identifier BECAME BitExp
 	| ArrayVal BECAME BitExp
 	| ArrayVal BECAME CHAR
 	;
 
 VarDeclarationAssignment
-	: VarDeclaration OF INTEGER {printf("and assigned\n");}
+	: VarDeclaration OF BitExp {printf("and assigned\n");}
+	| VarDeclaration OF CHAR	{printf("and assigned\n");}
+	| VarDeclaration OF STRINGLIT {printf("and assigned\n");}
 	;
 
 /* change value to be bit exp */
@@ -171,9 +172,9 @@ ParamList
 	| Paramater
 	;
 Paramater
-	: Call {}
-	| Identifier {}
-	| STRINGLIT {}
+	: STRINGLIT {}
+	| CHAR {}
+	| BitExp {}
 	;
 Read
 	: WHATWAS Identifier QUESTIONMARK

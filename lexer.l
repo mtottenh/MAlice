@@ -55,6 +55,7 @@ maybe		  { tokenpos += yyleng; return MAYBE; }
 "because Alice was unsure which" { tokenpos += yyleng; return ENDIF; }
 of		{tokenpos += yyleng; return OF; }
 "Alice found"		{tokenpos += yyleng; return FOUND; }
+spider	{tokenpos += yyleng; return TPTR; }
  /* logical operators (e.g. used in loop predicates) */
 
 &&		 { tokenpos += yyleng; return LAND; }
@@ -76,7 +77,7 @@ piece		{ tokenpos += yyleng; return ARRINDC; }
 ("said Alice"|spoke) { tokenpos +=yyleng; return PRINT; }
 
   /* Char literals */
-\'.\'		{ tokenpos +=yyleng; return CHAR; }
+{charlit}		{ tokenpos +=yyleng; return CHAR; }
 
   /* String literals */
 {stringlit}		{ tokenpos += yyleng; yylval.string = strdup(yytext);
@@ -98,7 +99,7 @@ closed		 { tokenpos += yyleng; return CBRACE; }
 -		{ tokenpos += yyleng; return MINUS; }
 \*		{ tokenpos += yyleng; return MULT; }
 \/		{ tokenpos += yyleng; return DIV; }
-%		{ tokenpos += yyleng; return MOD; }
+\%		{ tokenpos += yyleng; return MOD; }
 \^		{ tokenpos += yyleng; return XOR; }
 &		{ tokenpos += yyleng; return AND; }
 \|		{ tokenpos += yyleng; return OR; }
@@ -107,7 +108,8 @@ closed		 { tokenpos += yyleng; return CBRACE; }
 \)		{ tokenpos += yyleng; return CBRACKET; }
 
 {whitespace}	{ tokenpos += yyleng;} /* ignore any whitespace */
-\n.*		{ strncpy(linebuf, yytext+1,sizeof(linebuf)); 
+(###[^\n]*)		{}
+[\n].*		{ strncpy(linebuf, yytext+1,sizeof(linebuf)); 
 		  lineno++; yyless(1); tokenpos = 0; } 
 			/*rescan all but the \n*/
 .		{ tokenpos += yyleng; yyerror("Lexer Error");}
