@@ -86,7 +86,6 @@ FunctionDec
 	{$$ = new NFunctionDeclaration($8);}
 	| FUNC Identifier OBRACKET CBRACKET CONTAINEDA Type Codeblock 
 	{$$ = new NFunctionDeclaration($7);}
-
 	;
 
 ProcedureDec
