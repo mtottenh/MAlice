@@ -1,8 +1,8 @@
 #ifndef SYMBOLTABLE_HPP
 #define SYMBOLTABLE_HPP
 
-#include <boost/functional/hash.hpp>  
-#include "Node.hpp" /* change to Node.hpp */
+#include <boost/unordered_map.hpp>  
+#include "Node.hpp"
 
 /*
  * Symbol table for variables and identifiers contained within a MAlice program.
@@ -22,12 +22,11 @@ class SymbolTable {
 		 * values, a string hash function and the pointer to the parent
 		 * symbol table.
 		 */
-		map<int, Node*> dictionary;
-		boost::hash<string> string_hash;	
+		boost::unordered_map<string, Node*> map;
 		SymbolTable* parent;
 		
 		/* Look up a given variable/identifier in this table. */
-		Node lookupCurrentNode(const string&);
+		Node* lookupCurrentNode(const string&);
 	public:
 		/* 
 		 * Constructors for creating a global variable table
@@ -39,15 +38,22 @@ class SymbolTable {
 		
 		/* 
 		 * Add a new variable/identifier and node pairing to the table.
-		 * Returns 0 if successful, -1 on failure.
+		 * Returns 1 if successful, 0 on failure (elem already exists
+		 * in the map).
 		 */
-		int add(string, Node&);
+		int add(string, Node*);
 
 		/*
 		 * Look up a given variable/identifier in this table and all
 		 * parent tables. Returns the Node if found, NULL otherwise.
 		 */
-		Node lookup(const string&);
+		Node* lookup(const string&);
+
+		/*
+		 * Returns whether a parent symbol table exists. 1 if it exists,
+		 * 0 otherwise.
+		 */
+		int parentExists();
 };
 
 #endif
