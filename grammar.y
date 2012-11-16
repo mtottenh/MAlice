@@ -75,20 +75,24 @@ DeclarationList
 Declaration
 	: VarDeclaration Separator { $$->children.push_back($1) ; }
 	| VarDeclarationAssignment Separator {}
-	| FunctionDec	 { $$->children.push_back($1); }
-	| ProcedureDec     { $$->children.push_back($1);  printf("IT WORKED?");}
+	| FunctionDec	 { /*$$=$1;*/ }
+	| ProcedureDec     { $$= new FuctionDeclaration($1);  }
 	;
 
 FunctionDec
 	: FUNC Identifier OBRACKET ParamListDec CBRACKET CONTAINEDA Type Codeblock
-	{$$ = new NFunctionDeclaration(); $$->children.push_back($8);}
-	| FUNC Identifier OBRACKET CBRACKET CONTAINEDA Type Codeblock {$$ = new NFunctionDeclaration(); $$->children.push_back($7);}
+	{$$ = new NFunctionDeclaration($8);}
+	| FUNC Identifier OBRACKET CBRACKET CONTAINEDA Type Codeblock 
+	{$$ = new NFunctionDeclaration($7);}
+
 	;
 
 ProcedureDec
 	:  PROCEDURE Identifier OBRACKET ParamListDec CBRACKET Codeblock
-	{ $$ = new NFunctionDeclaration(); $$->children.push_back($6);/*$$ = new procNode( $2,$6,$4) name/body/args */ }
-	|  PROCEDURE Identifier OBRACKET CBRACKET Codeblock {$$ = new NFunctionDeclaration();printf("before push"); $$->children.push_back($5); printf("It worked :(");}
+	{ $$ = new NFunctionDeclaration( $6);
+	/*$$ = new procNode( $2,$6,$4) name/body/args */ }
+	|  PROCEDURE Identifier OBRACKET CBRACKET Codeblock 
+	{$$ = new NFunctionDeclaration($5);/* $$->children.push_back($5);*/}
 	;
 
 ParamListDec
@@ -126,11 +130,8 @@ Factor
 Value
 	: INTEGER {$$ = new NInteger();}
 	| Identifier {$$ = new NIdentifier();}
-<<<<<<< HEAD
 	| Call {}
 	| ArrayVal {}
-=======
->>>>>>> Made significant changes to grammar in order to support AST creation
 	;
 /* Add Array/String type */
 Type
@@ -252,7 +253,9 @@ Maybe
 	;
 
 Codeblock
-	: OBRACE StatementList CBRACE {$$ = new NCodeBlock(); $$->children.push_back($2);/* create new scoping symtable + vector*/}
+	: OBRACE StatementList CBRACE 
+	{$$ = new NCodeBlock(); $$->children.push_back($2);
+	/* create new scoping symtable + vector*/}
 	; 
 
 StatementList
@@ -274,7 +277,6 @@ Identifier
 int main()
 {
  int node = yyparse();
- printf(" WE HAVENT SETFAULTED YET");
  treePrinter t(root);
  t.print(); 
  return node;
