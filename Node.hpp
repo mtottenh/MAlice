@@ -89,7 +89,6 @@ public:
 class NFunctionDeclaration : public NStatement {
 public:
 	NFunctionDeclaration () { name = "FuncDec"; }
-
 };
 
 class NConditional : public NStatement {
