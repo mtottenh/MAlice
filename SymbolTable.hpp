@@ -1,8 +1,17 @@
 #ifndef SYMBOLTABLE_HPP
 #define SYMBOLTABLE_HPP
 
+#include <string>
 #include <boost/unordered_map.hpp>  
 #include "Node.hpp"
+
+using namespace std;
+
+/*
+ * Typedef for symbol table internal identifier -> Node mapping. Implemented
+ * as an unordered (hash) map from the Boost libraries. 
+ */
+typedef boost::unordered_map<string, Node*> table_t;
 
 /*
  * Symbol table for variables and identifiers contained within a MAlice program.
@@ -12,7 +21,7 @@
  * A symbol table will have a pointer to its parent symbol table (to look up a
  * variable in parent scope), unless it is the global variable table which will
  * instead have its parent set to NULL. The variable/identifer to value mapping
- * are stored in a hash map, making use of the Boost library's hash function.
+ * are stored in a map of type table_t.
  */
 
 class SymbolTable {
@@ -22,7 +31,7 @@ class SymbolTable {
 		 * values, a string hash function and the pointer to the parent
 		 * symbol table.
 		 */
-		boost::unordered_map<string, Node*> map;
+		table_t table;
 		SymbolTable* parent;
 		
 		/* Look up a given variable/identifier in this table. */
