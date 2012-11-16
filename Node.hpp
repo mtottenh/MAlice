@@ -87,8 +87,27 @@ public:
 /*class NExpressio nStatement*/
 
 class NFunctionDeclaration : public NStatement {
+
 public:
 	NFunctionDeclaration () { name = "FuncDec"; }
+	NFunctionDeclaration (NCodeBlock *block) { 
+		name = "FuncDec"; 
+		for (int i = 0; i < children.size(); i++ ){
+			if( children[i] == this) {
+				std::cout << " removing func block" << std::endl;
+				children.erase(children.begin()+i);
+			}
+		}
+		children.push_back(block);
+
+	}
+	int print() const {
+		std::cout << "FUNC NODE:" ;
+		for (int i = 0; i < children.size(); i++) {
+			
+		}
+		return 1;
+	}
 };
 
 class NConditional : public NStatement {

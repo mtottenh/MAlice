@@ -40,7 +40,7 @@ int treePrinter::print() {
 	
 		}
 	
-}
+		}
 	}
 	cout << endl;
 	return 0;
