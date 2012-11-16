@@ -17,7 +17,7 @@ typedef std::vector<NVariableDeclaration *> ViarableList;
 
 /* Top level Base Class */
 class Node {
-private:
+public:
 	std::string name;
 	std::vector<Node *> children;
 public :
@@ -29,17 +29,28 @@ public :
 };
 
 class NExpression : public Node {
+public:
+	NExpression() { name = "Exp" ;}
 };
 
 class NStatement : public Node {
+public:
+	NStatement () { name = "Stat"; }
 };
 
 
 class NInteger : public NExpression {
+public:
+	NInteger() { name = "Int"; }
 };
-class NChar 	: public NExpression {
+class NChar : public NExpression {
+	public:
+	 NChar() { name = "Char";}
 };
 class NIdentifier : public NExpression {
+	public:
+	NIdentifier() { name = "ID"; }
+//	NIdentifier(char *a) { name = strdup(a);
 };
 
 /* Fix this class - could also be expression?*/
@@ -59,9 +70,11 @@ class NAssignment : public NStatement {
 class NCodeBlock : public NStatement {
     /* add code to add a child */
 };
-
+class NDeclarationBlock : public Node {
+public:
+ std::vector<Node *> declarations;
+};
 class NVariableDeclaration : public NStatement {
- NCodeBlock *block;
 };
 
 /*class NExpressio nStatement*/
