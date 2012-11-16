@@ -45,9 +45,6 @@ EVENTUALLY BECAUSE ENOUGHTIMES THEN ELSE IF ENDIF MAYBE TOO
 	NVariableDeclaration *var_dec;
 	NFunctionDeclaration *func_dec;
 	NDeclarationBlock *dec_list;
-	NStatement *stat;
-	NIdentifier *id;
-	NVariableDeclaration *var_dec;
 	std::vector<NVariableDeclaration *> *paramlist;
 	std::vector<NStatement *> *statlist;
 	
