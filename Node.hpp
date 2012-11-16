@@ -74,8 +74,6 @@ public:
 class NDeclarationBlock : public Node {
 public:
  std::vector<Node *> declarations;
- NExpression *rhs;
- Node *lhs;
 };
 
 class NCodeBlock : public NStatement {
@@ -84,7 +82,6 @@ class NCodeBlock : public NStatement {
 class NVariableDeclaration : public NStatement {
 public:
 	NVariableDeclaration() { name = "Declaration"; }
- NCodeBlock *block;
 };
 
 /*class NExpressio nStatement*/

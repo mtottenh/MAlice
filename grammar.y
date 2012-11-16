@@ -126,8 +126,11 @@ Factor
 Value
 	: INTEGER {$$ = new NInteger();}
 	| Identifier {$$ = new NIdentifier();}
+<<<<<<< HEAD
 	| Call {}
 	| ArrayVal {}
+=======
+>>>>>>> Made significant changes to grammar in order to support AST creation
 	;
 /* Add Array/String type */
 Type
