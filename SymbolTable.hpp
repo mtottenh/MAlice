@@ -2,7 +2,7 @@
 #define SYMBOLTABLE_HPP
 
 #include <boost/functional/hash.hpp>  
-#include "node.h" /* change to Node.hpp */
+#include "Node.hpp" /* change to Node.hpp */
 
 /*
  * Symbol table for variables and identifiers contained within a MAlice program.
@@ -34,7 +34,7 @@ class SymbolTable {
 		 * (no parameters) or a table with a parent. Common destructor.
 		 */
 		SymbolTable();
-		SymbolTable(SymbolTable&);
+		SymbolTable(SymbolTable*);
 		~SymbolTable();
 		
 		/* 
