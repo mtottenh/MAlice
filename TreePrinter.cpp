@@ -30,12 +30,12 @@ int treePrinter::print() {
 /*			cout << "\tCurrent Node has: " << children.size() << " children" ; */
 			
 			for (unsigned int i = 0; i< children.size(); i++){
-				if((children[i] != temp) && (children[i] != NULL)){
+//				if((children[i] != temp) && (children[i] != NULL)){
 					printList.push(children[i]);
 					level.push(current_level + 1);
-				} else {
-					cout << "\tPROBLEM NODE AT i = " << i;
-				}
+//				} else {
+//					cout << "\tPROBLEM NODE AT i = " << i;
+//				}
 			}
 	
 		}
