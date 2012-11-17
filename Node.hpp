@@ -95,7 +95,7 @@ public:
 	}
 
 	int print() const {
-		std::cout << "FUNC NODE:" ;
+		std::cout << name ;
 		return 1;
 	}
 };
