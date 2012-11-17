@@ -69,15 +69,16 @@ program : DeclarationList { root = $1; }
 DeclarationList
 	: Declaration DeclarationList { $2->children.push_back($1);
 					/*code here */ }
-	| Declaration { $$ = new NDeclarationBlock(); $$->children.push_back($1);} 
+	| Declaration 
+	{ $$=$1;/*$$ = new NDeclarationBlock($1); } */ }
 	;
 
 Declaration
 	: VarDeclaration Separator { $$->children.push_back($1) ; }
 	| VarDeclaration TOO Separator {}
 	| VarDeclarationAssignment Separator {}
-	| FunctionDec	 { /*$$=$1;*/ }
-	| ProcedureDec     { $$= new FuctionDeclaration($1);  }
+	| FunctionDec	 { $$ = (NDeclarationBlock *)$1; }
+	| ProcedureDec     { $$= $1;  }
 	;
 
 FunctionDec
@@ -278,6 +279,7 @@ Identifier
 %%
 int main()
 {
+ std::cout << " hello \n";
  int node = yyparse();
  treePrinter t(root);
  t.print(); 
