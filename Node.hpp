@@ -23,6 +23,7 @@ public:
 public :
 	Node() { name = "Node";}
 	virtual ~Node() {}
+	Node(Node *a) { children.push_back(a); name = "Node"; }
 	virtual int print() const {std::cout << name; return 1;}
 	std::vector<Node *> getChildren() const { return children;}
 };
@@ -57,6 +58,8 @@ class NMethodCall : public NStatement {
 };
 
 class NBinOP : public NExpression {
+public:
+	NBinOP() { name = "Binary OP"; }
 };
 
 class NAssignment : public NStatement {
@@ -82,26 +85,16 @@ public:
 
 /*class NExpressio nStatement*/
 
-class NFunctionDeclaration : public NStatement {
+class NFunctionDeclaration : public NDeclarationBlock {
 
 public:
 	NFunctionDeclaration () { name = "FuncDec"; }
 	NFunctionDeclaration (NCodeBlock *block) { 
 		name = "FuncDec"; 
-		for (int i = 0; i < children.size(); i++ ){
-			if( children[i] == this) {
-				std::cout << " removing func block" << std::endl;
-				children.erase(children.begin()+i);
-			}
-		}
 		children.push_back(block);
-
 	}
 	int print() const {
-		std::cout << "FUNC NODE:" ;
-		for (int i = 0; i < children.size(); i++) {
-			
-		}
+		std::cout << name ;
 		return 1;
 	}
 };
