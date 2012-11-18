@@ -149,7 +149,6 @@ VarDeclaration
 Assignment
 	: Identifier BECAME BitExp   { $$ = new NAssignment();/*update value in symbol table*/}
 	| Identifier BECAME CHAR {/*also need to check errors*/}
-	| Identifier BECAME ArrayVal {}
 	| ArrayVal BECAME BitExp {}
 	| ArrayVal BECAME CHAR {}
 	;
@@ -266,6 +265,7 @@ StatementList
 Separator
 	: NULLTOK {}
 	| SEPARATOR {}
+/* Need A rule like this	| TOO SEPARATOR {}*/
 	| COMMA {}
 	;
 
