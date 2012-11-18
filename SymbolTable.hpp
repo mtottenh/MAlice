@@ -13,6 +13,7 @@ using namespace std;
  */
 typedef boost::unordered_map<string, Node*> table_t;
 
+
 /*
  * Symbol table for variables and identifiers contained within a MAlice program.
  * Supports adding mappings between variables/identifiers and their values and
@@ -21,7 +22,7 @@ typedef boost::unordered_map<string, Node*> table_t;
  * A symbol table will have a pointer to its parent symbol table (to look up a
  * variable in parent scope), unless it is the global variable table which will
  * instead have its parent set to NULL. The variable/identifer to value mapping
- * are stored in a map of type table_t.
+ * are stored in a hash map, making use of the Boost library's hash function.
  */
 
 class SymbolTable {
