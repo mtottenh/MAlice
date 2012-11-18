@@ -268,6 +268,8 @@ Separator
 	: NULLTOK {}
 	| SEPARATOR {}
 /* Need A rule like this	| TOO SEPARATOR {}*/
+	| TOO SEPARATOR {}
+	| TOO NULLTOK {}
 	| COMMA {}
 	;
 
