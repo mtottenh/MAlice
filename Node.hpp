@@ -93,7 +93,6 @@ public:
 		name = "FuncDec"; 
 		children.push_back(block);
 	}
-
 	int print() const {
 		std::cout << name ;
 		return 1;
