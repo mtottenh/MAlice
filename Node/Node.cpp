@@ -4,8 +4,8 @@ Node::Node() {
 	name = "Node";
 }
 
-Node::Node(Node *a) {
-	children.push_back(a);
+Node::Node(Node *child) {
+	children.push_back(child);
 	name = "Node";
 }
 

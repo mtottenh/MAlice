@@ -26,17 +26,18 @@ int treePrinter::print() {
 			cout << "Type: ";
 			temp->print();
 			cout << "\t"; 
-		}
-		const std::vector<Node *> children = temp->getChildren();
+		
+		std::vector<Node *> children = temp->getChildren();
 /*		cout << "\tCurrent Node has: " << children.size() << " children" ; */
-				
-		for (unsigned int i = 0; i< children.size(); i++){
-		//	if((children[i] != temp) && (children[i] != NULL)){
-				printList.push(children[i]);
-				level.push(current_level + 1);
+		 				
+			for (unsigned int i = 0; i< children.size(); i++){
+			//	if((children[i] != temp) && (children[i] != NULL)){
+					printList.push(children[i]);
+					level.push(current_level + 1);
 			//	} else {
 			//		cout << "\tPROBLEM NODE AT i = " << i;
 			//	}
+			}
 		}
 	}
 	cout << endl;

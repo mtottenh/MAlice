@@ -20,5 +20,6 @@
  #include "NPrint.hpp" 
  #include "NStatementList.hpp" 
  #include "NString.hpp" 
+ #include "NUnaryOp.hpp" 
  #include "NVariableDeclaration.hpp" 
 #endif

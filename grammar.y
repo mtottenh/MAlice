@@ -124,8 +124,8 @@ Term
 	| Factor {$$ = $1;}
 	;
 Factor
-	: NOT Factor %prec UNARY {}
-	| MINUS Factor %prec UNARY {}
+	: NOT Factor %prec UNARY {$$ = new NUnaryOp($1,$2);}
+	| MINUS Factor %prec UNARY {$$ = new NUnaryOp($1,$2);}
 	| Value { $$ = $1;}
 	;
 Value

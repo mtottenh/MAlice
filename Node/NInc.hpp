@@ -5,7 +5,7 @@
 
 class NInc  : public Node {
 public:
-	NInc(Node *child) { children.push_back(child);}
+	NInc(Node *child) {name = "Incrment"; children.push_back(child);}
 };   
 
 #endif
