@@ -7,7 +7,7 @@ class NAssignment : public NStatement {
 public:                                                                          
  NExpression *rhs;                                                               
  Node *lhs;                                                                      
- NAssignment() { name = "Assignment";}                                           
+ NAssignment(); 
 };   
 
 #endif

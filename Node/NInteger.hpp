@@ -5,7 +5,7 @@
 
 class NInteger : public NExpression {                                            
 public:                                                                          
-        NInteger() { name = "Int"; }                                             
+        NInteger();                                            
 }; 
 
 #endif

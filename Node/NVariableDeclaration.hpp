@@ -5,7 +5,7 @@
 
 class NVariableDeclaration : public NDeclarationBlock {                                 
 public:                                                                          
-        NVariableDeclaration() { name = "Declaration"; }                         
+        NVariableDeclaration(); 
 }; 
 
 #endif

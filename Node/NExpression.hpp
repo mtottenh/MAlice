@@ -5,7 +5,7 @@
 
 class NExpression : public Node {                                                
 public:                                                                          
-        NExpression() { name = "Exp" ;}                                          
+        NExpression();                                     
 }; 
 
 #endif

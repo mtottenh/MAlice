@@ -3,9 +3,9 @@
 
 #include "NExpression.hpp"
 
-class NBinOP : public NExpression {                                              
+class NBinOp : public NExpression {                                              
 public:                                                                          
-        NBinOP() { name = "Binary OP"; }                                         
-};   
+        NBinOp();
+};
 
 #endif

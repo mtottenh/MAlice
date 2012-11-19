@@ -5,7 +5,7 @@
 
 class NChar : public NExpression {                                               
         public:                                                                  
-         NChar() { name = "Char";}                                               
+         NChar();                                               
 };  
 
 #endif

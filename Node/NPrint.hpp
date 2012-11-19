@@ -5,7 +5,7 @@
 
 class NPrint : public NStatement {                                               
 public:                                                                          
-        NPrint() { name = "Print"; }                                             
+        NPrint();                                       
 };
 
 #endif

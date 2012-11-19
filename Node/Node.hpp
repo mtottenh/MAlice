@@ -21,11 +21,11 @@ public:
 	string name;
 	vector<Node *> children;
 public :
-	Node() { name = "Node";}
-	virtual ~Node() {}
-	Node(Node *a) { children.push_back(a); name = "Node"; }
-	virtual int print() const {cout << name; return 1;}
-	vector<Node *> getChildren() const { return children;}
+	Node();
+	Node(Node*);
+	virtual ~Node();
+	virtual int print() const;
+	vector<Node *> getChildren() const;
 };
 
 #endif

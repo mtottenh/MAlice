@@ -5,7 +5,7 @@
 
 class NCodeBlock : public NStatement {                                           
 public:                                                                          
-        NCodeBlock() { name = "block"; }                                         
+        NCodeBlock();                                        
     /* add code to add a child */                                                
 };   
 
