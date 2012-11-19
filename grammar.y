@@ -98,6 +98,7 @@ Value
 	| Identifier {}
 	| Call {}
 	| ArrayVal {}
+	| OBRACKET BitExp CBRACKET {}
 	;
 /* Add Array/String type */
 Type
