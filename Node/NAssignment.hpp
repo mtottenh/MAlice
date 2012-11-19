@@ -1,13 +1,13 @@
 #ifndef _NASSIGNMENT_HPP_
 #define _NASSIGNMENT_HPP_
+#include "Node.hpp"
 
-#include "NStatement.hpp"
 #include "NExpression.hpp"
-class NAssignment : public NStatement {                                          
-public:                                                                          
- NExpression *rhs;                                                               
- Node *lhs;                                                                      
- NAssignment(); 
+class NAssignment : public Node {
+public:
+ NExpression *rhs;
+ Node *lhs;
+ NAssignment();
 };   
 
 #endif

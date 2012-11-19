@@ -1,10 +1,12 @@
 #ifndef _NMETHODCALL_HPP_
 #define _NMETHODCALL_HPP_
 
-#include "NStatement.hpp"
+#include "Node.hpp"
 
 /* Fix this class - could also be expression?*/                                  
-class NMethodCall : public NStatement {                                          
+class NMethodCall : public Node {                                          
+public:
+	NMethodCall() { name = "function/procedure call"; }
 }; 
 
 #endif

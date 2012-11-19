@@ -1,8 +1,11 @@
 #ifndef _NINC_HPP
 #define _NINC_HPP
 
-#include "NStatement.hpp"
+#include "Node.hpp"
 
-class NInc  : public NStatement {};   
+class NInc  : public Node {
+public:
+	NInc(Node *child) { children.push_back(child);}
+};   
 
 #endif

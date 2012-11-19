@@ -1,8 +1,8 @@
 #ifndef _NSTRING_H_
 #define _NSTRING_H
 
-#include "NExpression.hpp"
+#include "Node.hpp"
 
-class NString : public NExpression {};  
+class NString : public Node {};  
 
 #endif

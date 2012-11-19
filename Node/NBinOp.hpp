@@ -1,10 +1,10 @@
 #ifndef _NBINOP_HPP_
 #define _NBINOP_HPP_
 
-#include "NExpression.hpp"
+#include "Node.hpp"
 
-class NBinOp : public NExpression {                                              
-public:                                                                          
+class NBinOp : public Node {
+public:
         NBinOp();
 };
 

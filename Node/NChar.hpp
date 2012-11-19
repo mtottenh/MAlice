@@ -1,11 +1,11 @@
 #ifndef _NCHAR_HPP
 #define _NCHAR_HPP
 
-#include "NExpression.hpp"
+#include "Node.hpp"
 
-class NChar : public NExpression {                                               
-        public:                                                                  
-         NChar();                                               
+class NChar : public Node {                                               
+public:
+         NChar();
 };  
 
 #endif

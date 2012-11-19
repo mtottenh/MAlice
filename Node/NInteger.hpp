@@ -1,9 +1,9 @@
 #ifndef _NINTEGER_HPP_
 #define _NINTEGER_HPP_
 
-#include "NExpression.hpp"
+#include "Node.hpp"
 
-class NInteger : public NExpression {                                            
+class NInteger : public Node {                                            
 public:                                                                          
         NInteger();                                            
 }; 

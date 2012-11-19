@@ -1,9 +1,9 @@
 #ifndef _NCONDITIONAL_HPP
 #define _NCONDITIONAL_HPP
 
-#include "NStatement.hpp"
+#include "Node.hpp"
 
-class NConditional : public NStatement {                                         
+class NConditional : public Node {                                         
 }; 
 
 #endif

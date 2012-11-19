@@ -1,11 +1,11 @@
 #ifndef _NDECLARATIONBLOCK_HPP_
 #define _NDECLARATIONBLOCK_HPP_
 
-#include "NStatement.hpp"
-class NDeclarationBlock : public NStatement {  
+#include "Node.hpp"
+class NDeclarationBlock : public Node {  
 public:	
 	NDeclarationBlock(){};
-	NDeclarationBlock(NDeclarationBlock *derp){ children.push_back(derp);};  
+	NDeclarationBlock(Node *child){ children.push_back(child);};  
 };  
 
 #endif

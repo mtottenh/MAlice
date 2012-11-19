@@ -17,7 +17,7 @@ QUESTIONMARK EVENTUALLY BECAUSE ENOUGHTIMES THEN ELSE IF ENDIF MAYBE TOO
 FOUND
 
 /* Primitives */
-%token CHAR STRING INTEGER STRINGLIT
+%token <string> CHAR STRING INTEGER STRINGLIT
 %token SEPARATOR NULLTOK COMMA QUOTE
 /*Operators */
 %token <token> MINUS PLUS MULT DIV MOD 
@@ -41,25 +41,23 @@ FOUND
 	NCodeBlock *block;
 	NExpression *exp;
 	NPrint *print;
-	NStatement *stat;
+	NStatementList *stat;
 	NIdentifier *id;
 	NAssignment *assignment;
 	NVariableDeclaration *var_dec;
 	NFunctionDeclaration *func_dec;
 	NDeclarationBlock *dec_list;
 	std::vector<NVariableDeclaration *> *paramlist;
-	std::vector<NStatement *> *statlist;
 	
 }
 
-%type <dec_list> DeclarationList Declaration program VarDeclarationAssignment
-%type <var_dec> VarDeclaration
-%type <func_dec> FunctionDec ProcedureDec
-%type <block> Codeblock
-%type <exp> BitExp Exp Term Factor Value ArrayVal Call
+%type <node> DeclarationList Declaration program VarDeclarationAssignment
+%type <node> VarDeclaration Return  
+%type <node> FunctionDec ProcedureDec
+%type <node> Codeblock 
+%type <node> BitExp Exp Term Factor Value ArrayVal Call Increment Decrement
 %type <assignment> Assignment 
-%type <stat> Statement
-%type <print> Print
+%type <node> Statement
 %type <id> Identifier
 %type <stat> StatementList
 /* UNDCIDED ONES LOL */
@@ -170,12 +168,12 @@ ArrayVal
 	;
  
 /*Print Token matches said allice and spoke*/
-Print 
-	: PRINT  {$$ = new NPrint();/**/}
-	;
+//Print 
+//	: PRINT  {$$ = new NPrint();/**/}
+//	;
 
 Return
-	: FOUND BitExp
+	: FOUND BitExp {}
 	;
 
 /* Add rules for /ArrayAcess/FuncandProcedureCalls
@@ -183,29 +181,29 @@ Return
  *  */
 Statement
 	: VarDeclaration Separator {$$ = $1;}
-	| VarDeclaration TOO Separator {} 
-	| VarDeclarationAssignment Separator {}
+	| VarDeclaration TOO Separator {$$ = $1;} 
+	| VarDeclarationAssignment Separator {$$ = $1;}
 	| Read {}
 	| Conditional {}
 	| Loop {}
 	| Call Separator { $$ = $1;}
-	| ProcedureDec {}
-	| FunctionDec {}
+	| ProcedureDec {$$ = $1;}
+	| FunctionDec {$$ = $1;}
 	| NULLTOK {}
-	| Increment Separator {}
-	| Decrement Separator {}
+	| Increment Separator {$$ = $1;}
+	| Decrement Separator {$$ = $1;}
 	| Codeblock {}
       /*| Generalise Print */
 	| Assignment Separator {$$ = $1;}
-	| BitExp Print Separator {$$ = $2;}
-	| STRINGLIT Print Separator {}
-	| CHAR Print Separator {}
-	| Return Separator {}
+	| BitExp PRINT Separator {$$ = new NPrint($1);}
+	| STRINGLIT PRINT Separator {$$ = new NPrint($1);}
+	| CHAR PRINT Separator { $$ = new NPrint($1);}
+	| Return Separator {$$ = $1;}
 	;
 
 Call 
-	: Identifier OBRACKET ParamList CBRACKET {}
-	| Identifier OBRACKET CBRACKET {printf("Called\n"); $$ = new NStatement();}
+	: Identifier OBRACKET ParamList CBRACKET {$$ = new NMethodCall();}
+	| Identifier OBRACKET CBRACKET {printf("Called\n"); $$ = new NMethodCall();}
 	;
 ParamList
 	: Paramater COMMA ParamList
@@ -240,11 +238,11 @@ PredPrime
 	;
 
 Increment
-	: Identifier INC
+	: Identifier INC { $$ = new NInc($1);}
 	;
 
 Decrement
-	: Identifier DEC
+	: Identifier DEC { $$ = new NDec($1);}
 	;	
 
 Conditional
@@ -259,13 +257,19 @@ Maybe
 
 Codeblock
 	: OBRACE StatementList CBRACE 
-	{$$ = new NCodeBlock(); $$->children.push_back($2);
-	/* create new scoping symtable + vector*/}
+	{$$ = $2;}
+/* Old code, I think we dont really need to make a new scope block 
+ * as statlist seems to create the same functionality in the tree,
+ * IE we can combine these rules to prune the AST
+ */
+  /*	{$$ = new NCodeBlock(); $$->children.push_back($2);} */
+	
+	/* Still need to create new scoping symtable + vector*/ 
 	; 
 
 StatementList
 	: StatementList Statement {$1->children.push_back($2);}
-	| Statement{$$ = new NStatement(); $$->children.push_back($1);}
+	| Statement{$$ = new NStatementList(); $$->children.push_back($1);}
 	;
 
 Separator
