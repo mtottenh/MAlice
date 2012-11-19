@@ -179,7 +179,8 @@ Return
  * user input / fix LoxExp print to be more generatlised 
  *  */
 Statement
-	: VarDeclaration Separator {$$ = $1;} 
+	: VarDeclaration Separator {$$ = $1;}
+	| VarDeclaration TOO Separator {} 
 	| VarDeclarationAssignment Separator {}
 	| Read {}
 	| Conditional {}
@@ -267,9 +268,6 @@ StatementList
 Separator
 	: NULLTOK {}
 	| SEPARATOR {}
-/* Need A rule like this	| TOO SEPARATOR {}*/
-	| TOO SEPARATOR {}
-	| TOO NULLTOK {}
 	| COMMA {}
 	;
 
@@ -280,7 +278,7 @@ Identifier
 %%
 int main()
 {
- std::cout << " hello \n";
+
  int node = yyparse();
  treePrinter t(root);
  t.print(); 

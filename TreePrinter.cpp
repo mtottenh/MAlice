@@ -19,7 +19,7 @@ int treePrinter::print() {
 			int current_level = level.front();
 			level.pop();
 			if(print_level< current_level) {
-				cout <<endl;	
+				cout << endl;	
 				print_level = current_level;
 				cout << "Level : " << print_level << endl;
 			}
@@ -41,7 +41,7 @@ int treePrinter::print() {
 		}
 	
 		}
-	}
+	
 	cout << endl;
 	return 0;
 }

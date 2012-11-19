@@ -77,8 +77,6 @@ piece		{ tokenpos += yyleng; return ARRINDC; }
   /* Print statements */
 ("said Alice"|spoke) { tokenpos +=yyleng; return PRINT; }
 
-"too."	{tokenpos += yyleng; return TOO; }
-
   /* Char literals */
 {charlit}		{ tokenpos +=yyleng; return CHAR; }
 
