@@ -3,8 +3,7 @@
 
 #include <string>
 #include <boost/unordered_map.hpp>  
-#include <boost/functional/hash.hpp>  
-#include "Node.hpp" /* change to Node.hpp */
+#include "Node.hpp"
 
 using namespace std;
 
