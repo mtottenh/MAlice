@@ -52,32 +52,34 @@ FOUND
 	
 }
 
-%type <dec_list> DeclarationList Declaration program
+%type <dec_list> DeclarationList Declaration program VarDeclarationAssignment
 %type <var_dec> VarDeclaration
 %type <func_dec> FunctionDec ProcedureDec
 %type <block> Codeblock
 %type <exp> BitExp Exp Term Factor Value 
-%type <assignment> Assignment
+%type <assignment> Assignment 
 %type <stat> Statement
 %type <print> Print
 %type <id> Identifier
 %type <stat> StatementList
+/* UNDCIDED ONES LOL */
+%type <stat> Call
 %%
 
 program : DeclarationList { root = $1; }
 	;
 
 DeclarationList
-	: Declaration DeclarationList { $2->children.push_back($1);
-					/*code here */ }
+	: DeclarationList Declaration 
+	{ $1->children.push_back($2); }
 	| Declaration 
-	{ $$=$1;/*$$ = new NDeclarationBlock($1); } */ }
+	{ $$ = new NDeclarationBlock($1); } 
 	;
 
 Declaration
 	: VarDeclaration Separator { $$=$1 ; }
 	| VarDeclaration TOO Separator {$$ = $1;}
-	| VarDeclarationAssignment Separator {}
+	| VarDeclarationAssignment Separator { $$ = $1;}
 	| FunctionDec	 { $$ = $1; }
 	| ProcedureDec     { $$= $1;  }
 	;
@@ -157,7 +159,7 @@ Assignment
 	;
 
 VarDeclarationAssignment
-	: VarDeclaration OF BitExp {printf("and assigned\n");}
+	: VarDeclaration OF BitExp {$$ = $1;}
 	| VarDeclaration OF CHAR	{printf("and assigned\n");}
 	| VarDeclaration OF STRINGLIT {printf("and assigned\n");}
 	;
@@ -186,7 +188,7 @@ Statement
 	| Read {}
 	| Conditional {}
 	| Loop {}
-	| Call Separator {}
+	| Call Separator { $$ = $1;}
 	| ProcedureDec {}
 	| FunctionDec {}
 	| NULLTOK {}
@@ -203,7 +205,7 @@ Statement
 
 Call 
 	: Identifier OBRACKET ParamList CBRACKET {}
-	| Identifier OBRACKET CBRACKET {printf("Called\n");}
+	| Identifier OBRACKET CBRACKET {printf("Called\n"); $$ = new NStatement();}
 	;
 ParamList
 	: Paramater COMMA ParamList
