@@ -208,13 +208,13 @@ Decrement
 	;	
 
 Conditional
-	: IF OBRACKET Predicate CBRACKET THEN Statement Maybe
+	: IF OBRACKET Predicate CBRACKET THEN StatementList Maybe
 	;
 
 Maybe
-	: ELSE Statement ENDIF
+	: ELSE StatementList ENDIF
 	| ENDIF
-	| ELSE MAYBE OBRACKET Predicate CBRACKET THEN Statement Maybe
+	| ELSE MAYBE OBRACKET Predicate CBRACKET THEN StatementList Maybe
 	;
 
 Codeblock
