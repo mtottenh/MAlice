@@ -3,7 +3,14 @@
 
 #include "Node.hpp"
 
-class NConditional : public Node {                                         
+class NConditional : public Node {
+public:
+	NConditional(Node* Predicate, Node* Left, Node* Right){
+		name = "Conditional";
+		children.push_back(Predicate);
+		children.push_back(Left);
+		children.push_back(Right);
+	};
 }; 
 
 #endif

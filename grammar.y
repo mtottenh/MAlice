@@ -52,9 +52,9 @@ FOUND
 }
 
 %type <node> DeclarationList Declaration program VarDeclarationAssignment
-%type <node> VarDeclaration Return  
+%type <node> VarDeclaration Return PredPrime 
 %type <node> FunctionDec ProcedureDec
-%type <node> Codeblock 
+%type <node> Codeblock Conditional Predicate Maybe
 %type <node> BitExp Exp Term Factor Value ArrayVal Call Increment Decrement
 %type <assignment> Assignment 
 %type <node> Statement
@@ -171,9 +171,9 @@ ArrayVal
 //Print 
 //	: PRINT  {$$ = new NPrint();/**/}
 //	;
-
+/* should probably make a return node*/
 Return
-	: FOUND BitExp {}
+	: FOUND BitExp {$$ = $2;}
 	;
 
 /* Add rules for /ArrayAcess/FuncandProcedureCalls
@@ -184,7 +184,7 @@ Statement
 	| VarDeclaration TOO Separator {$$ = $1;} 
 	| VarDeclarationAssignment Separator {$$ = $1;}
 	| Read {}
-	| Conditional {}
+	| Conditional { $$ = $1;}
 	| Loop {}
 	| Call Separator { $$ = $1;}
 	| ProcedureDec {$$ = $1;}
@@ -192,7 +192,7 @@ Statement
 	| NULLTOK {}
 	| Increment Separator {$$ = $1;}
 	| Decrement Separator {$$ = $1;}
-	| Codeblock {}
+	| Codeblock {$$ = $1;}
       /*| Generalise Print */
 	| Assignment Separator {$$ = $1;}
 	| BitExp PRINT Separator {$$ = new NPrint($1);}
@@ -203,7 +203,7 @@ Statement
 
 Call 
 	: Identifier OBRACKET ParamList CBRACKET {$$ = new NMethodCall();}
-	| Identifier OBRACKET CBRACKET {printf("Called\n"); $$ = new NMethodCall();}
+	| Identifier OBRACKET CBRACKET {$$ = new NMethodCall();}
 	;
 ParamList
 	: Paramater COMMA ParamList
@@ -222,19 +222,19 @@ Loop
 	;
 
 Predicate
-	: PredPrime LOR Predicate
-	| PredPrime LAND Predicate
-	| PredPrime
-	| LNOT OBRACKET Predicate CBRACKET
-	| OBRACKET Predicate CBRACKET
+	: PredPrime LOR Predicate {$$ = new NPredicate($1,$2,$3);}
+	| PredPrime LAND Predicate {$$ = new NPredicate($1,$2,$3);}
+	| PredPrime {$$ = $1;}
+	| LNOT OBRACKET Predicate CBRACKET {$$ = new NPredicate($1,$3);}
+	| OBRACKET Predicate CBRACKET {$$ = $2;}
 	;
 
 PredPrime
-	: BitExp LEQU BitExp
-	| BitExp LLTHAN BitExp
-	| BitExp LLTHANEQ BitExp
-	| BitExp LGTHAN BitExp
-	| BitExp LGTHANEQ BitExp
+	: BitExp LEQU BitExp  {$$ = new NPredicate($1,$2,$3);}
+	| BitExp LLTHAN BitExp {$$ = new NPredicate($1,$2,$3);}
+	| BitExp LLTHANEQ BitExp  {$$ = new NPredicate($1,$2,$3);}
+	| BitExp LGTHAN BitExp  {$$ = new NPredicate($1,$2,$3);}
+	| BitExp LGTHANEQ BitExp  {$$ = new NPredicate($1,$2,$3);}
 	;
 
 Increment
@@ -247,12 +247,14 @@ Decrement
 
 Conditional
 	: IF OBRACKET Predicate CBRACKET THEN StatementList Maybe
+	 { $$ = new NConditional($3,$6,$7);}
 	;
 
 Maybe
-	: ELSE StatementList ENDIF
-	| ENDIF
-	| ELSE MAYBE OBRACKET Predicate CBRACKET THEN StatementList Maybe
+	: ELSE StatementList ENDIF {$$ = $2;}
+	| ENDIF {}
+	| ELSE MAYBE OBRACKET Predicate CBRACKET THEN StatementList Maybe 
+	{$$ = new NConditional($4,$7,$8);}
 	;
 
 Codeblock

@@ -17,6 +17,7 @@
  #include "NMethodCall.hpp" 
  #include "Node.hpp" 
  #include "NodeIncludes.hpp" 
+ #include "NPredicate.hpp" 
  #include "NPrint.hpp" 
  #include "NStatementList.hpp" 
  #include "NString.hpp" 
