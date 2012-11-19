@@ -1,7 +1,12 @@
 #ifndef _NODE_HPP_
 #define _NODE_HPP_
+
 #include <iostream>
 #include <vector>
+#include <string>
+
+using namespace std;
+
 class Node;
 class NStatement;
 class NExpression;
@@ -9,48 +14,23 @@ class NVariableDeclaration;
 class NFunctionDeclaration;
 
 
-typedef std::vector<NStatement *> StatementList;
+typedef vector<NStatement *> StatementList;
 /*May not end up using these*/
-typedef std::vector<NExpression *> ExpressionList;
-typedef std::vector<NVariableDeclaration *> ViarableList;
+typedef vector<NExpression *> ExpressionList;
+typedef vector<NVariableDeclaration *> ViarableList;
 
 
 /* Top level Base Class */
 class Node {
 public:
-	std::string name;
-	std::vector<Node *> children;
+	string name;
+	vector<Node *> children;
 public :
 	Node() { name = "Node";}
 	virtual ~Node() {}
 	Node(Node *a) { children.push_back(a); name = "Node"; }
-	virtual int print() const {std::cout << name; return 1;}
-	std::vector<Node *> getChildren() const { return children;}
-};
-
-class NExpression : public Node {
-public:
-	NExpression() { name = "Exp" ;}
-};
-
-class NStatement : public Node {
-public:
-	NStatement () { name = "Stat"; }
-};
-
-
-class NInteger : public NExpression {
-public:
-	NInteger() { name = "Int"; }
-};
-class NChar : public NExpression {
-	public:
-	 NChar() { name = "Char";}
-};
-class NIdentifier : public NExpression {
-	public:
-	NIdentifier() { name = "ID"; }
-//	NIdentifier(char *a) { name = strdup(a);
+	virtual int print() const {cout << name; return 1;}
+	vector<Node *> getChildren() const { return children;}
 };
 
 /* Fix this class - could also be expression?*/
@@ -76,7 +56,7 @@ public:
 };
 class NDeclarationBlock : public Node {
 public:
- std::vector<Node *> declarations;
+ vector<Node *> declarations;
 };
 class NVariableDeclaration : public NStatement {
 public:
@@ -94,7 +74,7 @@ public:
 		children.push_back(block);
 	}
 	int print() const {
-		std::cout << name ;
+		cout << name ;
 		return 1;
 	}
 };
