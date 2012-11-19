@@ -1,7 +1,7 @@
 #ifndef _NINTEGER_HPP_
 #define _NINTEGER_HPP_
 
-#include "Node.hpp"
+#include "NExpression.hpp"
 
 class NInteger : public NExpression {                                            
 public:                                                                          

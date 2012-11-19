@@ -1,7 +1,7 @@
 #ifndef _NIDENTIFIER_HPP_
 #define _NIDENTIFIER_HPP_
 
-#include "Node.hpp"
+#include "NExpression.hpp"
 
 class NIdentifier : public NExpression {                                         
         public:                                                                  
