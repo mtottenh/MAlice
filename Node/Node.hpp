@@ -7,18 +7,13 @@
 
 using namespace std;
 
-class Node;
-class NStatement;
-class NExpression;
-class NVariableDeclaration;
-class NFunctionDeclaration;
 
-
+/*
 typedef vector<NStatement *> StatementList;
-/*May not end up using these*/
+May not end up using these*//*
 typedef vector<NExpression *> ExpressionList;
 typedef vector<NVariableDeclaration *> ViarableList;
-
+*/
 
 /* Top level Base Class */
 class Node {

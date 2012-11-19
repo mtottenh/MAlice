@@ -1,7 +1,8 @@
 %{
 #include <string>
 #include <iostream>
-#include "Node.hpp"
+#include "Node/Node.hpp"
+#include "Node/NodeIncludes.hpp"
 #include "TreePrinter.hpp"
 extern void yyerror(char*);
 extern int yylex();
@@ -74,10 +75,10 @@ DeclarationList
 	;
 
 Declaration
-	: VarDeclaration Separator { $$->children.push_back($1) ; }
-	| VarDeclaration TOO Separator {}
+	: VarDeclaration Separator { $$=$1 ; }
+	| VarDeclaration TOO Separator {$$ = $1;}
 	| VarDeclarationAssignment Separator {}
-	| FunctionDec	 { $$ = (NDeclarationBlock *)$1; }
+	| FunctionDec	 { $$ = $1; }
 	| ProcedureDec     { $$= $1;  }
 	;
 

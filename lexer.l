@@ -1,5 +1,5 @@
 %{
-#include "Node.hpp"
+#include "Node/NodeIncludes.hpp"
 
 #include <iostream>
 #include <stdio.h>

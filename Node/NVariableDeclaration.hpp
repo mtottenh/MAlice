@@ -3,7 +3,7 @@
 
 #include "NStatement.hpp"
 
-class NVariableDeclaration : public NStatement {                                 
+class NVariableDeclaration : public NDeclarationBlock {                                 
 public:                                                                          
         NVariableDeclaration() { name = "Declaration"; }                         
 }; 
