@@ -1,1 +1,1 @@
-#include "NDec.cpp"
+#include "NDec.hpp"

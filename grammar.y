@@ -56,14 +56,14 @@ FOUND
 %type <var_dec> VarDeclaration
 %type <func_dec> FunctionDec ProcedureDec
 %type <block> Codeblock
-%type <exp> BitExp Exp Term Factor Value 
+%type <exp> BitExp Exp Term Factor Value ArrayVal Call
 %type <assignment> Assignment 
 %type <stat> Statement
 %type <print> Print
 %type <id> Identifier
 %type <stat> StatementList
 /* UNDCIDED ONES LOL */
-%type <stat> Call
+ /*%type <stat> */
 %%
 
 program : DeclarationList { root = $1; }
@@ -109,20 +109,20 @@ ParamaterDec
 
   /* Brackets Relational Operators*/
 BitExp
-	: Exp AND BitExp {}
-	| Exp OR BitExp  {}
-	| Exp XOR BitExp {}
+	: Exp AND BitExp {$$ = new NBinOp();}
+	| Exp OR BitExp  {$$ = new NBinOp();}
+	| Exp XOR BitExp {$$ = new NBinOp();}
 	| Exp {$$ = $1;}
 	;
 Exp
-	: Exp PLUS Term {$$ = new NBinOP();}
-	| Exp MINUS Term {$$ = new NBinOP();}
+	: Exp PLUS Term {$$ = new NBinOp();}
+	| Exp MINUS Term {$$ = new NBinOp();}
 	| Term {$$ = $1;}
 	;
 Term
-	: Term MULT Factor {}
-	| Term DIV Factor {}
-	| Term MOD Factor {}
+	: Term MULT Factor {$$ = new NBinOp();}
+	| Term DIV Factor {$$ = new NBinOp();}
+	| Term MOD Factor {$$ = new NBinOp();}
 	| Factor {$$ = $1;}
 	;
 Factor
@@ -133,9 +133,9 @@ Factor
 Value
 	: INTEGER {$$ = new NInteger();}
 	| Identifier {$$ = new NIdentifier();}
-	| Call {}
-	| ArrayVal {}
-	| OBRACKET BitExp CBRACKET {}
+	| Call { $$ = $1;}
+	| ArrayVal {$$ = $1;}
+	| OBRACKET BitExp CBRACKET { $$ = $2;}
 	;
 
 /* Add Array/String type */

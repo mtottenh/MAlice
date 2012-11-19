@@ -2,10 +2,10 @@
 #define _NVARIABLEDECLARATION_HPP_
 
 #include "NStatement.hpp"
-
-class NVariableDeclaration : public NDeclarationBlock {                                 
-public:                                                                          
-        NVariableDeclaration(); 
+#include "NDeclarationBlock.hpp"
+class NVariableDeclaration : public NDeclarationBlock {
+public:
+        NVariableDeclaration();
 }; 
 
 #endif
