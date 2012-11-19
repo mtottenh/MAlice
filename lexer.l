@@ -18,7 +18,7 @@ int tokenpos = 0;
 %option nounput yylineno
 char		[a-zA-Z]
 separator	(and|but|then)
-integer		[-]?[0-9]+
+integer		[0-9]+
 charlit		['][^'][']
 stringlit   ["][^"]*["]
 string 		{char}[a-zA-Z0-9_]*
@@ -32,11 +32,10 @@ whitespace	[ \t]+
  /* Keywords */
 too 		  { tokenpos += yyleng; return TOO;}
 became	 	  { tokenpos += yyleng; return BECAME; }
-was	 	  { tokenpos += yyleng; return WAS; }
+"was a"	 	  { tokenpos += yyleng; return WAS; }
 number		  { tokenpos += yyleng; return TNUMBER; }
 letter		  { tokenpos += yyleng; return TCHAR; }
 sentence	{ tokenpos += yyleng; return TSTRING; }
-a		  { tokenpos += yyleng; return A;	  }
 ate		  { tokenpos += yyleng; return INC;	  }
 drank 		  { tokenpos += yyleng; return DEC;	  }
 "contained a"     { tokenpos += yyleng; return CONTAINEDA; }
@@ -75,6 +74,8 @@ spider	{tokenpos += yyleng; return TPTR; }
 piece		{ tokenpos += yyleng; return ARRINDC; }
   /* Print statements */
 ("said Alice"|spoke) { tokenpos +=yyleng; return PRINT; }
+
+"too."	{tokenpos += yyleng; return TOO; }
 
   /* Char literals */
 {charlit}		{ tokenpos +=yyleng; return CHAR; }
@@ -121,7 +122,7 @@ void yyerror (char *s) {
 	fprintf(stderr, "line %d: pos %d %s:\n%s\n", lineno, tokenpos, s, linebuf);
 	fprintf(stderr, "%*s\n", tokenpos, "^");
 }
-/*
+ /*
 main()
 {
 	int type;

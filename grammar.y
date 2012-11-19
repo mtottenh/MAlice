@@ -10,7 +10,7 @@ extern int yylex();
 /* Type Tokens */
 %token TCHAR TSTRING TPTR TNUMBER  
 /* Alice Keywords */
-%token OF WAS A PROCEDURE FUNC BECAME INC DEC CONTAINEDA HAD WHATWAS 
+%token OF WAS PROCEDURE FUNC BECAME INC DEC CONTAINEDA HAD WHATWAS 
 QUESTIONMARK EVENTUALLY BECAUSE ENOUGHTIMES THEN ELSE IF ENDIF MAYBE TOO
 FOUND
 
@@ -44,6 +44,7 @@ DeclarationList
 
 Declaration
 	: VarDeclaration Separator { /*$$ = $1*/ }
+	| VarDeclaration TOO Separator {}
 	| VarDeclarationAssignment Separator {}
 	| FunctionDec	 {  }
 	| ProcedureDec     { /*$$ = $1*/ }
@@ -71,10 +72,9 @@ ParamaterDec
 
   /* Brackets Relational Operators*/
 BitExp
-	: Exp AND BitExp {}
-	| Exp OR BitExp  {}
-	| Exp XOR BitExp {}
-	| OBRACKET BitExp CBRACKET {}
+	: BitExp AND Exp {}
+	| BitExp OR Exp  {}
+	| BitExp XOR Exp {}
 	| Exp {}
 	;
 Exp
@@ -89,8 +89,8 @@ Term
 	| Factor {}
 	;
 Factor
-	: NOT Value %prec UNARY {}
-	| MINUS Value %prec UNARY {}
+	: NOT Factor %prec UNARY {}
+	| MINUS Factor %prec UNARY {}
 	| Value {}
 	;
 Value
@@ -108,7 +108,7 @@ Type
 	;
 
 VarDeclaration
-	: Identifier WAS A Type {printf("Var Declared\n");}
+	: Identifier WAS Type {printf("Var Declared\n");}
 	| Identifier HAD BitExp Type {printf("Array Declared\n"); }
 	;
 
