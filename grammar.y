@@ -177,7 +177,10 @@ Factor
  * Integers: - we just create an integer node with the 
  * valude that the lexer returns as a paramter (CHECK IN LEXER)
  * Identifier: - We create an NIdentifier node and pass it the 
- * Name of the identifier returned from the lexer.
+ * Name of the identifier returned from the lexer. 
+ * (*POSSIBILITY*) We could remove Identifier as a node
+ * Return the string and let Declaration node add the string
+ * as a member field.
  * Other options: - we use the relevant subrules to create
  * Nodes
  */
@@ -189,28 +192,46 @@ Value
 	| OBRACKET BitExp CBRACKET { $$ = $2;}
 	;
 
-/* Add Array/String type */
+/* 
+ * (TODO) Types: here we should just return an integer relating to the token 
+ * returned by the lexer
+ */
 Type
 	: TNUMBER {}
 	| TCHAR {}
 	| TSTRING {}
 	| TPTR Type {}
 	;
-
+/*
+ * (TODO) To create a declaration node we pass it an ID node and its type
+ * we should also add it to the symbol table.
+ */
 VarDeclaration
 	: Identifier WAS Type {$$ = new NVariableDeclaration();/*add id to sym table*/}
 	| Identifier HAD BitExp Type {printf("Array Declared\n"); }
 	;
-
+/*
+ * (TODO) Assignment Nodes - Should accept:
+ * An Identifier (Node or string we should make this Decision soon)
+ * An rval Node pointer 
+ */
 Assignment
 	: Identifier BECAME BitExp   { $$ = new NAssignment();/*update value in symbol table*/}
 	| Identifier BECAME CHAR {/*also need to check errors*/}
 	| ArrayVal BECAME BitExp {}
 	| ArrayVal BECAME CHAR {}
 	;
-
+/*
+ * (TODO)This should return a StatementList Node with two sub nodes
+ * one a  declaration node ($1)
+ * and one an assignment node (new NStatementList(dec,ass))
+ */
 VarDeclarationAssignment
-	: VarDeclaration OF BitExp {$$ = $1;}
+	: VarDeclaration OF BitExp 
+	{$$ = $1;
+	/* Node Declaration = $1;
+  	   Node Assignment =  new NAssigment(Declaration.getID(), $2);
+	   $$ = new NStatementList(Declaration,Assignment);*/}
 	| VarDeclaration OF CHAR	{printf("and assigned\n");}
 	| VarDeclaration OF STRINGLIT {printf("and assigned\n");}
 	;
