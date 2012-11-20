@@ -3,9 +3,10 @@
 
 #include "Node.hpp"
 
-class NInteger : public Node {                                            
-public:                                                                          
-        NInteger();                                            
-}; 
+class NInteger : public Node {
+public:
+        NInteger();
+	NInteger(int);
+};
 
 #endif

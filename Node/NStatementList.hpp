@@ -5,7 +5,8 @@
 
 class NStatementList : public Node {
 public:
-        NStatementList () { name = "StatList"; }
+        NStatementList() { name = "StatList"; }
+	NStatementList(Node* , Node*);
 }; 
 
 #endif

@@ -17,7 +17,8 @@ QUESTIONMARK EVENTUALLY BECAUSE ENOUGHTIMES THEN ELSE IF ENDIF MAYBE TOO
 FOUND
 
 /* Primitives */
-%token <string> CHAR STRING INTEGER STRINGLIT
+%token <string> CHAR STRING STRINGLIT
+%token <token> INTEGER
 %token SEPARATOR NULLTOK COMMA QUOTE
 /*Operators */
 %token <token> MINUS PLUS MULT DIV MOD 
@@ -36,7 +37,7 @@ FOUND
 %left UNARY
 %union {
 	char *string;
-	int token;
+	int token; /* should we explicitly state the length? e.g. int_32t?*/
 	Node *node;
 	NCodeBlock *block;
 	NExpression *exp;
@@ -53,7 +54,7 @@ FOUND
 
 %type <node> DeclarationList Declaration program VarDeclarationAssignment
 %type <node> VarDeclaration Return PredPrime ParamListDec Read Loop
-%type <node> FunctionDec ProcedureDec ParamList
+%type <node> FunctionDec ProcedureDec ParamList Char
 %type <node> Codeblock Conditional Predicate Maybe
 %type <node> BitExp Exp Term Factor Value ArrayVal Call Increment Decrement
 %type <assignment> Assignment 
@@ -187,7 +188,7 @@ Factor
  */
 Value
 	: INTEGER {$$ = new NInteger($1);}
-	| Identifier {$$ = new NIdentifier($1);}
+	| Identifier {$$ = $1;}
 	| Call { $$ = $1;}
 	| ArrayVal {$$ = $1;}
 	| OBRACKET BitExp CBRACKET { $$ = $2;}
@@ -217,6 +218,7 @@ VarDeclaration
  * (TODO) Assignment Nodes - Should accept:
  * An Identifier Node which is just uses to extract the value then deletes
  * An rval Node pointer 
+ * Need to add cases for assigning things to stringlit's 
  */
 Assignment
 	: Identifier BECAME BitExp   { $$ = new NAssignment($1,$3);}
@@ -233,16 +235,16 @@ Assignment
  */
 VarDeclarationAssignment
 	: VarDeclaration OF BitExp 
-	{ NVariableDeclaration* Declaration = $1; 
-	  Node* Assignment =  new NAssignment(Declaration.getID(), $3);
+	{ NVariableDeclaration* Declaration = (NVariableDeclaration *)$1; 
+	  Node* Assignment =  new NAssignment(Declaration->getID(), $3);
 	  $$ = new NStatementList(Declaration,Assignment);}
 	| VarDeclaration OF CHAR 
-	{ NVariableDeclaration* Declaration = $1; 
-	  Node* Assignment =  new NAssignment(Declaration.getID(), $3);
+	{ NVariableDeclaration* Declaration = (NVariableDeclaration *)$1; 
+	  Node* Assignment =  new NAssignment(Declaration->getID(), $3);
 	  $$ = new NStatementList(Declaration,Assignment);}
 	| VarDeclaration OF STRINGLIT 
-	{ NVariableDeclaration* Declaration = $1; 
-	  Node* Assignment =  new NAssignment(Declaration.getID(), $3);
+	{ NVariableDeclaration* Declaration = (NVariableDeclaration *)$1; 
+	  Node* Assignment =  new NAssignment(Declaration->getID(), $3);
 	  $$ = new NStatementList(Declaration,Assignment);}
 	;
 
@@ -386,6 +388,9 @@ Separator
 
 Identifier
 	: STRING {$$ = new NIdentifier($1);}
+	;
+Char
+	: CHAR { $$ = new NChar($1); }
 	;
 
 %%

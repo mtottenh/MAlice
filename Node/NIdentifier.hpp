@@ -2,12 +2,14 @@
 #define _NIDENTIFIER_HPP_
 
 #include "Node.hpp"
+#include <string>
 
-class NIdentifier : public Node {                                         
-        public:                                                                  
-        	NIdentifier();                                           
+class NIdentifier : public Node {
+        public:
+        	NIdentifier();
 		string getID();
-//      	NIdentifier(char*);                                 
+		NIdentifier(string);
+	      	NIdentifier(char*);                                 
 };  
 
 #endif

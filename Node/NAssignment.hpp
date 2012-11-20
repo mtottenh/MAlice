@@ -2,12 +2,24 @@
 #define _NASSIGNMENT_HPP_
 #include "Node.hpp"
 
-#include "NExpression.hpp"
+#include "NIdentifier.hpp"
+#include "NChar.hpp"
+#include "NString.hpp"
 class NAssignment : public Node {
+private:
+	Node* lval;
+	Node* rval;
 public:
- NExpression *rhs;
- Node *lhs;
- NAssignment();
+	NAssignment();
+	/* special cases for VarDeclarationAssign */
+	NAssignment(string, Node*);
+	NAssignment(string, char*);
+	NAssignment(string, string);
+	/* General cases for Identifier */
+	NAssignment(Node*, Node*);
+	NAssignment(Node*, char*);
+	/* Add cases for assigning things to strings */
+	
 };   
 
 #endif
