@@ -11,13 +11,13 @@ NFunctionDeclaration::NFunctionDeclaration() {
 NFunctionDeclaration::NFunctionDeclaration (NIdentifier* ID, Node *block) {
         children.push_back(block);
 	/* change behaviour */
-	name = ID.getID(); 
+	name = ID->getID(); 
 	delete(ID);
 }                                                                        
 /* Delcaring Function with no arguments */
 NFunctionDeclaration::NFunctionDeclaration (NIdentifier* ID, Node *block, int type) {
-	this.type = type
-	name = ID.getID();
+	this->type = type;
+	name = ID->getID();
 	children.push_back(block);
 	delete(ID);
 }
@@ -25,8 +25,8 @@ NFunctionDeclaration::NFunctionDeclaration (NIdentifier* ID, Node *block, int ty
 /* declaring a function with arguments */
 NFunctionDeclaration::NFunctionDeclaration (NIdentifier* ID, Node *params, 
 					    Node *block, int type) {
-	this.type = type
-	name = ID.getID();
+	this->type = type;
+	name = ID->getID();
 	delete(ID);
 	children.push_back(params);
 	children.push_back(block);
@@ -34,7 +34,7 @@ NFunctionDeclaration::NFunctionDeclaration (NIdentifier* ID, Node *params,
 
 /* Declaring a procedure with arguments */
 NFunctionDeclaration::NFunctionDeclaration (NIdentifier* ID, Node *params,Node *block) {
-	name = ID.getID();
+	name = ID->getID();
 	delete(ID);
 	children.push_back(params);
 	children.push_back(block);
