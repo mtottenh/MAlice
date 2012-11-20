@@ -64,6 +64,20 @@ FOUND
  /*%type <stat> */
 %%
 
+/* (TODO) A Note On the symbol table and Type resolution:
+ * As our symbol table stores pointers to nodes in the AST as opposed to 
+ * type informatino for identifiers. The nodes int the AST MUST provide
+ * a method of resolving types of identifiers. This can be achived
+ * by adding an overideable method in the base class (Node) called
+ * getType(); We will need to also make sure that the constructors
+ * of our nodes is where the type resolution takes place.
+ * if we cannot resolve a type, it is probably prudent to create a default 
+ * 'undefined' type so that the rest of the AST's symantic checking 
+ * can continue
+ */
+
+/* We define a program as a list of Declarations, this allows global vaiables*/
+
 program : DeclarationList { root = $1; }
 	;
 
@@ -73,7 +87,11 @@ DeclarationList
 	| Declaration 
 	{ $$ = new NDeclarationBlock($1); } 
 	;
-
+/*
+ * The value of a declaration node is just defined as the 
+ * evaluation of one of the possible things it declares
+ * i.e. a generic Declaration node should not appear int the tree
+ */
 Declaration
 	: VarDeclaration Separator { $$=$1 ; }
 	| VarDeclaration TOO Separator {$$ = $1;}
@@ -82,21 +100,37 @@ Declaration
 	| ProcedureDec     { $$= $1;  }
 	;
 
+/* 
+ * To declare a function we create a function node and pass it the following:
+ * Its Identifier - which we add to the symbol table
+ * (OPTIONAL) A pointer to a list of its paramaters (as a subtree in the AST)
+ * its return type
+ * A pointer to a Codeblock which contains the functions implementation
+ * The function should try to infer its type from the paramters and return type
+ */
 FunctionDec
 	: FUNC Identifier OBRACKET ParamListDec CBRACKET CONTAINEDA Type Codeblock
-	{$$ = new NFunctionDeclaration($8);}
+	{$$ = new NFunctionDeclaration($2,$4,$8,$7);}
 	| FUNC Identifier OBRACKET CBRACKET CONTAINEDA Type Codeblock 
-	{$$ = new NFunctionDeclaration($7);}
+	{$$ = new NFunctionDeclaration($2,$7,$6);}
 	;
 
+/* 
+ * To declare a procedure we create a function node and pass it the following:
+ * Its Identifier - which we add to the symbol table
+ * (OPTIONAL) A pointer to a list of its paramaters (as a subtree in the AST)
+ * A pointer to a Codeblock which contains the functions implementation
+ * The return type of a procedure should be undefined 
+ */
 ProcedureDec
 	:  PROCEDURE Identifier OBRACKET ParamListDec CBRACKET Codeblock
-	{ $$ = new NFunctionDeclaration( $6);
+	{ $$ = new NFunctionDeclaration($2,$4,$6);
 	/*$$ = new procNode( $2,$6,$4) name/body/args */ }
 	|  PROCEDURE Identifier OBRACKET CBRACKET Codeblock 
-	{$$ = new NFunctionDeclaration($5);/* $$->children.push_back($5);*/}
+	{$$ = new NFunctionDeclaration($2,$5);/* $$->children.push_back($5);*/}
 	;
 
+/* TODO - we need to create classes for these */
 ParamListDec
 	: ParamaterDec {/*create a std::vector */}
 	| ParamaterDec COMMA ParamListDec { /* $$ = param_vector.pushback($1)*/}
@@ -105,7 +139,12 @@ ParamaterDec
 	: Type Identifier {/**/}
 	;
 
-  /* Brackets Relational Operators*/
+/* 
+ * (TODO)Numerical Expressions are created using the NBinOp class which accepts:
+ * pointer to the left subtree
+ * an opperator token which is returned from the lexer.
+ * a pointer to the right subtree
+ */
 BitExp
 	: Exp AND BitExp {$$ = new NBinOp();}
 	| Exp OR BitExp  {$$ = new NBinOp();}
@@ -123,13 +162,27 @@ Term
 	| Term MOD Factor {$$ = new NBinOp();}
 	| Factor {$$ = $1;}
 	;
+/*
+ * Unary Operators are created with the NUnaryOp class which accepts
+ * the operator token returned from the lexer
+ * a pointer to the subexpression to apply to operator too
+ */
 Factor
 	: NOT Factor %prec UNARY {$$ = new NUnaryOp($1,$2);}
 	| MINUS Factor %prec UNARY {$$ = new NUnaryOp($1,$2);}
 	| Value { $$ = $1;}
 	;
+/*
+ * (TODO)To create values we have several different options:
+ * Integers: - we just create an integer node with the 
+ * valude that the lexer returns as a paramter (CHECK IN LEXER)
+ * Identifier: - We create an NIdentifier node and pass it the 
+ * Name of the identifier returned from the lexer.
+ * Other options: - we use the relevant subrules to create
+ * Nodes
+ */
 Value
-	: INTEGER {$$ = new NInteger();}
+	: INTEGER {$$ = new NInteger($1);}
 	| Identifier {$$ = new NIdentifier();}
 	| Call { $$ = $1;}
 	| ArrayVal {$$ = $1;}
