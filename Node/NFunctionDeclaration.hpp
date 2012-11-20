@@ -8,15 +8,9 @@
 class NFunctionDeclaration : public Node {                          
                                                                                  
 public:                                                                          
-        NFunctionDeclaration () { name = "FuncDec"; }                            
-        NFunctionDeclaration (Node *block) {                               
-                name = "FuncDec";                                                
-                children.push_back(block);                                       
-        }                                                                        
-        int print() const {                                                      
-                cout << name ;                                                   
-                return 1;                                                        
-        }                                                                        
+        NFunctionDeclaration();                           
+        NFunctionDeclaration(Node*);
+	int print() const;
 };    
 
 #endif

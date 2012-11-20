@@ -5,8 +5,8 @@
 
 class NIdentifier : public Node {                                         
         public:                                                                  
-        NIdentifier() { name = "ID"; }                                           
-//      NIdentifier(char *a) { name = strdup(a);                                 
+        	NIdentifier();                                           
+//      	NIdentifier(char*);                                 
 };  
 
 #endif

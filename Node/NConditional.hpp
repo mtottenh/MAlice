@@ -5,12 +5,7 @@
 
 class NConditional : public Node {
 public:
-	NConditional(Node* Predicate, Node* Left, Node* Right){
-		name = "Conditional";
-		children.push_back(Predicate);
-		children.push_back(Left);
-		children.push_back(Right);
-	};
+	NConditional(Node*, Node*, Node*);
 }; 
 
 #endif
