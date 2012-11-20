@@ -3,7 +3,6 @@
 
 #include "Node.hpp"
 
-/*class NExpressio nStatement*/                                                  
                                                                                  
 class NFunctionDeclaration : public Node {                          
                                                                                  

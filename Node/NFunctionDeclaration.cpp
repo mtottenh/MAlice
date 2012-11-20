@@ -12,7 +12,7 @@ NFunctionDeclaration::NFunctionDeclaration (Node *block) {
         children.push_back(block);                                       
 }                                                                        
 
-int print() const {                                                      
+int NFunctionDeclaration::print() const {
 	cout << name ;                                                   
 	return 1;                                                        
 }

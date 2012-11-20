@@ -10,7 +10,7 @@ Node *root;
 %}
 
 /* Type Tokens */
-%token TCHAR TSTRING TPTR TNUMBER  
+%token<token> TCHAR TSTRING TPTR TNUMBER 
 /* Alice Keywords */
 %token OF WAS PROCEDURE FUNC BECAME INC DEC CONTAINEDA HAD WHATWAS 
 QUESTIONMARK EVENTUALLY BECAUSE ENOUGHTIMES THEN ELSE IF ENDIF MAYBE TOO
@@ -52,13 +52,14 @@ FOUND
 }
 
 %type <node> DeclarationList Declaration program VarDeclarationAssignment
-%type <node> VarDeclaration Return PredPrime 
-%type <node> FunctionDec ProcedureDec
+%type <node> VarDeclaration Return PredPrime ParamListDec Read Loop
+%type <node> FunctionDec ProcedureDec ParamList
 %type <node> Codeblock Conditional Predicate Maybe
 %type <node> BitExp Exp Term Factor Value ArrayVal Call Increment Decrement
 %type <assignment> Assignment 
 %type <node> Statement
 %type <id> Identifier
+%type <token> Type
 %type <stat> StatementList
 /* UNDCIDED ONES LOL */
  /*%type <stat> */
@@ -233,15 +234,15 @@ Assignment
 VarDeclarationAssignment
 	: VarDeclaration OF BitExp 
 	{ NVariableDeclaration* Declaration = $1; 
-	  Node* Assignment =  new NAssigment(Declaration.getID(), $2);
+	  Node* Assignment =  new NAssignment(Declaration.getID(), $3);
 	  $$ = new NStatementList(Declaration,Assignment);}
 	| VarDeclaration OF CHAR 
 	{ NVariableDeclaration* Declaration = $1; 
-	  Node* Assignment =  new NAssigment(Declaration.getID(), $2);
+	  Node* Assignment =  new NAssignment(Declaration.getID(), $3);
 	  $$ = new NStatementList(Declaration,Assignment);}
 	| VarDeclaration OF STRINGLIT 
 	{ NVariableDeclaration* Declaration = $1; 
-	  Node* Assignment =  new NAssigment(Declaration.getID(), $2);
+	  Node* Assignment =  new NAssignment(Declaration.getID(), $3);
 	  $$ = new NStatementList(Declaration,Assignment);}
 	;
 
