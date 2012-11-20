@@ -1,5 +1,5 @@
 #include "Node.hpp"
-
+#define UNDEFINED -1
 Node::Node() {
 	name = "Node";
 }
@@ -20,4 +20,9 @@ int Node::print() const {
 
 vector<Node*> Node::getChildren() const {
 	return children;
+}
+
+/* return the type as or UNDEFINED */
+int Node::getType() const {
+	return UNDEFINED;
 }
