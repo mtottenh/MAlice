@@ -7,39 +7,52 @@ SymbolTableGenerator::SymbolTableGenerator(Node *tree) {
 	
 }
 
-SymbolTable* SymbolTableGenerator::generateTable() {
+SymbolTable* SymbolTableGenerator::generateTable(Node *root) {
 	std::vector<Node *> processQueue = root->getChildren();
 	int numberOfChildren = children.size();
 	int type = root.getType();
-	
-	/*check if  identifier exists in this scope */
-	Node* nodePtr = lookupCurrentScope(root.getID());
-	if (nodePtr != NULL) {
-		error_var_exists(root.getID();
-		return sym;
+	/* Check the type of the Node, if it is not a Declaration
+         * Or paramter declaration then do not add its ID
+  	 * to the symbol table but just update the node with the
+	 * symbol table and  create a new scope if
+	 * nessecary	
+	 */
 
-	}
-	/* Look up in all scopes*/
-	nodePtr = lookup(root.getID());
-	/*if it exists and is a keyword*/
-	if(nodePtr != NULL) {
-		if (nodePtr->getType() != KEYWORD) {
-			sym.add(root.getID(),root);
-		} else {
-			error_keyword(root.getID());
+	/* Add a pointer to the symbol table */
+	root.addTable(sym);
+
+	/* Fix by using acutal typenames later */
+	if (type == ( FUNCDEC || PROCEDUREDEC || VARDEC || PARAMDEC)) {
+		/*check if  identifier exists in this scope */
+		Node* nodePtr = lookupCurrentScope(root.getID());
+		if (nodePtr != NULL) {
+			error_var_exists(root.getID();
 			return sym;
+
+		}
+		/* Look up in all scopes*/
+		nodePtr = lookup(root.getID());
+		/*if it is not a keyword add it*/
+		if(nodePtr != NULL) {
+			if (nodePtr->getType() != KEYWORD) {
+				sym.add(root.getID(),root);
+			} else {
+				error_keyword(root.getID());
+				return sym;
+			}
 		}
 	}
-		
-
-
 
 	/* if we hit a new codeblock create a new scope */
-	if (type ==  CODEBLOCK ) {
+	if (type == CODEBLOCK ) {
 		sym = new SymbolTable(sym);
 	} 
-	while (!processQueue.empty())
-		
+
+	 
+	while (!processQueue.empty()) {
+		generateTable(children.pop());
+	}
+	return sym;
 	
 }
 
