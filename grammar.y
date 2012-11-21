@@ -53,30 +53,19 @@ FOUND KEYWORD
 }
 
 %type <node> DeclarationList Declaration program VarDeclarationAssignment
-%type <node> VarDeclaration Return PredPrime ParamListDec Read Loop
-%type <node> FunctionDec ProcedureDec ParamList Char StringLit
+%type <node> VarDeclaration Return PredPrime ParamListDec Read Loop ParamList
+%type <func_dec> FunctionDec ProcedureDec
 %type <node> Codeblock Conditional Predicate Maybe
-%type <node> BitExp Exp Term Factor Value ArrayVal Call Increment Decrement
+%type <node> BitExp Exp Term Factor Value ArrayVal Call 
 %type <assignment> Assignment 
 %type <node> Statement
-%type <id> Identifier ParameterDec
+%type <node> StringLit Char
+%type <id> Identifier ParameterDec Increment Decrement
 %type <token> Type
 %type <stat> StatementList
 /* UNDCIDED ONES LOL */
  /*%type <stat> */
 %%
-
-/* (TODO) A Note On the symbol table and Type resolution:
- * As our symbol table stores pointers to nodes in the AST as opposed to 
- * type informatino for identifiers. The nodes int the AST MUST provide
- * a method of resolving types of identifiers. This can be achived
- * by adding an overideable method in the base class (Node) called
- * getType(); We will need to also make sure that the constructors
- * of our nodes is where the type resolution takes place.
- * if we cannot resolve a type, it is probably prudent to create a default 
- * 'undefined' type so that the rest of the AST's symantic checking 
- * can continue
- */
 
 /* We define a program as a list of Declarations, this allows global vaiables*/
 
@@ -102,14 +91,6 @@ Declaration
 	| ProcedureDec     { $$= $1;  }
 	;
 
-/* 
- * To declare a function we create a function node and pass it the following:
- * Its Identifier - which we add to the symbol table
- * (OPTIONAL) A pointer to a list of its paramaters (as a subtree in the AST)
- * its return type
- * A pointer to a Codeblock which contains the functions implementation
- * The function should try to infer its type from the paramters and return type
- */
 FunctionDec
 	: FUNC Identifier OBRACKET ParamListDec CBRACKET CONTAINEDA Type Codeblock
 	{$$ = new NFunctionDeclaration($2,$4,$8,$7);}
@@ -117,13 +98,6 @@ FunctionDec
 	{$$ = new NFunctionDeclaration($2,$7,$6);}
 	;
 
-/* 
- * To declare a procedure we create a function node and pass it the following:
- * Its Identifier - which we add to the symbol table
- * (OPTIONAL) A pointer to a list of its paramaters (as a subtree in the AST)
- * A pointer to a Codeblock which contains the functions implementation
- * The return type of a procedure should be undefined 
- */
 ProcedureDec
 	:  PROCEDURE Identifier OBRACKET ParamListDec CBRACKET Codeblock
 	{ $$ = new NFunctionDeclaration($2,$4,$6);
@@ -140,12 +114,6 @@ ParameterDec
 	: Type Identifier {$$ = $2; }
 	;
 
-/* 
- * (TODO)Numerical Expressions are created using the NBinOp class which accepts:
- * pointer to the left subtree
- * an opperator token which is returned from the lexer.
- * a pointer to the right subtree
- */
 BitExp
 	: Exp AND BitExp {$$ = new NBinOp($1, $3, BAND);}
 	| Exp OR BitExp  {$$ = new NBinOp($1, $3, BOR);}
@@ -173,18 +141,6 @@ Factor
 	| MINUS Factor %prec UNARY {$$ = new NUnaryOp($1,$2);}
 	| Value { $$ = $1;}
 	;
-/*
- * (TODO)To create values we have several different options:
- * Integers: - we just create an integer node with the 
- * valude that the lexer returns as a paramter (CHECK IN LEXER)
- * Identifier: - We create an NIdentifier node and pass it the 
- * Name of the identifier returned from the lexer. 
- * NOTE -> The behaviour of nodes that use the above two 
- * should probably get the value from the node and delete it 
- * rather than storing it as a child.
- * Other options: - we use the relevant subrules to create
- * Nodes
- */
 Value
 	: INTEGER {$$ = new NInteger($1);}
 	| Identifier {$$ = $1;}
@@ -192,10 +148,8 @@ Value
 	| ArrayVal {$$ = $1;}
 	| OBRACKET BitExp CBRACKET { $$ = $2;}
 	;
-
 /* 
- * (TODO) Types: here we should just return an integer relating to the token 
- * returned by the lexer
+ * (TODO) Look into TREF
  */
 Type
 	: TNUMBER { $$ = $1; }
@@ -204,36 +158,18 @@ Type
  /* This is actually passing by reference and not a PTR type */
 	| TREF Type {}
 	;
-/*
- * (TODO) To create a declaration node we pass it an ID node and its type
- * we should also add it to the symbol table.
-ar.y:141:56: error: no matching function for call to
-‘NIdentifier::NIdentifier(NIdentifier*&)’
-* for array declarations we add an extra paramater, ie the number of elements
- */
 VarDeclaration
 	: Identifier WAS Type {$$ = new NVariableDeclaration($1,$3);/*add id to sym table*/}
 	| Identifier HAD BitExp Type {$$ = new NVariableDeclaration($1,$4,$3); }
 	;
-/*
- * (TODO) Assignment Nodes - Should accept:
- * An Identifier Node which is just uses to extract the value then deletes
- * An rval Node pointer 
- * Need to add cases for assigning things to stringlit's 
- */
+
+//Check string lit case!
 Assignment
 	: Identifier BECAME BitExp   { $$ = new NAssignment($1,$3);}
 	| Identifier BECAME Char {$$ = new NAssignment($1,$3);/*need to check errors*/}
 	| ArrayVal BECAME BitExp {$$ = new NAssignment($1,$3); }
 	| ArrayVal BECAME Char {$$ = new NAssignment($1,$3);}
 	;
-/*
- * (TODO)This should return a StatementList Node with two sub nodes
- * one a  declaration node ($1)
- * and one an assignment node (new NStatementList(dec,ass))
- * need to overload assignment constructor to accept a string aswell as 
- * a pointer to an ID node
- */
 VarDeclarationAssignment
 	: VarDeclaration OF BitExp 
 	{ NVariableDeclaration* Declaration = (NVariableDeclaration *)$1; 
@@ -254,11 +190,6 @@ VarDeclarationAssignment
  * the first is just gets the identifier value  and deletes the node 
  * the second it stores as a child to be evaluated later
  */
-ArrayVal
-	: Identifier ARRINDO Value ARRINDC 
-	{$$ = new NArray($1,$3); }
-	;
- 
 /*Print Token matches said allice and spoke*/
 //Print 
 //	: PRINT  {$$ = new NPrint();/**/}
@@ -336,10 +267,6 @@ PredPrime
 	| BitExp LGTHANEQ BitExp  {$$ = new NPredicate($1,$2,$3);}
 	;
 
-/* We need to change the behaviour of these constructors 
- * to extract $1's value with getID() and then 
- * delete the node, will make check() easier
- */
 Increment
 	: Identifier INC { $$ = new NInc($1);}
 	;
@@ -363,13 +290,6 @@ Maybe
 Codeblock
 	: OBRACE StatementList CBRACE 
 	{$$ = $2;}
-/* Old code, I think we dont really need to make a new scope block 
- * as statlist seems to create the same functionality in the tree,
- * IE we can combine these rules to prune the AST
- */
-  /*	{$$ = new NCodeBlock(); $$->children.push_back($2);} */
-	
-	/* Still need to create new scoping symtable + vector*/ 
 	; 
 
 StatementList
@@ -383,8 +303,15 @@ Separator
 	| COMMA {}
 	;
 
+ArrayVal
+	: Identifier ARRINDO Value ARRINDC 
+	{$$ = new NArrayAccess($1,$3); }
+	;
+ 
 Identifier
 	: STRING {$$ = new NIdentifier($1);}
+	| Increment {$$ = $1;}
+	| Decrement {$$ = $1;}
 	;
 StringLit
 	: STRINGLIT {$$ = new NStringLit($1);}

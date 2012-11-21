@@ -2,10 +2,11 @@
 #define _NDEC_HPP
 
 #include "Node.hpp"
+#include "NIdentifier.hpp"
 
-class NDec : public Node {
+class NDec : public NIdentifier {
 public:
-	NDec(Node *child) {name = "Decrement"; children.push_back(child);}
+	NDec(Node *child); 
 }; 
 
 #endif
