@@ -9,7 +9,6 @@ class NVariableDeclaration : public Node {
 private:
 	int type;
 public:
-        NVariableDeclaration();
 	/* args are identifier & type */
 	NVariableDeclaration(NIdentifier*, int);
 	/* args are identifier, bit expression, type - arrays */

@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include "../SemanticErrors.hpp"
 
 using namespace std;
 
@@ -19,6 +20,7 @@ typedef vector<NVariableDeclaration *> ViarableList;
 class Node {
 public:
 	string name;
+	int type;
 	vector<Node *> children;
 public:
 	Node();
@@ -27,7 +29,7 @@ public:
 	virtual int print() const;
 	virtual int getType() const;
 	vector<Node *> getChildren() const;
-	int check();
+	virtual int check(SymbolTable*);
 };
 
 #endif

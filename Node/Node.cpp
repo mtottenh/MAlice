@@ -22,17 +22,17 @@ vector<Node*> Node::getChildren() const {
 	return children;
 }
 
-/* return the type as or UNDEFINED */
 int Node::getType() const {
-	return UNDEFINED;
+	return type;
 }
 
-int Node::check() {
+int Node::check(SymbolTable* table) {
+	int isValid = 1;
 	vector<Node*>::iterator it;
 
 	for(it = children.begin(); it != children.end(); ++it) {
-		it->check();
+		isValid = it->check();
 	}
 
-	return 1;
+	return isValid;
 }
