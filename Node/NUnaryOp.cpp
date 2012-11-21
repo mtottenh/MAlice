@@ -3,7 +3,7 @@
 
 #include "NUnaryOp.hpp"
 
-NUnaryOp::NUnaryOp(int op, Node*) { 
+NUnaryOp::NUnaryOp(int op, Node* child) { 
 	name = "Unary Op"; 
 	children.push_back(child);
 }

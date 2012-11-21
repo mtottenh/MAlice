@@ -19,6 +19,7 @@
  #include "NMethodCall.hpp" 
  #include "Node.hpp" 
  #include "NodeIncludes.hpp" 
+ #include "NParamDeclarationBlock.hpp" 
  #include "NPredicate.hpp" 
  #include "NPrint.hpp" 
  #include "NReturn.hpp" 
