@@ -17,4 +17,10 @@ void error_var_exists(const string&);
  */
 void error_keyword(const string&);
 
+/*
+ * Prints an error that a variable does not exist. Takes the name of the
+ * offending variable.
+ */
+void error_var_not_found(const string&);
+
 #endif

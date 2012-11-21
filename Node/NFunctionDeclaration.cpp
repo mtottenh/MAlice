@@ -2,6 +2,7 @@
 #define ___NFUNCTIONDECLARATION__
 
 #include "NFunctionDeclaration.hpp"
+#include "TypeDefs.hpp"
 
 NFunctionDeclaration::NFunctionDeclaration() { 
 	name = "FuncDec"; 
@@ -47,6 +48,29 @@ int NFunctionDeclaration::print() const {
 }
 int NFunctionDeclaration::getType() const {
 	return type;
+}
+
+int NFunctionDeclaration::check(SymbolTable* table) {
+	int isValid = 1;
+
+	Node* nodePtr = table->lookup(name);
+
+	/* Does the variable exist in scope? If not, error. */
+	if(nodePtr == NULL) {
+		error_var_not_found(name);
+		isValid = 0;
+	}
+
+	/* Is the variable a keyword? If so, error. */
+	else if (nodePtr->getType() == KEYWORD) {
+		error_keyword(name);
+		isValid = 0;
+	}
+
+	/* Check the function code block and arguments. */
+	isValid &= Node::check(table); 
+
+	return isValid;
 }
 
 #endif
