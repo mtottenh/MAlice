@@ -10,8 +10,9 @@ typedef enum
 
 class NBinOp : public Node {
 public:
-		BinaryOperator binOp;
+	BinaryOperator binOp;
         NBinOp(Node*, Node*, BinaryOperator);
+	virtual int check();
 };
 
 #endif

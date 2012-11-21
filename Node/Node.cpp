@@ -18,7 +18,7 @@ int Node::print() const {
 	return 1;
 }
 
-vector<Node*> Node::getChildren() const {
+node_children_t Node::getChildren() const {
 	return children;
 }
 
@@ -32,7 +32,7 @@ string Node::getID() {
 
 int Node::check() {
 	int isValid = 1;
-	vector<Node*>::iterator it;
+	node_children_t::iterator it;
 
 	for(it = children.begin(); it != children.end(); ++it) {
 		isValid = (*it)->check();

@@ -16,6 +16,6 @@ void error_var_not_found(const string& varName) {
 
 void error_type_mismatch(const string& varName, int t1, int t2) {
 	cerr << "ERROR: Type mismatch. Variable '" << varName << "' of type '"
-		<< typemap_get(t1) << "' does not match type '" << 
+		<< typemap_get(t1) << "' does not match expected type '" << 
 		typemap_get(t2) << "'" << endl;
 }

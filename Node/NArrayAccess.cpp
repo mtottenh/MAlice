@@ -1,4 +1,5 @@
 #include "NArrayAccess.hpp"
+#include "TypeDefs.hpp"
 
 NArrayAccess::NArrayAccess(NIdentifier* id, Node* indexNode)
 {
@@ -15,6 +16,12 @@ int NArrayAccess::check() {
 	Node* nodePtr = table->lookup(name);
 	if(nodePtr == NULL) {
 		error_var_not_found(name);
+		isValid = 0;
+	}
+
+	/* Is the identifier a keyword? */
+	else if(nodePtr->getType() == KEYWORD) {
+		error_keyword(name);
 		isValid = 0;
 	}
 
