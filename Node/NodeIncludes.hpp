@@ -1,5 +1,7 @@
+/* Auto-Generated File  */
 #ifndef HEADERS
 #define HEADERS
+ #include "NArray.hpp" 
  #include "NAssignment.hpp" 
  #include "NBinOp.hpp" 
  #include "NChar.hpp" 
@@ -19,6 +21,7 @@
  #include "NodeIncludes.hpp" 
  #include "NPredicate.hpp" 
  #include "NPrint.hpp" 
+ #include "NReturn.hpp" 
  #include "NStatementList.hpp" 
  #include "NString.hpp" 
  #include "NUnaryOp.hpp" 

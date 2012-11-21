@@ -8,4 +8,10 @@ NStatementList::NStatementList()
 	name = "StatList"; 
 }
 
+NStatementList::NStatementList(Node *dec, Node *ass) {
+	name = "Dec&Assign";
+	children.push_back(dec);
+	children.push_back(ass);
+}
+
 #endif

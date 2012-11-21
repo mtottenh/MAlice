@@ -1,8 +1,13 @@
 #ifndef _NSTRING_H_
-#define _NSTRING_H
+#define _NSTRING_H_
 
 #include "Node.hpp"
+#include <string.h>
 
-class NString : public Node {};  
+class NString : public Node {
+public:
+	NString(string s) { name = s; };
+	NString(char* s) { name = strdup(s);};
+};  
 
 #endif

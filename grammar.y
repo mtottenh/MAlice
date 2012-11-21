@@ -10,14 +10,15 @@ Node *root;
 %}
 
 /* Type Tokens */
-%token TCHAR TSTRING TPTR TNUMBER  
+%token<token> TCHAR TSTRING TPTR TNUMBER 
 /* Alice Keywords */
 %token OF WAS PROCEDURE FUNC BECAME INC DEC CONTAINEDA HAD WHATWAS 
 QUESTIONMARK EVENTUALLY BECAUSE ENOUGHTIMES THEN ELSE IF ENDIF MAYBE TOO
 FOUND
 
 /* Primitives */
-%token <string> CHAR STRING INTEGER STRINGLIT
+%token <string> CHAR STRING STRINGLIT
+%token <token> INTEGER
 %token SEPARATOR NULLTOK COMMA QUOTE
 /*Operators */
 %token <token> MINUS PLUS MULT DIV MOD 
@@ -36,7 +37,7 @@ FOUND
 %left UNARY
 %union {
 	char *string;
-	int token;
+	int token; /* should we explicitly state the length? e.g. int_32t?*/
 	Node *node;
 	NCodeBlock *block;
 	NExpression *exp;
@@ -52,13 +53,14 @@ FOUND
 }
 
 %type <node> DeclarationList Declaration program VarDeclarationAssignment
-%type <node> VarDeclaration Return PredPrime 
-%type <node> FunctionDec ProcedureDec
+%type <node> VarDeclaration Return PredPrime ParamListDec Read Loop
+%type <node> FunctionDec ProcedureDec ParamList Char
 %type <node> Codeblock Conditional Predicate Maybe
 %type <node> BitExp Exp Term Factor Value ArrayVal Call Increment Decrement
 %type <assignment> Assignment 
 %type <node> Statement
 %type <id> Identifier
+%type <token> Type
 %type <stat> StatementList
 /* UNDCIDED ONES LOL */
  /*%type <stat> */
@@ -177,56 +179,96 @@ Factor
  * Integers: - we just create an integer node with the 
  * valude that the lexer returns as a paramter (CHECK IN LEXER)
  * Identifier: - We create an NIdentifier node and pass it the 
- * Name of the identifier returned from the lexer.
+ * Name of the identifier returned from the lexer. 
+ * NOTE -> The behaviour of nodes that use the above two 
+ * should probably get the value from the node and delete it 
+ * rather than storing it as a child.
  * Other options: - we use the relevant subrules to create
  * Nodes
  */
 Value
 	: INTEGER {$$ = new NInteger($1);}
-	| Identifier {$$ = new NIdentifier();}
+	| Identifier {$$ = $1;}
 	| Call { $$ = $1;}
 	| ArrayVal {$$ = $1;}
 	| OBRACKET BitExp CBRACKET { $$ = $2;}
 	;
 
-/* Add Array/String type */
+/* 
+ * (TODO) Types: here we should just return an integer relating to the token 
+ * returned by the lexer
+ */
 Type
-	: TNUMBER {}
-	| TCHAR {}
-	| TSTRING {}
+	: TNUMBER { $$ = $1; }
+	| TCHAR { $$ = $1; }
+	| TSTRING {$$ = $1;}
+ /* This is actually passing by reference and not a PTR type */
 	| TPTR Type {}
 	;
-
+/*
+ * (TODO) To create a declaration node we pass it an ID node and its type
+ * we should also add it to the symbol table.
+ * for array declarations we add an extra paramater, ie the number of elements
+ */
 VarDeclaration
-	: Identifier WAS Type {$$ = new NVariableDeclaration();/*add id to sym table*/}
-	| Identifier HAD BitExp Type {printf("Array Declared\n"); }
+	: Identifier WAS Type {$$ = new NVariableDeclaration($1,$3);/*add id to sym table*/}
+	| Identifier HAD BitExp Type {$$ = new NVariableDeclaration($1,$4,$3); }
 	;
-
+/*
+ * (TODO) Assignment Nodes - Should accept:
+ * An Identifier Node which is just uses to extract the value then deletes
+ * An rval Node pointer 
+ * Need to add cases for assigning things to stringlit's 
+ */
 Assignment
-	: Identifier BECAME BitExp   { $$ = new NAssignment();/*update value in symbol table*/}
-	| Identifier BECAME CHAR {/*also need to check errors*/}
-	| ArrayVal BECAME BitExp {}
-	| ArrayVal BECAME CHAR {}
+	: Identifier BECAME BitExp   { $$ = new NAssignment($1,$3);}
+	| Identifier BECAME CHAR {$$ = new NAssignment($1,$3);/*need to check errors*/}
+	| ArrayVal BECAME BitExp {$$ = new NAssignment($1,$3); }
+	| ArrayVal BECAME CHAR {$$ = new NAssignment($1,$3);}
 	;
-
+/*
+ * (TODO)This should return a StatementList Node with two sub nodes
+ * one a  declaration node ($1)
+ * and one an assignment node (new NStatementList(dec,ass))
+ * need to overload assignment constructor to accept a string aswell as 
+ * a pointer to an ID node
+ */
 VarDeclarationAssignment
-	: VarDeclaration OF BitExp {$$ = $1;}
-	| VarDeclaration OF CHAR	{printf("and assigned\n");}
-	| VarDeclaration OF STRINGLIT {printf("and assigned\n");}
+	: VarDeclaration OF BitExp 
+	{ NVariableDeclaration* Declaration = (NVariableDeclaration *)$1; 
+	  Node* Assignment =  new NAssignment(Declaration->getID(), $3);
+	  $$ = new NStatementList(Declaration,Assignment);}
+	| VarDeclaration OF CHAR 
+	{ NVariableDeclaration* Declaration = (NVariableDeclaration *)$1; 
+	  Node* Assignment =  new NAssignment(Declaration->getID(), $3);
+	  $$ = new NStatementList(Declaration,Assignment);}
+	| VarDeclaration OF STRINGLIT 
+	{ NVariableDeclaration* Declaration = (NVariableDeclaration *)$1; 
+	  Node* Assignment =  new NAssignment(Declaration->getID(), $3);
+	  $$ = new NStatementList(Declaration,Assignment);}
 	;
 
-/* change value to be bit exp */
+/* (TODO) change value to be bit exp?
+ * The NArray class takes two arguments
+ * the first is just gets the identifier value  and deletes the node 
+ * the second it stores as a child to be evaluated later
+ */
 ArrayVal
-	: Identifier ARRINDO Value ARRINDC {/*value is an index*/}
+	: Identifier ARRINDO Value ARRINDC 
+	{$$ = new NArray($1,$3); }
 	;
  
 /*Print Token matches said allice and spoke*/
 //Print 
 //	: PRINT  {$$ = new NPrint();/**/}
 //	;
-/* should probably make a return node*/
+
+/*
+ * (TODO) Make a return node and
+ * pass it an expression to return;
+ */
 Return
-	: FOUND BitExp {$$ = $2;}
+	: FOUND BitExp {$$ = new NReturn($2);}
 	;
 
 /* Add rules for /ArrayAcess/FuncandProcedureCalls
@@ -236,9 +278,9 @@ Statement
 	: VarDeclaration Separator {$$ = $1;}
 	| VarDeclaration TOO Separator {$$ = $1;} 
 	| VarDeclarationAssignment Separator {$$ = $1;}
-	| Read {}
+	| Read {$$=$1;}
 	| Conditional { $$ = $1;}
-	| Loop {}
+	| Loop {$$=$1;}
 	| Call Separator { $$ = $1;}
 	| ProcedureDec {$$ = $1;}
 	| FunctionDec {$$ = $1;}
@@ -254,10 +296,17 @@ Statement
 	| Return Separator {$$ = $1;}
 	;
 
+/* (TODO) Paramaterize the constructor of NMethod call
+ * to accept an identifier node which it extracts the value of
+ * and deletes
+ * and an optional paramter list node which it adds as its child
+ */
 Call 
-	: Identifier OBRACKET ParamList CBRACKET {$$ = new NMethodCall();}
-	| Identifier OBRACKET CBRACKET {$$ = new NMethodCall();}
+	: Identifier OBRACKET ParamList CBRACKET {$$ = new NMethodCall($1,$3);}
+	| Identifier OBRACKET CBRACKET {$$ = new NMethodCall($1);}
 	;
+/* (TODO)
+ */
 ParamList
 	: Paramater COMMA ParamList
 	| Paramater
@@ -290,6 +339,10 @@ PredPrime
 	| BitExp LGTHANEQ BitExp  {$$ = new NPredicate($1,$2,$3);}
 	;
 
+/* We need to change the behaviour of these constructors 
+ * to extract $1's value with getID() and then 
+ * delete the node, will make check() easier
+ */
 Increment
 	: Identifier INC { $$ = new NInc($1);}
 	;
@@ -334,7 +387,10 @@ Separator
 	;
 
 Identifier
-	: STRING {$$ = new NIdentifier();}
+	: STRING {$$ = new NIdentifier($1);}
+	;
+Char
+	: CHAR { $$ = new NChar($1); }
 	;
 
 %%

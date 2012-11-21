@@ -1,5 +1,9 @@
 #include "NChar.hpp"
 
 NChar::NChar() {
-	name = "Charr";
+	name = "Char";
+}
+
+NChar::NChar(char *c) {
+	this->character = *c;
 }

@@ -3,10 +3,20 @@
 
 #include "NMethodCall.hpp"
 
-/* Broken! See header. */
 NMethodCall::NMethodCall() 
 { 
 	name = "function/procedure call"; 
+}
+
+NMethodCall::NMethodCall(NIdentifier* id, Node* params) {
+	name = id->getID();
+	children.push_back(params);
+	delete(id);
+}
+
+NMethodCall::NMethodCall(NIdentifier* id) {
+	name = id->getID();
+	delete(id);
 }
 
 #endif

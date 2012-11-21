@@ -93,7 +93,7 @@ closed		 { tokenpos += yyleng; return CBRACE; }
 {string}	 { tokenpos += yyleng; yylval.string = strdup(yytext);
 		   return STRING; }
 
-{integer}	{ tokenpos += yyleng; return INTEGER; }
+{integer}	{ tokenpos += yyleng; yylval.token = atoi(yytext); return INTEGER; }
 \.	 	{ tokenpos += yyleng; return NULLTOK; }
 \,		{ tokenpos += yyleng; return COMMA;	}
 \+		{ tokenpos += yyleng; return PLUS; }

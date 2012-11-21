@@ -7,7 +7,7 @@
 for f in *.hpp
 do
 	y=${f^^}
-	if [ ! -e ${f%.*}.cpp ]
+	if [ ! -e ${f%.*}.cpp && $f != "NodeIncludes.hpp" ] 
 	then
 		echo ${f%.*}.cpp >> TODO.txt
 		touch ${f%.*}.cpp

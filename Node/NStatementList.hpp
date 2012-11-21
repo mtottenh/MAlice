@@ -6,6 +6,7 @@
 class NStatementList : public Node {
 public:
         NStatementList();
+	NStatementList(Node* , Node*);
 }; 
 
 #endif
