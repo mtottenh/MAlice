@@ -26,3 +26,13 @@ vector<Node*> Node::getChildren() const {
 int Node::getType() const {
 	return UNDEFINED;
 }
+
+int Node::check() {
+	vector<Node*>::iterator it;
+
+	for(it = children.begin(); it != children.end(); ++it) {
+		it->check();
+	}
+
+	return 1;
+}

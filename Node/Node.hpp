@@ -20,13 +20,14 @@ class Node {
 public:
 	string name;
 	vector<Node *> children;
-public :
+public:
 	Node();
 	Node(Node*);
 	virtual ~Node();
 	virtual int print() const;
 	virtual int getType() const;
 	vector<Node *> getChildren() const;
+	int check();
 };
 
 #endif
