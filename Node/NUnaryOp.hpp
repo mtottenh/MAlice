@@ -3,8 +3,10 @@
 #include "Node.hpp"
 
 class NUnaryOp : public Node { 
+private:
+	int op;
 public:
-	NUnaryOp(int op, Node*);
+	NUnaryOp(int, Node*);
 };
 
 #endif

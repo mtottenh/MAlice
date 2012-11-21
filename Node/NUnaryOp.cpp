@@ -3,9 +3,10 @@
 
 #include "NUnaryOp.hpp"
 
-NUnaryOp::NUnaryOp(int op, Node* child) { 
-	name = "Unary Op"; 
-	children.push_back(child);
+NUnaryOp::NUnaryOp(int op, Node* exp) { 
+	name = "UnaryOp"; 
+	this->op = op;
+	children.push_back(exp);
 }
 
 #endif

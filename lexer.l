@@ -1,12 +1,11 @@
 %{
-#include "Node/NodeIncludes.hpp"
 
 #include <iostream>
 #include <stdio.h>
 #include <string>
 #include <stdlib.h>
-#include "y.tab.h"
 #define YY_NO_INPUT
+#include "Node/NodeIncludes.hpp"
 
 //extern char *strdup(const char *s);
 //extern int fileno(FILE *stream);

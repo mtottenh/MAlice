@@ -21,7 +21,7 @@ SymbolTable::~SymbolTable() {
 
 /* Public methods. */
 int SymbolTable::add(string name, Node* node) {
-	Node* currentNodePtr = lookupCurrentNode(name);
+	Node* currentNodePtr = lookupCurrentScope(name);
 	
 	if (currentNodePtr == NULL) {
 		table[name] = node;
@@ -33,7 +33,7 @@ int SymbolTable::add(string name, Node* node) {
 }
 
 Node* SymbolTable::lookup(const string& name) {
-	Node* currentNodePtr = lookupCurrentNode(name);
+	Node* currentNodePtr = lookupCurrentScope(name);
 
 	if (currentNodePtr != NULL) {
 		return currentNodePtr;
@@ -47,7 +47,7 @@ Node* SymbolTable::lookup(const string& name) {
 }
 
 /* Private methods. */
-Node* SymbolTable::lookupCurrentNode(const string& name) {
+Node* SymbolTable::lookupCurrentScope(const string& name) {
 	table_t::iterator nameNodePtr = table.find(name);
 
 	if (nameNodePtr == table.end()) {

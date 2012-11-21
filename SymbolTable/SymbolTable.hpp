@@ -3,8 +3,8 @@
 
 #include <string>
 #include <boost/unordered_map.hpp>  
-#include "Node.hpp"
-
+#include "../Node/Node.hpp"
+class Node;
 using namespace std;
 
 /*
@@ -33,9 +33,7 @@ class SymbolTable {
 		 */
 		table_t table;
 		SymbolTable* parent;
-		
-		/* Look up a given variable/identifier in this table. */
-		Node* lookupCurrentNode(const string&);
+			
 	public:
 		/* 
 		 * Constructors for creating a global variable table
@@ -51,6 +49,9 @@ class SymbolTable {
 		 * in the map).
 		 */
 		int add(string, Node*);
+
+		/* Look up a given variable/identifier in this table. */
+		Node* lookupCurrentScope(const string&);
 
 		/*
 		 * Look up a given variable/identifier in this table and all

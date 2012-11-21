@@ -3,7 +3,7 @@
 #include <iostream>
 #include "Node/Node.hpp"
 #include "Node/NodeIncludes.hpp"
-#include "TreePrinter.hpp"
+#include "TreePrinter/TreePrinter.hpp"
 extern void yyerror(char*);
 extern int yylex();
 Node *root;
