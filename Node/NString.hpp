@@ -1,5 +1,5 @@
 #ifndef _NSTRING_H_
-#define _NSTRING_H
+#define _NSTRING_H_
 
 #include "Node.hpp"
 #include <string.h>

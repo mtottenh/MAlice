@@ -2,7 +2,7 @@
 #define ___NIDENTIFIER__
 
 #include "NIdentifier.hpp"
-#include <string>
+#include <string.h>
 
 NIdentifier::NIdentifier() 
 { 
@@ -12,9 +12,11 @@ NIdentifier::NIdentifier()
 string NIdentifier::getID() {
 	return name;
 }
-//NIdentifier::NIdentifier(char *a) 
-//{ 
-//name = strdup(a);
-//}
-
+NIdentifier::NIdentifier(char *name) { 
+	this->name = strdup(name);
+}
+NIdentifier::NIdentifier(string name) {
+	this->name = name;
+}
 #endif
+
