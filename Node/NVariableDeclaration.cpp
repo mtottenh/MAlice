@@ -33,7 +33,7 @@ int NVariableDeclaration::check(SymbolTable* table) {
 	}
 
 	/* If we have children (i.e. array access bit expressions), check them. */
-	valid = Node::check(table);
+	isValid = Node::check(table);
 
 	return isValid;
 }
