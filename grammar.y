@@ -159,7 +159,7 @@ Type
 	| TREF Type {}
 	;
 VarDeclaration
-	: Identifier WAS Type {$$ = new NVariableDeclaration($1,$3);/*add id to sym table*/}
+	: Identifier WAS Type {$$ = new NVariableDeclaration($1,$3);}
 	| Identifier HAD BitExp Type {$$ = new NVariableDeclaration($1,$4,$3); }
 	;
 
@@ -185,11 +185,6 @@ VarDeclarationAssignment
 	  $$ = new NStatementList(Declaration,Assignment);}
 	;
 
-/* (TODO) change value to be bit exp?
- * The NArray class takes two arguments
- * the first is just gets the identifier value  and deletes the node 
- * the second it stores as a child to be evaluated later
- */
 /*Print Token matches said allice and spoke*/
 //Print 
 //	: PRINT  {$$ = new NPrint();/**/}
