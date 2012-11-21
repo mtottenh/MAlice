@@ -3,7 +3,7 @@
 #include "Node.hpp"
 
 #include "NIdentifier.hpp"
-#include "NChar.hpp"
+#include "NCharLit.hpp"
 #include "NString.hpp"
 class NAssignment : public Node {
 private:

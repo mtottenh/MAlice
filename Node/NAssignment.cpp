@@ -12,7 +12,7 @@ NAssignment::NAssignment(string id, Node* exp) {
 }
 NAssignment::NAssignment(string id, char *exp) {
 	lval = new NIdentifier(id);
-	rval = new NChar(exp);
+	rval = new NCharLit(exp);
 	name = "Assignment";
 }
 NAssignment::NAssignment(string id, string exp) {
@@ -29,7 +29,7 @@ NAssignment::NAssignment(Node* id, Node* exp) {
 NAssignment::NAssignment(Node* id, char *exp) {
 	lval = id;
 	name = "Assignment";
-	rval = new NChar(exp);
+	rval = new NCharLit(exp);
 }
 /* Add cases for assigning things to strings */
 

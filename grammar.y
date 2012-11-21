@@ -389,7 +389,7 @@ Identifier
 StringLit
 	: STRINGLIT {$$ = new NStringLit($1);}
 Char
-	: CHARLIT { $$ = new NChar($1); }
+	: CHARLIT { $$ = new NCharLit($1); }
 	;
 
 %%
