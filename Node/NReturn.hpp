@@ -5,10 +5,7 @@
 
 class NReturn : public Node {
 public:
-	NReturn(Node *exp) {
-		children.push_back(exp);
-	}
-
+	NReturn(Node *exp);
 };
 #endif
 

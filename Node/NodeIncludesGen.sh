@@ -4,6 +4,10 @@ echo "#ifndef HEADERS" >> NodeIncludes.hpp
 echo "#define HEADERS" >> NodeIncludes.hpp
 for f in *.hpp
 do
-	echo " #include \"$f\" " >> NodeIncludes.hpp
+	if [ "$f" != "TypeDefs.hpp" ] && [ "$f" != "NodeIncludes.hpp" ]
+	then
+		echo " #include \"$f\" " >> NodeIncludes.hpp
+	fi
 done
+echo " #include \"../y.tab.h\"" >> NodeIncludes.hpp
 echo "#endif" >> NodeIncludes.hpp
