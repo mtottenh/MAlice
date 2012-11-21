@@ -1,6 +1,7 @@
 /* Auto-Generated File  */
 #ifndef HEADERS
 #define HEADERS
+ #include "NArrayAccess.hpp" 
  #include "NArray.hpp" 
  #include "NAssignment.hpp" 
  #include "NBinOp.hpp" 

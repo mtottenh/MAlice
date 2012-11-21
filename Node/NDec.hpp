@@ -5,7 +5,7 @@
 
 class NDec : public Node {
 public:
-	NDec(Node *child) {name = "Decrement"; children.push_back(child);}
+	NDec(Node *child); 
 }; 
 
 #endif

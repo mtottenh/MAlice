@@ -1,13 +1,10 @@
-#ifndef _NARRAY_H_
-#define _NARRAY_H_
+#ifndef _NARRAYACCESS_H_
+#define _NARRAYACCESS_H_
 
 #include "Node.hpp"
-#include "NIdentifier.hpp"
 
-class NArray : public Node {
-
-public:
-	NArray();
-	NArray(NIdentifier*,Node*);
-};
+public class NArrayAccess : public Node
+{
+	NArrayAccess(NIdentifier*, Node*);
+}
 #endif
