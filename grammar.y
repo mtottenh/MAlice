@@ -14,6 +14,7 @@ Node *root;
 /* Alice Keywords */
 %token OF WAS PROCEDURE FUNC BECAME INC DEC CONTAINEDA HAD WHATWAS 
 QUESTIONMARK EVENTUALLY BECAUSE ENOUGHTIMES THEN ELSE IF ENDIF MAYBE TOO
+nclude "NVariableDeclaration.hpp" 
 FOUND KEYWORD
 
 /* Primitives */
@@ -53,13 +54,14 @@ FOUND KEYWORD
 }
 
 %type <node> DeclarationList Declaration program VarDeclarationAssignment
-%type <node> VarDeclaration Return PredPrime ParamListDec Read Loop ParamList
+%type <node> VarDeclaration Return PredPrime ParamListDec ParamList
+%type <node> Read Loop
 %type <func_dec> FunctionDec ProcedureDec
 %type <node> Codeblock Conditional Predicate Maybe
 %type <node> BitExp Exp Term Factor Value ArrayVal Call 
 %type <assignment> Assignment 
 %type <node> Statement
-%type <node> StringLit Char
+%type <node> StringLit Char Parameter
 %type <id> Identifier ParameterDec Increment Decrement
 %type <token> Type
 %type <stat> StatementList
@@ -227,16 +229,14 @@ Call
 	: Identifier OBRACKET ParamList CBRACKET {$$ = new NMethodCall($1,$3);}
 	| Identifier OBRACKET CBRACKET {$$ = new NMethodCall($1);}
 	;
-/* (TODO)
- */
 ParamList
-	: Paramater COMMA ParamList {}
-	| Paramater {}
+	: ParamList COMMA Parameter { $1->children.push_back($3); }
+	| Parameter { $$ = new NParamBlock($1); }
 	;
-Paramater
-	: StringLit {}
-	| Char {}
-	| BitExp {}
+Parameter
+	: StringLit {$$ = $1;}
+	| Char {$$ = $1;}
+	| BitExp {$$ = $1;}
 	;
 Read
 	: WHATWAS Identifier QUESTIONMARK {}
