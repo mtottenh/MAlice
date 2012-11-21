@@ -3,8 +3,8 @@
 
 #include <string>
 #include <boost/unordered_map.hpp>  
-#include "Node.hpp"
-
+#include "../Node/Node.hpp"
+class Node;
 using namespace std;
 
 /*

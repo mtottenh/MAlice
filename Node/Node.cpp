@@ -31,7 +31,7 @@ int Node::check(SymbolTable* table) {
 	vector<Node*>::iterator it;
 
 	for(it = children.begin(); it != children.end(); ++it) {
-		isValid = it->check();
+		isValid = (*it)->check(table);
 	}
 
 	return isValid;

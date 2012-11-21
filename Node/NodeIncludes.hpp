@@ -18,12 +18,13 @@
  #include "NLoop.hpp" 
  #include "NMethodCall.hpp" 
  #include "Node.hpp" 
- #include "NodeIncludes.hpp" 
  #include "NPredicate.hpp" 
  #include "NPrint.hpp" 
  #include "NReturn.hpp" 
  #include "NStatementList.hpp" 
  #include "NString.hpp" 
  #include "NUnaryOp.hpp" 
- #include "NVariableDeclaration.hpp" 
+ #include "NVariableDeclaration.hpp"
+ #include "../y.tab.h"
+
 #endif

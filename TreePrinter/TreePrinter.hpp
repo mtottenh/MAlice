@@ -1,4 +1,4 @@
-#include "Node/Node.hpp"
+#include "../Node/Node.hpp"
 class treePrinter {
 private:
 	const Node *root;

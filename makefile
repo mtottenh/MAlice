@@ -13,7 +13,7 @@ scanner: lex.yy.c y.tab.h
 
 yacc: grammar.y
 	yacc $(YFLAGS) grammar.y
-parser: lex.yy.c y.tab.c TreePrinter.cpp Node/*.cpp
+parser: lex.yy.c y.tab.c TreePrinter/*.cpp Node/*.cpp Errors/*.cpp SymbolTable/*.cpp
 	$(CC) $(CFLAGS) $^ -o $@ -lfl
 clean: 
 	rm -f lex.yy.c 

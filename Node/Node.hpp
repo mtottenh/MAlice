@@ -4,7 +4,8 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include "../SemanticErrors.hpp"
+#include "../Errors/SemanticErrors.hpp"
+#include "../SymbolTable/SymbolTable.hpp"
 
 using namespace std;
 
@@ -15,7 +16,7 @@ May not end up using these*//*
 typedef vector<NExpression *> ExpressionList;
 typedef vector<NVariableDeclaration *> ViarableList;
 */
-
+class SymbolTable;
 /* Top level Base Class */
 class Node {
 public:

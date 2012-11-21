@@ -3,7 +3,7 @@
 #include <iostream>
 #include "Node/Node.hpp"
 #include "Node/NodeIncludes.hpp"
-#include "TreePrinter.hpp"
+#include "TreePrinter/TreePrinter.hpp"
 extern void yyerror(char*);
 extern int yylex();
 Node *root;
@@ -14,7 +14,7 @@ Node *root;
 /* Alice Keywords */
 %token OF WAS PROCEDURE FUNC BECAME INC DEC CONTAINEDA HAD WHATWAS 
 QUESTIONMARK EVENTUALLY BECAUSE ENOUGHTIMES THEN ELSE IF ENDIF MAYBE TOO
-FOUND
+FOUND KEYWORD
 
 /* Primitives */
 %token <string> CHAR STRING STRINGLIT
