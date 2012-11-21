@@ -1,4 +1,5 @@
 #include "NAssignment.hpp"
+#include "TypeDefs.hpp"
 
 NAssignment::NAssignment() {
 	name = "Assignment";
@@ -33,3 +34,40 @@ NAssignment::NAssignment(Node* id, char *exp) {
 }
 /* Add cases for assigning things to strings */
 
+int NAssignment::check() {
+	int isValid = 1;
+	string lvalID = lval->getID();
+
+	Node* nodePtr = table->lookup(lvalID);
+
+	/* Does the variable exist? If not, error. */
+	if(nodePtr == NULL) {
+		error_var_not_found(name);
+		isValid = 0;
+	}
+	
+	else { 
+		int lhsType = nodePtr->getType();
+		int rhsType = rval->getType();
+
+		/* Is the variable a keyword? */
+		if(lhsType == KEYWORD) {
+			error_keyword(name);
+			isValid = 0;
+		}
+		
+		/*
+		 * Does the type of the var match the type of the expression's
+		 * RHS?
+		 */
+		else if(lhsType != rhsType) {
+			error_type_mismatch(lvalID, lhsType, rhsType);
+		}
+		
+	}
+
+	/* Check the RHS of the assignment. */
+	isValid &= rval->check();
+
+	return isValid;
+}

@@ -16,7 +16,7 @@ public:
 	NFunctionDeclaration(NIdentifier*, Node*);
 	int print() const;
 	int getType() const;
-	virtual int check(SymbolTable*);
+	virtual int check();
 };    
 
 #endif

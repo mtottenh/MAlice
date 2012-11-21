@@ -20,17 +20,19 @@ class SymbolTable;
 /* Top level Base Class */
 class Node {
 public:
+	SymbolTable* table; /* maybe should be private, fix at some point! */
 	string name;
 	int type;
 	vector<Node *> children;
-public:
 	Node();
 	Node(Node*);
 	virtual ~Node();
 	virtual int print() const;
 	virtual int getType() const;
+	virtual string getID();
 	vector<Node *> getChildren() const;
-	virtual int check(SymbolTable*);
+	virtual int check();
+	virtual int addTable(SymbolTable*);
 };
 
 #endif
