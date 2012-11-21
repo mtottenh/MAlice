@@ -10,14 +10,14 @@ Node *root;
 %}
 
 /* Type Tokens */
-%token<token> TCHAR TSTRING TPTR TNUMBER 
+%token<token> TCHAR TSTRING TREF TNUMBER 
 /* Alice Keywords */
 %token OF WAS PROCEDURE FUNC BECAME INC DEC CONTAINEDA HAD WHATWAS 
 QUESTIONMARK EVENTUALLY BECAUSE ENOUGHTIMES THEN ELSE IF ENDIF MAYBE TOO
 FOUND KEYWORD
 
 /* Primitives */
-%token <string> CHAR STRING STRINGLIT
+%token <string> CHARLIT STRING STRINGLIT
 %token <token> INTEGER
 %token SEPARATOR NULLTOK COMMA QUOTE
 /*Operators */
@@ -29,6 +29,7 @@ FOUND KEYWORD
 %token <token> OBRACKET CBRACKET ARRINDO ARRINDC
 %token <token> USCORE
 %token <token> OBRACE CBRACE 
+
 
 /*Built in functions */
 %token <token> PRINT
@@ -49,17 +50,16 @@ FOUND KEYWORD
 	NFunctionDeclaration *func_dec;
 	NDeclarationBlock *dec_list;
 	std::vector<NVariableDeclaration *> *paramlist;
-	
 }
 
 %type <node> DeclarationList Declaration program VarDeclarationAssignment
 %type <node> VarDeclaration Return PredPrime ParamListDec Read Loop
-%type <node> FunctionDec ProcedureDec ParamList Char
+%type <node> FunctionDec ProcedureDec ParamList Char StringLit
 %type <node> Codeblock Conditional Predicate Maybe
 %type <node> BitExp Exp Term Factor Value ArrayVal Call Increment Decrement
 %type <assignment> Assignment 
 %type <node> Statement
-%type <id> Identifier
+%type <id> Identifier ParameterDec
 %type <token> Type
 %type <stat> StatementList
 /* UNDCIDED ONES LOL */
@@ -132,13 +132,12 @@ ProcedureDec
 	{$$ = new NFunctionDeclaration($2,$5);/* $$->children.push_back($5);*/}
 	;
 
-/* TODO - we need to create classes for these */
 ParamListDec
-	: ParamaterDec {/*create a std::vector */}
-	| ParamaterDec COMMA ParamListDec { /* $$ = param_vector.pushback($1)*/}
+	: ParameterDec {$$ = new NParamDeclarationBlock($1); }
+	| ParamListDec COMMA ParameterDec {$1->children.push_back($3); }
 	;
-ParamaterDec
-	: Type Identifier {/**/}
+ParameterDec
+	: Type Identifier {$$ = $2; }
 	;
 
 /* 
@@ -148,20 +147,20 @@ ParamaterDec
  * a pointer to the right subtree
  */
 BitExp
-	: Exp AND BitExp {$$ = new NBinOp();}
-	| Exp OR BitExp  {$$ = new NBinOp();}
-	| Exp XOR BitExp {$$ = new NBinOp();}
+	: Exp AND BitExp {$$ = new NBinOp($1, $3, BAND);}
+	| Exp OR BitExp  {$$ = new NBinOp($1, $3, BOR);}
+	| Exp XOR BitExp {$$ = new NBinOp($1, $3, BXOR);}
 	| Exp {$$ = $1;}
 	;
 Exp
-	: Exp PLUS Term {$$ = new NBinOp();}
-	| Exp MINUS Term {$$ = new NBinOp();}
+	: Exp PLUS Term {$$ = new NBinOp($1, $3, BPLUS);}
+	| Exp MINUS Term {$$ = new NBinOp($1, $3, BMINUS);}
 	| Term {$$ = $1;}
 	;
 Term
-	: Term MULT Factor {$$ = new NBinOp();}
-	| Term DIV Factor {$$ = new NBinOp();}
-	| Term MOD Factor {$$ = new NBinOp();}
+	: Term MULT Factor {$$ = new NBinOp($1, $3, BMULT);}
+	| Term DIV Factor {$$ = new NBinOp($1, $3, BDIV);}
+	| Term MOD Factor {$$ = new NBinOp($1, $3, BMOD);}
 	| Factor {$$ = $1;}
 	;
 /*
@@ -203,12 +202,14 @@ Type
 	| TCHAR { $$ = $1; }
 	| TSTRING {$$ = $1;}
  /* This is actually passing by reference and not a PTR type */
-	| TPTR Type {}
+	| TREF Type {}
 	;
 /*
  * (TODO) To create a declaration node we pass it an ID node and its type
  * we should also add it to the symbol table.
- * for array declarations we add an extra paramater, ie the number of elements
+ar.y:141:56: error: no matching function for call to
+‘NIdentifier::NIdentifier(NIdentifier*&)’
+* for array declarations we add an extra paramater, ie the number of elements
  */
 VarDeclaration
 	: Identifier WAS Type {$$ = new NVariableDeclaration($1,$3);/*add id to sym table*/}
@@ -222,9 +223,9 @@ VarDeclaration
  */
 Assignment
 	: Identifier BECAME BitExp   { $$ = new NAssignment($1,$3);}
-	| Identifier BECAME CHAR {$$ = new NAssignment($1,$3);/*need to check errors*/}
+	| Identifier BECAME Char {$$ = new NAssignment($1,$3);/*need to check errors*/}
 	| ArrayVal BECAME BitExp {$$ = new NAssignment($1,$3); }
-	| ArrayVal BECAME CHAR {$$ = new NAssignment($1,$3);}
+	| ArrayVal BECAME Char {$$ = new NAssignment($1,$3);}
 	;
 /*
  * (TODO)This should return a StatementList Node with two sub nodes
@@ -238,11 +239,11 @@ VarDeclarationAssignment
 	{ NVariableDeclaration* Declaration = (NVariableDeclaration *)$1; 
 	  Node* Assignment =  new NAssignment(Declaration->getID(), $3);
 	  $$ = new NStatementList(Declaration,Assignment);}
-	| VarDeclaration OF CHAR 
+	| VarDeclaration OF Char 
 	{ NVariableDeclaration* Declaration = (NVariableDeclaration *)$1; 
 	  Node* Assignment =  new NAssignment(Declaration->getID(), $3);
 	  $$ = new NStatementList(Declaration,Assignment);}
-	| VarDeclaration OF STRINGLIT 
+	| VarDeclaration OF StringLit 
 	{ NVariableDeclaration* Declaration = (NVariableDeclaration *)$1; 
 	  Node* Assignment =  new NAssignment(Declaration->getID(), $3);
 	  $$ = new NStatementList(Declaration,Assignment);}
@@ -291,16 +292,11 @@ Statement
       /*| Generalise Print */
 	| Assignment Separator {$$ = $1;}
 	| BitExp PRINT Separator {$$ = new NPrint($1);}
-	| STRINGLIT PRINT Separator {$$ = new NPrint($1);}
-	| CHAR PRINT Separator { $$ = new NPrint($1);}
+	| StringLit PRINT Separator {$$ = new NPrint($1);}
+	| Char PRINT Separator { $$ = new NPrint($1);}
 	| Return Separator {$$ = $1;}
 	;
 
-/* (TODO) Paramaterize the constructor of NMethod call
- * to accept an identifier node which it extracts the value of
- * and deletes
- * and an optional paramter list node which it adds as its child
- */
 Call 
 	: Identifier OBRACKET ParamList CBRACKET {$$ = new NMethodCall($1,$3);}
 	| Identifier OBRACKET CBRACKET {$$ = new NMethodCall($1);}
@@ -308,19 +304,20 @@ Call
 /* (TODO)
  */
 ParamList
-	: Paramater COMMA ParamList
-	| Paramater
+	: Paramater COMMA ParamList {}
+	| Paramater {}
 	;
 Paramater
-	: STRINGLIT {}
-	| CHAR {}
+	: StringLit {}
+	| Char {}
 	| BitExp {}
 	;
 Read
-	: WHATWAS Identifier QUESTIONMARK
+	: WHATWAS Identifier QUESTIONMARK {}
 	;
 Loop
-	: EVENTUALLY OBRACKET Predicate CBRACKET BECAUSE StatementList ENOUGHTIMES
+	: EVENTUALLY OBRACKET Predicate CBRACKET BECAUSE StatementList 
+		ENOUGHTIMES { $$ = new NLoop($3, $6); }
 	;
 
 Predicate
@@ -389,8 +386,10 @@ Separator
 Identifier
 	: STRING {$$ = new NIdentifier($1);}
 	;
+StringLit
+	: STRINGLIT {$$ = new NStringLit($1);}
 Char
-	: CHAR { $$ = new NChar($1); }
+	: CHARLIT { $$ = new NCharLit($1); }
 	;
 
 %%

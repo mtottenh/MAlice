@@ -3,12 +3,12 @@
 
 #include "Node.hpp"
 
-class NChar : public Node { 
+class NCharLit : public Node { 
 private:
 	char character;                                           
 public:
-        NChar();
-	NChar(char *);
+	NCharLit();
+	NCharLit(char *);
 };  
 
 #endif

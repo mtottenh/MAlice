@@ -3,9 +3,15 @@
 
 #include "Node.hpp"
 
+typedef enum
+{
+	BAND, BOR, BXOR, BPLUS, BMINUS, BMULT, BDIV, BMOD
+} BinaryOperator;
+
 class NBinOp : public Node {
 public:
-        NBinOp();
+		BinaryOperator binOp;
+        NBinOp(Node*, Node*, BinaryOperator);
 };
 
 #endif

@@ -55,7 +55,7 @@ maybe		  { tokenpos += yyleng; return MAYBE; }
 "because Alice was unsure which" { tokenpos += yyleng; return ENDIF; }
 of		{tokenpos += yyleng; return OF; }
 "Alice found"		{tokenpos += yyleng; return FOUND; }
-spider	{tokenpos += yyleng; return TPTR; }
+spider	{tokenpos += yyleng; return TREF; }
  /* logical operators (e.g. used in loop predicates) */
 
 &&		 { tokenpos += yyleng; return LAND; }
@@ -77,7 +77,8 @@ piece		{ tokenpos += yyleng; return ARRINDC; }
 ("said Alice"|spoke) { tokenpos +=yyleng; return PRINT; }
 
   /* Char literals */
-{charlit}		{ tokenpos +=yyleng; return CHAR; }
+{charlit}		{ tokenpos +=yyleng; yylval.string = strdup(yytext);
+					 return CHARLIT; }
 
   /* String literals */
 {stringlit}		{ tokenpos += yyleng; yylval.string = strdup(yytext);
