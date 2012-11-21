@@ -56,11 +56,11 @@ FOUND KEYWORD
 %type <node> VarDeclaration Return PredPrime ParamListDec Read Loop ParamList
 %type <func_dec> FunctionDec ProcedureDec
 %type <node> Codeblock Conditional Predicate Maybe
-%type <node> BitExp Exp Term Factor Value ArrayVal Call Increment Decrement
+%type <node> BitExp Exp Term Factor Value ArrayVal Call 
 %type <assignment> Assignment 
 %type <node> Statement
 %type <node> StringLit Char
-%type <id> Identifier ParameterDec
+%type <id> Identifier ParameterDec Increment Decrement
 %type <token> Type
 %type <stat> StatementList
 /* UNDCIDED ONES LOL */
@@ -267,10 +267,6 @@ PredPrime
 	| BitExp LGTHANEQ BitExp  {$$ = new NPredicate($1,$2,$3);}
 	;
 
-/* We need to change the behaviour of these constructors 
- * to extract $1's value with getID() and then 
- * delete the node, will make check() easier
- */
 Increment
 	: Identifier INC { $$ = new NInc($1);}
 	;
@@ -314,6 +310,8 @@ ArrayVal
  
 Identifier
 	: STRING {$$ = new NIdentifier($1);}
+	| Increment {$$ = $1;}
+	| Decrement {$$ = $1;}
 	;
 StringLit
 	: STRINGLIT {$$ = new NStringLit($1);}

@@ -2,8 +2,9 @@
 #define _NDEC_HPP
 
 #include "Node.hpp"
+#include "NIdentifier.hpp"
 
-class NDec : public Node {
+class NDec : public NIdentifier {
 public:
 	NDec(Node *child); 
 }; 
