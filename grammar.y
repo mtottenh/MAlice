@@ -7,8 +7,6 @@
 #include "Errors/TypeMap.hpp"
 extern void yyerror(char*);
 extern int yylex();
-extern map<int, string> typemap;
-extern int typemap_add(int, string);
 Node *root;
 %}
 
