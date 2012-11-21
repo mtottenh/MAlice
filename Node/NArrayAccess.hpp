@@ -2,9 +2,11 @@
 #define _NARRAYACCESS_H_
 
 #include "Node.hpp"
+#include "NIdentifier.hpp"
 
-public class NArrayAccess : public Node
+class NArrayAccess : public Node
 {
+public:
 	NArrayAccess(NIdentifier*, Node*);
-}
+};
 #endif
