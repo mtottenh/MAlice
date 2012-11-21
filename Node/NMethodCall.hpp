@@ -6,7 +6,7 @@
 /* Fix this class - could also be expression?*/                                  
 class NMethodCall : public Node {                                          
 public:
-	NMethodCall() { name = "function/procedure call"; }
+	NMethodCall();
 }; 
 
 #endif
