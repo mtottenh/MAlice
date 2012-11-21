@@ -78,7 +78,8 @@ piece		{ tokenpos += yyleng; return ARRINDC; }
 ("said Alice"|spoke) { tokenpos +=yyleng; return PRINT; }
 
   /* Char literals */
-{charlit}		{ tokenpos +=yyleng; return CHAR; }
+{charlit}		{ tokenpos +=yyleng; yylval.string = strdup(yytext);
+					 return CHARLIT; }
 
   /* String literals */
 {stringlit}		{ tokenpos += yyleng; yylval.string = strdup(yytext);

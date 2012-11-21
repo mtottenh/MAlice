@@ -1,7 +1,5 @@
 %{
 #include <string>
-grammar.y:141:56: error: no matching function for call to
-‘NIdentifier::NIdentifier(NIdentifier*&)’
 #include <iostream>
 #include "Node/Node.hpp"
 #include "Node/NodeIncludes.hpp"
@@ -16,10 +14,10 @@ Node *root;
 /* Alice Keywords */
 %token OF WAS PROCEDURE FUNC BECAME INC DEC CONTAINEDA HAD WHATWAS 
 QUESTIONMARK EVENTUALLY BECAUSE ENOUGHTIMES THEN ELSE IF ENDIF MAYBE TOO
-FOUND
+FOUND KEYWORD
 
 /* Primitives */
-%token <string> CHAR STRING STRINGLIT
+%token <string> CHARLIT STRING STRINGLIT
 %token <token> INTEGER
 %token SEPARATOR NULLTOK COMMA QUOTE
 /*Operators */
@@ -52,12 +50,11 @@ FOUND
 	NFunctionDeclaration *func_dec;
 	NDeclarationBlock *dec_list;
 	std::vector<NVariableDeclaration *> *paramlist;
-	
 }
 
 %type <node> DeclarationList Declaration program VarDeclarationAssignment
 %type <node> VarDeclaration Return PredPrime ParamListDec Read Loop
-%type <node> FunctionDec ProcedureDec ParamList Char
+%type <node> FunctionDec ProcedureDec ParamList Char StringLit
 %type <node> Codeblock Conditional Predicate Maybe
 %type <node> BitExp Exp Term Factor Value ArrayVal Call Increment Decrement
 %type <assignment> Assignment 
@@ -246,7 +243,7 @@ VarDeclarationAssignment
 	{ NVariableDeclaration* Declaration = (NVariableDeclaration *)$1; 
 	  Node* Assignment =  new NAssignment(Declaration->getID(), $3);
 	  $$ = new NStatementList(Declaration,Assignment);}
-	| VarDeclaration OF STRINGLIT 
+	| VarDeclaration OF StringLit 
 	{ NVariableDeclaration* Declaration = (NVariableDeclaration *)$1; 
 	  Node* Assignment =  new NAssignment(Declaration->getID(), $3);
 	  $$ = new NStatementList(Declaration,Assignment);}
@@ -295,16 +292,11 @@ Statement
       /*| Generalise Print */
 	| Assignment Separator {$$ = $1;}
 	| BitExp PRINT Separator {$$ = new NPrint($1);}
-	| STRINGLIT PRINT Separator {$$ = new NPrint($1);}
+	| StringLit PRINT Separator {$$ = new NPrint($1);}
 	| Char PRINT Separator { $$ = new NPrint($1);}
 	| Return Separator {$$ = $1;}
 	;
 
-/* (TODO) Paramaterize the constructor of NMethod call
- * to accept an identifier node which it extracts the value of
- * and deletes
- * and an optional paramter list node which it adds as its child
- */
 Call 
 	: Identifier OBRACKET ParamList CBRACKET {$$ = new NMethodCall($1,$3);}
 	| Identifier OBRACKET CBRACKET {$$ = new NMethodCall($1);}
@@ -316,7 +308,7 @@ ParamList
 	| Paramater {}
 	;
 Paramater
-	: STRINGLIT {}
+	: StringLit {}
 	| Char {}
 	| BitExp {}
 	;
@@ -325,7 +317,7 @@ Read
 	;
 Loop
 	: EVENTUALLY OBRACKET Predicate CBRACKET BECAUSE StatementList 
-		ENOUGHTIMES {}
+		ENOUGHTIMES { $$ = new NLoop($3, $6); }
 	;
 
 Predicate
@@ -394,8 +386,10 @@ Separator
 Identifier
 	: STRING {$$ = new NIdentifier($1);}
 	;
+StringLit
+	: STRINGLIT {$$ = new NStringLit($1);}
 Char
-	: CHAR { $$ = new NChar($1); }
+	: CHARLIT { $$ = new NChar($1); }
 	;
 
 %%
