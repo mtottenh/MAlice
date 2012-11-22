@@ -14,8 +14,7 @@ Node *root;
 /* Alice Keywords */
 %token OF WAS PROCEDURE FUNC BECAME INC DEC CONTAINEDA HAD WHATWAS 
 QUESTIONMARK EVENTUALLY BECAUSE ENOUGHTIMES THEN ELSE IF ENDIF MAYBE TOO
-nclude "NVariableDeclaration.hpp" 
-FOUND KEYWORD
+FOUND KEYWORD VARDEC PARAMDEC
 
 /* Primitives */
 %token <string> CHARLIT STRING STRINGLIT
@@ -107,7 +106,7 @@ ProcedureDec
 	|  PROCEDURE Identifier OBRACKET CBRACKET Codeblock 
 	{$$ = new NFunctionDeclaration($2,$5);/* $$->children.push_back($5);*/}
 	;
-
+/* WE NEED TO EDIT THIS TO ADD TYPE INFORMATION TO THE CONSTRUCTOR!"
 ParamListDec
 	: ParameterDec {$$ = new NParamDeclarationBlock($1); }
 	| ParamListDec COMMA ParameterDec {$1->children.push_back($3); }
