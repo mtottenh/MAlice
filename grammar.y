@@ -1,20 +1,24 @@
 %{
 #include <string>
 #include <iostream>
-#include "Node/Node.hpp"
+#include <map>
 #include "Node/NodeIncludes.hpp"
 #include "TreePrinter/TreePrinter.hpp"
+#include "Errors/TypeMap.hpp"
 extern void yyerror(char*);
 extern int yylex();
 Node *root;
 %}
 
 /* Type Tokens */
-%token<token> TCHAR TSTRING TREF TNUMBER 
+%token<token> TCHAR TSTRING TREF TNUMBER REFCHAR REFSTRING REFNUMBER
 /* Alice Keywords */
 %token OF WAS PROCEDURE FUNC BECAME INC DEC CONTAINEDA HAD WHATWAS 
 QUESTIONMARK EVENTUALLY BECAUSE ENOUGHTIMES THEN ELSE IF ENDIF MAYBE TOO
-FOUND KEYWORD VARDEC PARAMDEC
+FOUND VARDEC PARAMDEC
+
+/* Extra 'types' for semantic analysis (add to types enum). */
+%token INVALIDTYPE KEYWORD
 
 /* Primitives */
 %token <string> CHARLIT STRING STRINGLIT
@@ -156,6 +160,7 @@ Type
 	: TNUMBER { $$ = $1; }
 	| TCHAR { $$ = $1; }
 	| TSTRING {$$ = $1;}
+ /* We need to get the type 'number' rather than value etc. */
  /* This is actually passing by reference and not a PTR type */
 	| TREF Type {}
 	;
@@ -314,13 +319,27 @@ Char
 	;
 
 %%
+
+int initTypeMap();
+
 int main()
 {
-
+ initTypeMap();
  int node = yyparse();
  treePrinter t(root);
  t.print(); 
  return node;
+}
+
+int initTypeMap() { 
+	typemap_add(TCHAR, "letter");
+	typemap_add(TSTRING, "sentence");
+	typemap_add(TNUMBER, "number");
+	typemap_add(REFCHAR, "spider letter");
+	typemap_add(REFSTRING, "spider sentence");
+	typemap_add(REFNUMBER, "spider number");
+	typemap_add(INVALIDTYPE, "INVALID");
+	return 1;
 }
 /*
 yyerror(s)

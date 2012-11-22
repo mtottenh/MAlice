@@ -16,21 +16,29 @@ May not end up using these*//*
 typedef vector<NExpression *> ExpressionList;
 typedef vector<NVariableDeclaration *> ViarableList;
 */
+
+class Node;
+typedef vector<Node *> node_children_t;
+
 class SymbolTable;
 /* Top level Base Class */
 class Node {
-public:
-	string name;
+protected: /* This should be changed to private at some point. */
+	SymbolTable* table;
 	int type;
-	vector<Node *> children;
+	virtual int resolveType();
 public:
+	node_children_t children; /* This shouldn't be publicly exposed. Fix! */
+	string name; /* Same here... */
 	Node();
 	Node(Node*);
 	virtual ~Node();
 	virtual int print() const;
 	virtual int getType() const;
-	vector<Node *> getChildren() const;
-	virtual int check(SymbolTable*);
+	virtual string getID();
+	node_children_t getChildren() const;
+	virtual int check();
+	virtual int addTable(SymbolTable*);
 };
 
 #endif

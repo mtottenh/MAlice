@@ -1,8 +1,43 @@
 #include "NArrayAccess.hpp"
+#include "TypeDefs.hpp"
 
-NArrayAccess::NArrayAccess(NIdentifier* id, Node* n)
+NArrayAccess::NArrayAccess(NIdentifier* id, Node* indexNode)
 {
-	//n describes the value at which the array should be accessed
+	this->name = id->getID();
+	this->id = id;
+	this->indexNode = indexNode;
+	this->type = resolveType();
 }
 
-//Check function will check identifiers type. 
+int NArrayAccess::resolveType() {
+	/* Return type of the identifier. */
+	Node* nodePtr = table->lookup(name);
+	if(nodePtr == NULL) {
+		return INVALIDTYPE;
+	}
+	else {
+		return nodePtr->getType();
+	}	
+}
+
+int NArrayAccess::check() {
+	int isValid = 1;
+	
+	/* Does the identifier exist in scope? */
+	Node* nodePtr = table->lookup(name);
+	if(nodePtr == NULL) {
+		error_var_not_found(name);
+		isValid = 0;
+	}
+
+	/* Is the identifier a keyword? */
+	else if(nodePtr->getType() == KEYWORD) {
+		error_keyword(name);
+		isValid = 0;
+	}
+
+	/* Is the index node valid? */
+	isValid &= indexNode->check();
+
+	return isValid;
+}

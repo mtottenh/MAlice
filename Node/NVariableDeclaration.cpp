@@ -20,7 +20,7 @@ NVariableDeclaration::NVariableDeclaration(NIdentifier* id, int type, Node *bloc
 	delete(id);
 }
 
-int NVariableDeclaration::check(SymbolTable* table) {
+int NVariableDeclaration::check() {
 	int isValid = 1;
 
 	/* Does the variable name already exist in current scope? */
@@ -39,7 +39,7 @@ int NVariableDeclaration::check(SymbolTable* table) {
 	}
 
 	/* If we have children (i.e. array access bit expressions), check them. */
-	isValid = Node::check(table);
+	isValid &= Node::check();
 
 	return isValid;
 }

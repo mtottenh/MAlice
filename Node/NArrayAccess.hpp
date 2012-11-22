@@ -6,7 +6,13 @@
 
 class NArrayAccess : public Node
 {
+private:
+	NIdentifier* id;
+	Node* indexNode;
+	virtual int resolveType();
 public:
 	NArrayAccess(NIdentifier*, Node*);
+	virtual int check();
 };
+
 #endif
