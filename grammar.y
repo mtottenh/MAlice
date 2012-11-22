@@ -212,7 +212,7 @@ Statement
 	| Call Separator { $$ = $1;}
 	| ProcedureDec {$$ = $1;}
 	| FunctionDec {$$ = $1;}
-	| NULLTOK {}
+	| NULLTOK {$$ = new NNullToken();}
 	| Increment Separator {$$ = $1;}
 	| Decrement Separator {$$ = $1;}
 	| Codeblock {$$ = $1;}
@@ -278,7 +278,7 @@ Conditional
 
 Maybe
 	: ELSE StatementList ENDIF {$$ = $2;}
-	| ENDIF {}
+	| ENDIF {$$ = new NEndIf();}
 	| ELSE MAYBE OBRACKET Predicate CBRACKET THEN StatementList Maybe 
 	{$$ = new NConditional($4,$7,$8);}
 	;
