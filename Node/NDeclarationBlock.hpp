@@ -4,8 +4,8 @@
 #include "Node.hpp"
 class NDeclarationBlock : public Node {  
 public:	
-	NDeclarationBlock(){};
-	NDeclarationBlock(Node *child){ children.push_back(child);};  
+	NDeclarationBlock();
+	NDeclarationBlock(Node *child);
 };  
 
 #endif

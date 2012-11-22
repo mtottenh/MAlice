@@ -1,12 +1,17 @@
 #include "Node.hpp"
+#include "TypeDefs.hpp"
+
 #define UNDEFINED -1
+
 Node::Node() {
 	name = "Node";
+	type = INVALIDTYPE;
 }
 
 Node::Node(Node *child) {
 	children.push_back(child);
 	name = "Node";
+	type = INVALIDTYPE;
 }
 
 Node::~Node() {
@@ -24,6 +29,10 @@ node_children_t Node::getChildren() const {
 
 int Node::getType() const {
 	return type;
+}
+
+int Node::resolveType() {
+	return INVALIDTYPE;
 }
 
 string Node::getID() {

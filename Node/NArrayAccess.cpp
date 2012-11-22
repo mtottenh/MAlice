@@ -3,10 +3,21 @@
 
 NArrayAccess::NArrayAccess(NIdentifier* id, Node* indexNode)
 {
-	/* Do we need this identifier? */
+	this->name = id->getID();
 	this->id = id;
-	name = id->getID();
 	this->indexNode = indexNode;
+	this->type = resolveType();
+}
+
+int NArrayAccess::resolveType() {
+	/* Return type of the identifier. */
+	Node* nodePtr = table->lookup(name);
+	if(nodePtr == NULL) {
+		return INVALIDTYPE;
+	}
+	else {
+		return nodePtr->getType();
+	}	
 }
 
 int NArrayAccess::check() {
@@ -16,12 +27,6 @@ int NArrayAccess::check() {
 	Node* nodePtr = table->lookup(name);
 	if(nodePtr == NULL) {
 		error_var_not_found(name);
-		isValid = 0;
-	}
-
-	/* Is the identifier a keyword? */
-	else if(nodePtr->getType() == KEYWORD) {
-		error_keyword(name);
 		isValid = 0;
 	}
 

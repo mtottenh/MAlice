@@ -7,6 +7,19 @@ NBinOp::NBinOp(Node* left, Node* right, BinaryOperator op) : binOp(op) {
 	children.push_back(left);
 }
 
+int NBinOp::resolveType() {
+	/* Do the types of the children match? */
+	int t1 = children[0]->getType();
+	int t2 = children[1]->getType();
+
+	if(t1 != t2) {
+		return INVALIDTYPE;
+	}
+	else {
+		return t1;
+	}
+}
+
 int NBinOp::check() {
 	int isValid = 1;
 	

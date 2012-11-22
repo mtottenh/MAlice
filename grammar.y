@@ -1,7 +1,6 @@
 %{
 #include <string>
 #include <iostream>
-#include <map>
 #include "Node/NodeIncludes.hpp"
 #include "TreePrinter/TreePrinter.hpp"
 #include "Errors/TypeMap.hpp"
@@ -17,7 +16,10 @@ Node *root;
 /* Alice Keywords */
 %token OF WAS PROCEDURE FUNC BECAME INC DEC CONTAINEDA HAD WHATWAS 
 QUESTIONMARK EVENTUALLY BECAUSE ENOUGHTIMES THEN ELSE IF ENDIF MAYBE TOO
-FOUND KEYWORD
+FOUND
+
+/* Extra 'types' for semantic analysis (add to types enum). */
+%token INVALIDTYPE BOOLEAN
 
 /* Primitives */
 %token <string> CHARLIT STRING STRINGLIT
@@ -43,7 +45,6 @@ FOUND KEYWORD
 	char *string;
 	int token; /* should we explicitly state the length? e.g. int_32t?*/
 	Node *node;
-	NCodeBlock *block;
 	NExpression *exp;
 	NPrint *print;
 	NStatementList *stat;
@@ -52,7 +53,6 @@ FOUND KEYWORD
 	NVariableDeclaration *var_dec;
 	NFunctionDeclaration *func_dec;
 	NDeclarationBlock *dec_list;
-	std::vector<NVariableDeclaration *> *paramlist;
 }
 
 %type <node> DeclarationList Declaration program VarDeclarationAssignment
@@ -338,6 +338,7 @@ int initTypeMap() {
 	typemap_add(REFCHAR, "spider letter");
 	typemap_add(REFSTRING, "spider sentence");
 	typemap_add(REFNUMBER, "spider number");
+	typemap_add(INVALIDTYPE, "INVALID");
 	return 1;
 }
 /*

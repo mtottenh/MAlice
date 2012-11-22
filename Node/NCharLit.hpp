@@ -5,10 +5,12 @@
 
 class NCharLit : public Node { 
 private:
-	char character;                                           
+	char character;
+	virtual int resolveType();                                           
 public:
 	NCharLit();
 	NCharLit(char *);
+	virtual int check();
 };  
 
 #endif
