@@ -36,4 +36,15 @@ void error_type_mismatch(const string&, int, int);
  */
 void error_no_entry();
 
+/*
+ * Prints an error saying that an identifier is not a function or procedure.
+ */
+void error_not_func(const string&);
+
+/*
+ * Prints an error that function name (param1) expected n arguments (param2)
+ * but got m args (param 3).
+ */
+void error_num_args(const string&, int, int);
+
 #endif

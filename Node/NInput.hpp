@@ -5,6 +5,7 @@
 
 class NInput : public Node {                                               
 public:
+	/* Type resolution and semantic checking are the same as Node. */
 	NInput();
 };  
 
