@@ -64,6 +64,8 @@ class SymbolTable {
 		 * 0 otherwise.
 		 */
 		int parentExists();
+
+		void print();
 };
 
 #endif

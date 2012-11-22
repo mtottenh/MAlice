@@ -15,48 +15,53 @@ SymbolTableGenerator::SymbolTableGenerator(Node *tree) {
  */
 SymbolTable* SymbolTableGenerator::funcGen(Node *func, SymbolTable* sym) {
 	/*get funcs children and add them to the front of the queue*/
-	addChildren(func);	
-	/*check if  identifier exists in this scope */
-	Node* nodePtr = lookupCurrentScope(func.getID());
-	if (nodePtr != NULL) {
-		error_var_exists(func.getID());
-		return sym;
-
-	}
-	/* If it doesnt add it to the symbl table*/
-	sym.add(root.getID(), root);
-
-	
-	/* Function declarations create a new scope block for their
- 	 * paramaters and function body
-	 */
-	while (!processQueue.empty()) {
-		SymbolTable* t_sym = new SymbolTable(sym);
-		func = pop_fron_q();
-		if (type == CODEBLOCK) {
-			/* add the codeblocks children to the front of the queue*/
-			/* process them with t_sym as the symbol table*/
+	int numberOfChildren = func->getChildren().size();
+	std::deque<Node *> children = func->getChildren();
+	if (numberOfChildren > 1) {
+		/* if we have a function that takes paramaters 
+		 * let the codeblock create the new scope
+		 * and then pass that to the Params node
+		 */
+		sym = nodeTableGen(children[0],sym);
+		nodeTableGen(children[1],sym);
+	} else {
+		/*If it takes no args just process its child with a new scope */
+		sym = new SymbolTable(sym);
+		nodeTableGen(children[0],sym);
 		
-		} else {
-			generateTable();
-		}
 	}
 	
-	return new SymbolTable(sym);
+	return sym;
 
 }
-
+/* Wapper for getting the fisrt elem of a queue then
+ * deleting that element from the queue
+ */
 Node* SymbolTableGenerator::pop_front_q() {
 	Node* front = processQueue.front();
 	processQueue.pop_front();
 	return front;
 }
-/* Augments the given AST starting at Node with a symbol table
+/* Augments the given AST starting at
+ * root with a symbol table
  * containing all identifiers from variable and function declarations
  */
-SymbolTable* SymbolTableGenerator::generateTable(Node *node, SymbolTable* sym) {
+SymbolTable* SymbolTableGenerator::generateTable() {
+	SymbolTable* sym = new SymbolTable();
+	while(!processQueue.empty()) {
+		root = pop_front_q();
+		nodeTableGen(root,sym);
+	}
+	return sym;
+}
+/* Takes an AST Beginning at node and generates a symbolTable Hierarchy
+ * from that node onwards
+ */
+SymbolTable* SymbolTableGenerator::nodeTableGen(Node *node, SymbolTable* sym) {
 	/* Add a pointer to the symbol table that the node is declared in*/
-	node.addTable(sym);
+	if(!node->addTable(sym)) {
+		cout << "VILLAGES HAVE BEEN BURNT RUN FOR YOUR LIVES\n";	
+	}
 		
 	int type = node->getNodeType();
 	/* Check the type of the Node, if it is not a Declaration
@@ -78,25 +83,25 @@ SymbolTable* SymbolTableGenerator::generateTable(Node *node, SymbolTable* sym) {
 	 */
 	if (type == VARDEC) {
 		/*check if  identifier exists in this scope */
-		Node* nodePtr = lookupCurrentScope(func.getID());
+		Node* nodePtr = sym->lookupCurrentScope(node->getID());
 		if (nodePtr != NULL) {
-			error_var_exists(node.getID());
+			error_var_exists(node->getID());
 			return sym;
 
 		}
 		/* If it doesnt add it to the symbl table*/
-		sym.add(node.getID(), root);	
+		sym->add(node->getID(), root);	
 	}		
-	if (type == CODEBLOCKK) {
+	if (type == CODEBLOCK) {
 		/* if we are processing a codeblock 
 		 * then create a new scope
 		 * and add the children to the font of th equeu
 		 */
-	}
-	/* once we have dealt with the node deal with the rest of the process queue*/
-	while (!processQueue.empty()) {
-		node = pop_front_q();
-	 	generateTable(node,sym);
+		sym = new SymbolTable(sym);
+		for (unsigned int i = 0; i < node->getChildren().size(); i++) {
+			/* Like dat bad coding bro? */
+			nodeTableGen(node->getChildren()[i],sym);
+		}
 	}
 	return sym;
 

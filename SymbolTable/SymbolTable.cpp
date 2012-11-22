@@ -1,7 +1,18 @@
 #include "SymbolTable.hpp"
 
-/* See SymbolTable.hpp for detailed documentation. */
 
+
+/* See SymbolTable.hpp for detailed documentation. */
+/* print function faily self explanitory*/
+void SymbolTable::print() {
+	cout << "\n\n**** SYMBOL TABLE CONTENT ****\n\n";
+ 	table_t::iterator it;
+//	it = table.begin();
+	for(it = table.begin(); it != table.end(); ++it) {
+		cout << "Name: " << it->first;
+//		cout << endl;
+	}
+}
 /* Constructors and destructors. */
 SymbolTable::SymbolTable() : parent(NULL) {
 	/* Do nothing! */

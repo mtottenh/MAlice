@@ -24,6 +24,8 @@ int treePrinter::print() {
 		if (temp != NULL) {	
 			cout << "Type: ";
 			temp->print();
+			if (temp->table != NULL)
+				temp->table->print();
 			cout << "\t"; 
 		
 		node_children_t children = temp->getChildren();

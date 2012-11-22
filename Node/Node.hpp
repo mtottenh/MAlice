@@ -23,7 +23,7 @@ typedef deque<Node *> node_children_t;
 class SymbolTable;
 /* Top level Base Class */
 class Node {
-protected: /* This should be changed to private at some point. */
+public: /* This should be changed to private at some point. */
 	SymbolTable* table;
 	int nodeType;
 	int type;

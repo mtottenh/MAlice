@@ -4,7 +4,7 @@
 #include "Node/NodeIncludes.hpp"
 #include "TreePrinter/TreePrinter.hpp"
 #include "Errors/TypeMap.hpp"
-
+#include "TreeWalker/SymbolTableGenerator.hpp"
 extern void yyerror(char*);
 extern int yylex();
 Node *root;
@@ -16,7 +16,7 @@ Node *root;
 /* Alice Keywords */
 %token OF WAS PROCEDURE FUNC BECAME INC DEC CONTAINEDA HAD WHATWAS 
 QUESTIONMARK EVENTUALLY BECAUSE ENOUGHTIMES THEN ELSE IF ENDIF MAYBE TOO
-FOUND VARDEC PARAMDEC
+FOUND VARDEC PARAMDEC CODEBLOCK
 
 /* Extra 'types' for semantic analysis (add to types enum). */
 %token INVALIDTYPE BOOLEAN VOID 
@@ -327,6 +327,10 @@ int main()
  int node = yyparse();
  treePrinter t(root);
  t.print(); 
+ SymbolTableGenerator* s = new SymbolTableGenerator(root);
+ SymbolTable* sym = s->generateTable();
+ sym->print();
+ t.print();
  return node;
 }
 
