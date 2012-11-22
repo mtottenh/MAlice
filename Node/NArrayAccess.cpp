@@ -6,7 +6,6 @@ NArrayAccess::NArrayAccess(NIdentifier* id, Node* indexNode)
 	this->name = id->getID();
 	this->id = id;
 	this->indexNode = indexNode;
-	this->type = resolveType();
 }
 
 int NArrayAccess::resolveType() {
@@ -22,6 +21,8 @@ int NArrayAccess::resolveType() {
 
 int NArrayAccess::check() {
 	int isValid = 1;
+
+	this->type = resolveType();
 	
 	/* Does the identifier exist in scope? */
 	Node* nodePtr = table->lookup(name);

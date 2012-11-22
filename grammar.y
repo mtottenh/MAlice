@@ -200,7 +200,7 @@ VarDeclarationAssignment
 //	;
 
 Print
-	: ALICE SAID {}
+	: SAID ALICE {}
 	| SPOKE {}
 	;
 
@@ -295,9 +295,9 @@ Maybe
 
 Codeblock
 	: OBRACE DeclarationList StatementList CBRACE 
-	{}
-	| OBRACE StatementList CBRACE {}
-	| OBRACE CBRACE {}
+	{ $$ = new NCodeBlock($2, $3);}
+	| OBRACE StatementList CBRACE { $$ = new NCodeBlock($2);}
+	| OBRACE CBRACE {$$ = new NCodeBlock(); }
 	; 
 
 StatementList
