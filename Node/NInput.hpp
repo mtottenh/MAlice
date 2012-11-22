@@ -4,6 +4,8 @@
 #include "Node.hpp"
 
 class NInput : public Node {                                               
+public:
+	NInput();
 };  
 
 #endif
