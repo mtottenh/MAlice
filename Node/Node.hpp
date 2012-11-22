@@ -23,11 +23,13 @@ typedef vector<Node *> node_children_t;
 class SymbolTable;
 /* Top level Base Class */
 class Node {
-public:
-	SymbolTable* table; /* maybe should be private, fix at some point! */
-	string name;
+protected: /* This should be changed to private at some point. */
+	SymbolTable* table;
 	int type;
-	node_children_t children;
+	virtual int resolveType();
+public:
+	node_children_t children; /* This shouldn't be publicly exposed. Fix! */
+	string name; /* Same here... */
 	Node();
 	Node(Node*);
 	virtual ~Node();

@@ -15,7 +15,10 @@ Node *root;
 /* Alice Keywords */
 %token OF WAS PROCEDURE FUNC BECAME INC DEC CONTAINEDA HAD WHATWAS 
 QUESTIONMARK EVENTUALLY BECAUSE ENOUGHTIMES THEN ELSE IF ENDIF MAYBE TOO
-FOUND KEYWORD
+FOUND
+
+/* Extra 'types' for semantic analysis (add to types enum). */
+%token INVALIDTYPE KEYWORD
 
 /* Primitives */
 %token <string> CHARLIT STRING STRINGLIT
@@ -341,6 +344,7 @@ int initTypeMap() {
 	typemap_add(REFCHAR, "spider letter");
 	typemap_add(REFSTRING, "spider sentence");
 	typemap_add(REFNUMBER, "spider number");
+	typemap_add(INVALIDTYPE, "INVALID");
 	return 1;
 }
 /*
