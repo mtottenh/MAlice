@@ -1,7 +1,6 @@
 %{
 #include <string>
 #include <iostream>
-#include <map>
 #include "Node/NodeIncludes.hpp"
 #include "TreePrinter/TreePrinter.hpp"
 #include "Errors/TypeMap.hpp"
@@ -54,7 +53,6 @@ FOUND
 	NVariableDeclaration *var_dec;
 	NFunctionDeclaration *func_dec;
 	NDeclarationBlock *dec_list;
-	std::vector<NVariableDeclaration *> *paramlist;
 }
 
 %type <node> DeclarationList Declaration program VarDeclarationAssignment
