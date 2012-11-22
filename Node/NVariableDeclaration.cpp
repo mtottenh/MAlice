@@ -5,6 +5,7 @@ NVariableDeclaration::NVariableDeclaration(NIdentifier* id, int type) {
 	this->type = type;
 	name = id->getID();
 	delete(id);
+	nodeType = VARDEC;
 }
 
 NVariableDeclaration::NVariableDeclaration(NIdentifier* id, int type, Node *block) {
@@ -12,6 +13,7 @@ NVariableDeclaration::NVariableDeclaration(NIdentifier* id, int type, Node *bloc
 	children.push_back(block);
 	name = id->getID();
 	delete(id);
+	nodeType = VARDEC;
 }
 
 int NVariableDeclaration::check() {

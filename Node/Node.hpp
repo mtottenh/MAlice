@@ -25,6 +25,7 @@ class SymbolTable;
 class Node {
 protected: /* This should be changed to private at some point. */
 	SymbolTable* table;
+	int nodeType;
 	int type;
 	virtual int resolveType();
 public:
@@ -39,6 +40,7 @@ public:
 	node_children_t getChildren() const;
 	virtual int check();
 	virtual int addTable(SymbolTable*);
+	virtual int getNodeType();
 };
 
 #endif
