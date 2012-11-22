@@ -42,7 +42,7 @@ int NAssignment::check() {
 
 	/* Does the variable exist? If not, error. */
 	if(nodePtr == NULL) {
-		error_var_not_found(name);
+		error_var_not_found(lvalID);
 		isValid = 0;
 	}
 	
@@ -52,7 +52,7 @@ int NAssignment::check() {
 
 		/* Is the variable a keyword? */
 		if(lhsType == KEYWORD) {
-			error_keyword(name);
+			error_keyword(lvalID);
 			isValid = 0;
 		}
 		
