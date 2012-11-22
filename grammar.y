@@ -19,7 +19,7 @@ QUESTIONMARK EVENTUALLY BECAUSE ENOUGHTIMES THEN ELSE IF ENDIF MAYBE TOO
 FOUND VARDEC PARAMDEC
 
 /* Extra 'types' for semantic analysis (add to types enum). */
-%token INVALIDTYPE BOOLEAN 
+%token INVALIDTYPE BOOLEAN VOID 
 
 /* Primitives */
 %token <string> CHARLIT STRING STRINGLIT
