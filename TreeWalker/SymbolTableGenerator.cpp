@@ -27,7 +27,8 @@ SymbolTable* SymbolTableGenerator::funcGen(Node *func, SymbolTable* sym) {
 		sym = nodeTableGen(children[0],sym);
 		nodeTableGen(children[1],sym);
 	} else {
-		cout << "no params given\n";
+		cout << "Number of children: " << numberOfChildren << endl;
+		cout << "Child Type: " << children[0]->getNodeType();
 		/*If it takes no args just process its child with a new scope */
 		sym->print();
 		sym = new SymbolTable(sym);
@@ -55,11 +56,14 @@ SymbolTable* SymbolTableGenerator::generateTable() {
 	SymbolTable* sym = new SymbolTable();
 	while(!processQueue.empty()) {
 		root = pop_front_q();
-		sym = nodeTableGen(root,sym);
-		cout << "Generating symbol table for node:\n";
+		cout << "---Generating symbol table for node:---\n";
 		root->print();
-		cout << "\nTable Generated: ";
+
+		sym = nodeTableGen(root,sym);
+
+		cout << "---Table Generated: --";
 		sym->print();
+		cout << "--end--\n";
 	}
 	return sym;
 }
@@ -83,11 +87,11 @@ SymbolTable* SymbolTableGenerator::nodeTableGen(Node *node, SymbolTable* sym) {
 	/* If it is a Func Declaration node add it to the symbol table
 	 * and deal with the nodes children
 	 */
-	cout << "Type in symbol table builder: " << type << endl;
+	cout << "\nType in symbol table builder: " << type << endl;
 	if ((type ==  FUNC) ||  (type == PROCEDURE)) {
-		sym = funcGen(node,sym);
 		cout << "Generating table for Function Declaration: " << type << endl;
-		sym->print();
+		sym = funcGen(node,sym);
+//		sym->print();
 	}
 	
 	/* If it is a variable declaration node then just add it 
@@ -95,6 +99,7 @@ SymbolTable* SymbolTableGenerator::nodeTableGen(Node *node, SymbolTable* sym) {
 	 */
 	if (type == VARDEC) {
 		/*check if  identifier exists in this scope */
+		cout << "Generating table for Variable Declaration: " << type << endl;
 		Node* nodePtr = sym->lookupCurrentScope(node->getID());
 		if (nodePtr != NULL) {
 			error_var_exists(node->getID());
@@ -103,7 +108,6 @@ SymbolTable* SymbolTableGenerator::nodeTableGen(Node *node, SymbolTable* sym) {
 		}
 		/* If it doesnt add it to the symbl table*/
 		sym->add(node->getID(), root);	
-		cout << "Generating table for Variable Declaration: " << type << endl;
 		sym->print();
 	}		
 	if (type == CODEBLOCK) {
@@ -111,12 +115,13 @@ SymbolTable* SymbolTableGenerator::nodeTableGen(Node *node, SymbolTable* sym) {
 		 * then create a new scope
 		 * and add the children to the font of th equeu
 		 */
+		cout << "Generating table for CodeBlock: " << type << endl;
 		sym = new SymbolTable(sym);
 		for (unsigned int i = 0; i < node->getChildren().size(); i++) {
 			/* Like dat bad coding bro? */
 			nodeTableGen(node->getChildren()[i],sym);
 		}
-		cout << "Generating table for CodeBlock: " << type << endl;
+
 	}
 	return sym;
 

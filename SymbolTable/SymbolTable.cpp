@@ -10,8 +10,9 @@ void SymbolTable::print() {
 //	it = table.begin();
 	for(it = table.begin(); it != table.end(); ++it) {
 		cout << "Name: " << it->first;
-//		cout << endl;
+		cout << endl;
 	}
+	cout << "\n**** END SYMBOL TABLE CONTENT ****\n";
 }
 /* Constructors and destructors. */
 SymbolTable::SymbolTable() : parent(NULL) {

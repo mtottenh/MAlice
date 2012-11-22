@@ -4,7 +4,7 @@ YFLAGS = --verbose --debug --defines
 LFLAGS = --yylineno
 objects := $(patsubst %.c,%.o,$(wildcard Node/*.cpp Errors/*.cpp TreePrinter/*.cpp SymbolTable/*.cpp TreeWalker/*.cpp))
 
-all: yacc lex TreePrinter Node Errors SymbolTable TreeWalker parser 
+all: yacc lex TreePrinter Errors SymbolTable TreeWalker Node parser 
 
 lex: lexer.l
 	flex $(LFLAGS) lexer.l
@@ -15,11 +15,11 @@ scanner: lex.yy.c y.tab.h
 yacc: grammar.y
 	yacc $(YFLAGS) grammar.y
 
-parser: 
-	$(CC) $(CFLAGS) lex.yy.c y.tab.c $(objects) -o $@ -lfl
+parser: yacc grammar.y y.tab.c 
+	$(CC) $(CFLAGS) lex.yy.c y.tab.c *.o -o $@ -lfl
 
-TreePrinter: TreePrinter/*.cpp
-	$(CC) $(CFLAGS) -c $^  
+TreePrinter: TreePrinter/*.cpp 
+	$(CC) $(CFLAGS) -c TreePrinter/*.cpp  
 
 Node: Node/*.cpp
 	$(CC) $(CFLAGS) -c $^  
