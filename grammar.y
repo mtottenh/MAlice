@@ -19,7 +19,7 @@ QUESTIONMARK EVENTUALLY BECAUSE ENOUGHTIMES THEN ELSE IF ENDIF MAYBE TOO
 FOUND VARDEC PARAMDEC
 
 /* Extra 'types' for semantic analysis (add to types enum). */
-%token INVALIDTYPE BOOLEAN 
+%token INVALIDTYPE BOOLEAN VOID 
 
 /* Primitives */
 %token <string> CHARLIT STRING STRINGLIT
@@ -45,7 +45,6 @@ FOUND VARDEC PARAMDEC
 	char *string;
 	int token; /* should we explicitly state the length? e.g. int_32t?*/
 	Node *node;
-	NExpression *exp;
 	NPrint *print;
 	NStatementList *stat;
 	NIdentifier *id;
@@ -55,7 +54,7 @@ FOUND VARDEC PARAMDEC
 	NDeclarationBlock *dec_list;
 }
 
-%type <node> DeclarationList Declaration program VarDeclarationAssignment
+%type <node> DeclarationList Declaration program ParameterDec VarDeclarationAssignment
 %type <node> VarDeclaration Return PredPrime ParamListDec ParamList
 %type <node> Loop
 %type <func_dec> FunctionDec ProcedureDec
@@ -64,7 +63,7 @@ FOUND VARDEC PARAMDEC
 %type <assignment> Assignment Read
 %type <node> Statement
 %type <node> StringLit Char Parameter
-%type <id> Identifier ParameterDec Increment Decrement
+%type <id> Identifier Increment Decrement
 %type <token> Type
 %type <stat> StatementList
 /* UNDCIDED ONES LOL */

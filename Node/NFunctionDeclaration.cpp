@@ -10,7 +10,8 @@ NFunctionDeclaration::NFunctionDeclaration() {
 
 /* Declaring a procedure with no arguments */
 NFunctionDeclaration::NFunctionDeclaration (NIdentifier* ID, Node *block) {
-        children.push_back(block);
+        this->type = VOID;
+	children.push_back(block);
 	/* change behaviour */
 	name = ID->getID(); 
 	nodeType = PROCEDURE;
@@ -38,6 +39,7 @@ NFunctionDeclaration::NFunctionDeclaration (NIdentifier* ID, Node *params,
 
 /* Declaring a procedure with arguments */
 NFunctionDeclaration::NFunctionDeclaration (NIdentifier* ID, Node *params,Node *block) {
+	this->type = VOID;
 	name = ID->getID();
 	delete(ID);
 	children.push_back(params);
