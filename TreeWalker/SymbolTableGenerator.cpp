@@ -14,7 +14,9 @@ SymbolTableGenerator::SymbolTableGenerator(Node *tree) {
  * should just have the first element (The function) and any elements it adds
  * removed
  */
-SymbolTable* SymbolTableGenerator::funcGen(Node *func, std::vector<Node*> pq) {
+SymbolTable* SymbolTableGenerator::funcGen(Node *func) {
+	/*get funcs children and add them to the front of the queue*/
+	
 	/*check if  identifier exists in this scope */
 	Node* nodePtr = lookupCurrentScope(func.getID());
 	if (nodePtr != NULL) {
@@ -29,8 +31,9 @@ SymbolTable* SymbolTableGenerator::funcGen(Node *func, std::vector<Node*> pq) {
 	/* Function declarations create a new scope block for their
  	 * paramaters and function body
 	 */
-	while (!pq.empty()) {
-		root = pq.pop()
+	while (!processQueue.empty()) {
+		SymbolTable* t_sym = new SymbolTable(sym);
+		func = pop_fron_q();
 		if (type == CODEBLOCK) {
 			/* go straight to generating code for its children */
 		} else {
@@ -53,7 +56,7 @@ Node* SymbolTableGenerator::pop_front_q() {
 SymbolTable* SymbolTableGenerator::generateTable(Node *node) {
 	/* Add a pointer to the symbol table */
 	node.addTable(sym);
-
+		
 	int type = node->getNodeType();
 	/* Check the type of the Node, if it is not a Declaration
          * Or paramter declaration then do not add its ID
@@ -62,27 +65,34 @@ SymbolTable* SymbolTableGenerator::generateTable(Node *node) {
 	 * nessecary	
 	 */
 
-	/* If it is a Func Declaration Add to the symbol table*/
+	/* If it is a Func Declaration node Add to the symbol table*/
 	if (type == ( FUNC || PROCEDURE)) {
 		funcGen(node);
 		while (!processQueue.empty()) {
-			node = pop_front_q;
+			node = pop_front_q();
 		 	generateTable(node);
 		}
 		return sym;
 		
 	}
-	/* If it is a variable declaration then just add it 
+	/* If it is a variable declaration node then just add it 
 	 * to the table
 	 */
-	if (type == VARDEC {
-		
+	if (type == VARDEC) {
+		/*check if  identifier exists in this scope */
+		Node* nodePtr = lookupCurrentScope(func.getID());
+		if (nodePtr != NULL) {
+			error_var_exists(func.getID();
+			return sym;
+
+		}
+		/* If it doesnt add it to the symbl table*/
+		sym.add(root.getID(), root);	
 	}
 	
 
 	return sym;
 	
 }
-
 
 
