@@ -16,10 +16,10 @@ Node *root;
 /* Alice Keywords */
 %token OF WAS PROCEDURE FUNC BECAME INC DEC CONTAINEDA HAD WHATWAS 
 QUESTIONMARK EVENTUALLY BECAUSE ENOUGHTIMES THEN ELSE IF ENDIF MAYBE TOO
-FOUND
+FOUND VARDEC PARAMDEC
 
 /* Extra 'types' for semantic analysis (add to types enum). */
-%token INVALIDTYPE BOOLEAN
+%token INVALIDTYPE BOOLEAN VOID 
 
 /* Primitives */
 %token <string> CHARLIT STRING STRINGLIT
@@ -45,7 +45,6 @@ FOUND
 	char *string;
 	int token; /* should we explicitly state the length? e.g. int_32t?*/
 	Node *node;
-	NExpression *exp;
 	NPrint *print;
 	NStatementList *stat;
 	NIdentifier *id;
@@ -55,7 +54,7 @@ FOUND
 	NDeclarationBlock *dec_list;
 }
 
-%type <node> DeclarationList Declaration program VarDeclarationAssignment
+%type <node> DeclarationList Declaration program ParameterDec VarDeclarationAssignment
 %type <node> VarDeclaration Return PredPrime ParamListDec ParamList
 %type <node> Loop
 %type <func_dec> FunctionDec ProcedureDec
@@ -64,7 +63,7 @@ FOUND
 %type <assignment> Assignment Read
 %type <node> Statement
 %type <node> StringLit Char Parameter
-%type <id> Identifier ParameterDec Increment Decrement
+%type <id> Identifier Increment Decrement
 %type <token> Type
 %type <stat> StatementList
 /* UNDCIDED ONES LOL */
@@ -125,13 +124,13 @@ ProcedureDec
 	|  PROCEDURE Identifier OBRACKET CBRACKET Codeblock 
 	{$$ = new NFunctionDeclaration($2,$5);/* $$->children.push_back($5);*/}
 	;
-
+/* WE NEED TO EDIT THIS TO ADD TYPE INFORMATION TO THE CONSTRUCTOR!" */
 ParamListDec
 	: ParameterDec {$$ = new NParamDeclarationBlock($1); }
 	| ParamListDec COMMA ParameterDec {$1->children.push_back($3); }
 	;
 ParameterDec
-	: Type Identifier {$$ = $2; }
+	: Type Identifier {$$ = new NVariableDeclaration($2,$1); }
 	;
 
 BitExp

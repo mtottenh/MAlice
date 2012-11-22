@@ -4,9 +4,12 @@
 #include "Node.hpp"
 #include "NIdentifier.hpp"
 
-class NInc  : public NIdentifier {
+class NInc : public NIdentifier {
+private:
+	virtual int resolveType();
 public:
-	NInc(Node *child) {name = "Incrment"; children.push_back(child);}
+	NInc(Node *child);
+	virtual int check();
 };   
 
 #endif
