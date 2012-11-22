@@ -44,6 +44,7 @@ had		  { tokenpos += yyleng; return HAD; }
 "what was"	  { tokenpos += yyleng; return WHATWAS; }
 \?		  { tokenpos += yyleng; return QUESTIONMARK; }
 \!		  { tokenpos += yyleng; return LNOT; }
+\!\=	  { tokenpos += yyleng; return LNOTEQU; }
 eventually	  { tokenpos += yyleng; return EVENTUALLY; }
 because		  { tokenpos += yyleng; return BECAUSE; }
 "enough times" 	  { tokenpos += yyleng; return ENOUGHTIMES; }
@@ -65,7 +66,6 @@ spider	{tokenpos += yyleng; return TREF; }
 \<=		 { tokenpos += yyleng; return LLTHANEQ; }
 \>=		 { tokenpos += yyleng; return LGTHANEQ; }
 \>		 { tokenpos += yyleng; return LGTHAN; }
-
 
  /* functions and procedurs*/
 "The room"	  { tokenpos += yyleng;  return FUNC; }
