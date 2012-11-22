@@ -18,7 +18,7 @@ int Node::print() const {
 	return 1;
 }
 
-vector<Node*> Node::getChildren() const {
+node_children_t Node::getChildren() const {
 	return children;
 }
 
@@ -26,13 +26,27 @@ int Node::getType() const {
 	return type;
 }
 
-int Node::check(SymbolTable* table) {
+string Node::getID() {
+	return name;
+}
+
+int Node::check() {
 	int isValid = 1;
-	vector<Node*>::iterator it;
+	node_children_t::iterator it;
 
 	for(it = children.begin(); it != children.end(); ++it) {
-		isValid = (*it)->check(table);
+		isValid = (*it)->check();
 	}
 
 	return isValid;
+}
+
+int Node::addTable(SymbolTable* table) {
+	if(table == NULL) {
+		return 0;
+	}
+	else {
+		this->table = table;
+		return 1;
+	}
 }

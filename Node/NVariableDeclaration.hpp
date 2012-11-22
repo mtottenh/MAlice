@@ -14,7 +14,7 @@ public:
 	/* args are identifier, bit expression, type - arrays */
 	NVariableDeclaration(NIdentifier*, int, Node*);
 	string getID() const { return name;}
-	virtual int check(SymbolTable*);
+	virtual int check();
 }; 
 
 #endif
