@@ -5,10 +5,12 @@
 #include "Node/NodeIncludes.hpp"
 #include "TreePrinter/TreePrinter.hpp"
 #include "Errors/TypeMap.hpp"
+
 extern void yyerror(char*);
 extern int yylex();
 Node *root;
 %}
+
 
 /* Type Tokens */
 %token<token> TCHAR TSTRING TREF TNUMBER REFCHAR REFSTRING REFNUMBER
@@ -56,11 +58,11 @@ FOUND KEYWORD
 
 %type <node> DeclarationList Declaration program VarDeclarationAssignment
 %type <node> VarDeclaration Return PredPrime ParamListDec ParamList
-%type <node> Read Loop
+%type <node> Loop
 %type <func_dec> FunctionDec ProcedureDec
 %type <node> Codeblock Conditional Predicate Maybe
 %type <node> BitExp Exp Term Factor Value ArrayVal Call 
-%type <assignment> Assignment 
+%type <assignment> Assignment Read
 %type <node> Statement
 %type <node> StringLit Char Parameter
 %type <id> Identifier ParameterDec Increment Decrement
@@ -93,6 +95,23 @@ Declaration
 	| FunctionDec	 { $$ = $1; }
 	| ProcedureDec     { $$= $1;  }
 	;
+/* 
+ * (TODO) Look into TREF
+ */
+Type
+	: TNUMBER { $$ = $1; }
+	| TCHAR { $$ = $1; }
+	| TSTRING {$$ = $1;}
+ /* We need to get the type 'number' rather than value etc. */
+	| REFCHAR {}
+	| REFNUMBER {}
+	| REFSTRING {}
+	;
+VarDeclaration
+	: Identifier WAS Type {$$ = new NVariableDeclaration($1,$3);}
+	| Identifier HAD BitExp Type {$$ = new NVariableDeclaration($1,$4,$3); }
+	| Identifier WAS error {yyerror("Unknown type\n"); yyclearin;}
+	;
 
 FunctionDec
 	: FUNC Identifier OBRACKET ParamListDec CBRACKET CONTAINEDA Type Codeblock
@@ -118,9 +137,9 @@ ParameterDec
 	;
 
 BitExp
-	: Exp AND BitExp {$$ = new NBinOp($1, $3, BAND);}
-	| Exp OR BitExp  {$$ = new NBinOp($1, $3, BOR);}
-	| Exp XOR BitExp {$$ = new NBinOp($1, $3, BXOR);}
+	: BitExp AND Exp {$$ = new NBinOp($1, $3, BAND);}
+	| BitExp OR Exp {$$ = new NBinOp($1, $3, BOR);}
+	| BitExp XOR Exp {$$ = new NBinOp($1, $3, BXOR);}
 	| Exp {$$ = $1;}
 	;
 Exp
@@ -151,22 +170,6 @@ Value
 	| ArrayVal {$$ = $1;}
 	| OBRACKET BitExp CBRACKET { $$ = $2;}
 	;
-/* 
- * (TODO) Look into TREF
- */
-Type
-	: TNUMBER { $$ = $1; }
-	| TCHAR { $$ = $1; }
-	| TSTRING {$$ = $1;}
- /* We need to get the type 'number' rather than value etc. */
- /* This is actually passing by reference and not a PTR type */
-	| TREF Type {}
-	;
-VarDeclaration
-	: Identifier WAS Type {$$ = new NVariableDeclaration($1,$3);}
-	| Identifier HAD BitExp Type {$$ = new NVariableDeclaration($1,$4,$3); }
-	;
-
 //Check string lit case!
 Assignment
 	: Identifier BECAME BitExp   { $$ = new NAssignment($1,$3);}
@@ -194,10 +197,6 @@ VarDeclarationAssignment
 //	: PRINT  {$$ = new NPrint();/**/}
 //	;
 
-/*
- * (TODO) Make a return node and
- * pass it an expression to return;
- */
 Return
 	: FOUND BitExp {$$ = new NReturn($2);}
 	;
@@ -241,7 +240,8 @@ Parameter
 	| BitExp {$$ = $1;}
 	;
 Read
-	: WHATWAS Identifier QUESTIONMARK {}
+	: WHATWAS Identifier QUESTIONMARK { $$ = new NAssignment($2, 
+										new NInput()); }
 	;
 Loop
 	: EVENTUALLY OBRACKET Predicate CBRACKET BECAUSE StatementList 
@@ -287,6 +287,8 @@ Maybe
 Codeblock
 	: OBRACE StatementList CBRACE 
 	{$$ = $2;}
+	| error CBRACE {yyerror("Missing 'opened' brace");}
+	| OBRACE error {yyerror("Missing 'closed' brace");}
 	; 
 
 StatementList
@@ -298,6 +300,7 @@ Separator
 	: NULLTOK {}
 	| SEPARATOR {}
 	| COMMA {}
+	| error {yyerror("Expected a separator");}
 	;
 
 ArrayVal
@@ -315,7 +318,6 @@ StringLit
 Char
 	: CHARLIT { $$ = new NCharLit($1); }
 	;
-
 %%
 
 int initTypeMap();
