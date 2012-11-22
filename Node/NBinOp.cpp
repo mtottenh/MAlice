@@ -31,9 +31,9 @@ int NBinOp::check() {
 
 		isValid &= nodePtr->check();
 		
-		int nodeType = nodePtr->getType();
-		if (nodeType != TNUMBER) {
-			error_type_mismatch(nodePtr->getID(), nodeType, 
+		int node_Type = nodePtr->getType();
+		if (node_Type != TNUMBER) {
+			error_type_mismatch(nodePtr->getID(), node_Type, 
 						TNUMBER);
 			isValid = 0;
 		}

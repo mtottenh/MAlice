@@ -17,17 +17,22 @@ SymbolTable* SymbolTableGenerator::funcGen(Node *func, SymbolTable* sym) {
 	/*get funcs children and add them to the front of the queue*/
 	int numberOfChildren = func->getChildren().size();
 	std::deque<Node *> children = func->getChildren();
+	sym->add(func->getID(),func);
 	if (numberOfChildren > 1) {
 		/* if we have a function that takes paramaters 
 		 * let the codeblock create the new scope
 		 * and then pass that to the Params node
 		 */
+		cout << "we got some paramaters\n";
 		sym = nodeTableGen(children[0],sym);
 		nodeTableGen(children[1],sym);
 	} else {
+		cout << "no params given\n";
 		/*If it takes no args just process its child with a new scope */
+		sym->print();
 		sym = new SymbolTable(sym);
 		nodeTableGen(children[0],sym);
+
 		
 	}
 	
@@ -50,7 +55,11 @@ SymbolTable* SymbolTableGenerator::generateTable() {
 	SymbolTable* sym = new SymbolTable();
 	while(!processQueue.empty()) {
 		root = pop_front_q();
-		nodeTableGen(root,sym);
+		sym = nodeTableGen(root,sym);
+		cout << "Generating symbol table for node:\n";
+		root->print();
+		cout << "\nTable Generated: ";
+		sym->print();
 	}
 	return sym;
 }
@@ -74,8 +83,11 @@ SymbolTable* SymbolTableGenerator::nodeTableGen(Node *node, SymbolTable* sym) {
 	/* If it is a Func Declaration node add it to the symbol table
 	 * and deal with the nodes children
 	 */
-	if (type == ( FUNC || PROCEDURE)) {
-		funcGen(node,sym);
+	cout << "Type in symbol table builder: " << type << endl;
+	if ((type ==  FUNC) ||  (type == PROCEDURE)) {
+		sym = funcGen(node,sym);
+		cout << "Generating table for Function Declaration: " << type << endl;
+		sym->print();
 	}
 	
 	/* If it is a variable declaration node then just add it 
@@ -91,6 +103,8 @@ SymbolTable* SymbolTableGenerator::nodeTableGen(Node *node, SymbolTable* sym) {
 		}
 		/* If it doesnt add it to the symbl table*/
 		sym->add(node->getID(), root);	
+		cout << "Generating table for Variable Declaration: " << type << endl;
+		sym->print();
 	}		
 	if (type == CODEBLOCK) {
 		/* if we are processing a codeblock 
@@ -102,6 +116,7 @@ SymbolTable* SymbolTableGenerator::nodeTableGen(Node *node, SymbolTable* sym) {
 			/* Like dat bad coding bro? */
 			nodeTableGen(node->getChildren()[i],sym);
 		}
+		cout << "Generating table for CodeBlock: " << type << endl;
 	}
 	return sym;
 

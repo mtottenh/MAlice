@@ -15,7 +15,7 @@ scanner: lex.yy.c y.tab.h
 yacc: grammar.y
 	yacc $(YFLAGS) grammar.y
 
-parser: $(objects)
+parser: 
 	$(CC) $(CFLAGS) lex.yy.c y.tab.c $(objects) -o $@ -lfl
 
 TreePrinter: TreePrinter/*.cpp

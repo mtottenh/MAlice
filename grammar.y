@@ -326,11 +326,11 @@ int main()
  initTypeMap();
  int node = yyparse();
  treePrinter t(root);
- t.print(); 
+ //t.print(); 
  SymbolTableGenerator* s = new SymbolTableGenerator(root);
  SymbolTable* sym = s->generateTable();
- sym->print();
- t.print();
+// sym->print();
+// t.print();
  return node;
 }
 
