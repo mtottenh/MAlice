@@ -9,6 +9,8 @@ typedef enum
 } BinaryOperator;
 
 class NBinOp : public Node {
+private:
+	virtual int resolveType();
 public:
 	BinaryOperator binOp;
         NBinOp(Node*, Node*, BinaryOperator);

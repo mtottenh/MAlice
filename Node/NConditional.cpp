@@ -10,4 +10,12 @@ NConditional::NConditional(Node* predicate, Node* left, Node* right) {
 	children.push_back(right);
 }
 
+int NConditional::resolveType() {
+	return 1;
+}
+
+int NConditional::check() {
+	return 1;
+}
+
 #endif

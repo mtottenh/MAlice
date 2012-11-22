@@ -42,7 +42,7 @@ int NAssignment::check() {
 
 	/* Does the variable exist? If not, error. */
 	if(nodePtr == NULL) {
-		error_var_not_found(name);
+		error_var_not_found(lvalID);
 		isValid = 0;
 	}
 	
@@ -50,17 +50,11 @@ int NAssignment::check() {
 		int lhsType = nodePtr->getType();
 		int rhsType = rval->getType();
 
-		/* Is the variable a keyword? */
-		if(lhsType == KEYWORD) {
-			error_keyword(name);
-			isValid = 0;
-		}
-		
 		/*
 		 * Does the type of the var match the type of the expression's
 		 * RHS?
 		 */
-		else if(lhsType != rhsType) {
+		if(lhsType != rhsType) {
 			error_type_mismatch(lvalID, lhsType, rhsType);
 		}
 		

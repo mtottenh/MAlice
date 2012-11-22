@@ -5,10 +5,12 @@
 #include "Node/NodeIncludes.hpp"
 #include "TreePrinter/TreePrinter.hpp"
 #include "Errors/TypeMap.hpp"
+
 extern void yyerror(char*);
 extern int yylex();
 Node *root;
 %}
+
 
 /* Type Tokens */
 %token<token> TCHAR TSTRING TREF TNUMBER REFCHAR REFSTRING REFNUMBER
@@ -18,7 +20,7 @@ QUESTIONMARK EVENTUALLY BECAUSE ENOUGHTIMES THEN ELSE IF ENDIF MAYBE TOO
 FOUND VARDEC PARAMDEC
 
 /* Extra 'types' for semantic analysis (add to types enum). */
-%token INVALIDTYPE KEYWORD
+%token INVALIDTYPE BOOLEAN 
 
 /* Primitives */
 %token <string> CHARLIT STRING STRINGLIT
@@ -28,7 +30,7 @@ FOUND VARDEC PARAMDEC
 %token <token> MINUS PLUS MULT DIV MOD 
 %token <token> XOR AND OR NOT
 /* Logical operators */
-%token <token> LAND LOR LEQU LNOT LGTHAN LGTHANEQ LLTHAN LLTHANEQ
+%token <token> LAND LOR LEQU LNOT LNOTEQU LGTHAN LGTHANEQ LLTHAN LLTHANEQ
 /* bracket and braces */
 %token <token> OBRACKET CBRACKET ARRINDO ARRINDC
 %token <token> USCORE
@@ -44,7 +46,6 @@ FOUND VARDEC PARAMDEC
 	char *string;
 	int token; /* should we explicitly state the length? e.g. int_32t?*/
 	Node *node;
-	NCodeBlock *block;
 	NExpression *exp;
 	NPrint *print;
 	NStatementList *stat;
@@ -58,11 +59,11 @@ FOUND VARDEC PARAMDEC
 
 %type <node> DeclarationList Declaration program VarDeclarationAssignment
 %type <node> VarDeclaration Return PredPrime ParamListDec ParamList
-%type <node> Read Loop
+%type <node> Loop
 %type <func_dec> FunctionDec ProcedureDec
 %type <node> Codeblock Conditional Predicate Maybe
 %type <node> BitExp Exp Term Factor Value ArrayVal Call 
-%type <assignment> Assignment 
+%type <assignment> Assignment Read
 %type <node> Statement
 %type <node> StringLit Char Parameter
 %type <id> Identifier ParameterDec Increment Decrement
@@ -95,6 +96,22 @@ Declaration
 	| FunctionDec	 { $$ = $1; }
 	| ProcedureDec     { $$= $1;  }
 	;
+/* 
+ * (TODO) Look into TREF
+ */
+Type
+	: TNUMBER { $$ = $1; }
+	| TCHAR { $$ = $1; }
+	| TSTRING {$$ = $1;}
+ /* We need to get the type 'number' rather than value etc. */
+	| TREF TCHAR {$$ = REFCHAR;}
+	| TREF TNUMBER {$$ = REFNUMBER;}
+	| REFSTRING {$$ = REFSTRING;}
+	;
+VarDeclaration
+	: Identifier WAS Type {$$ = new NVariableDeclaration($1,$3);}
+	| Identifier HAD BitExp Type {$$ = new NVariableDeclaration($1,$4,$3); }
+	;
 
 FunctionDec
 	: FUNC Identifier OBRACKET ParamListDec CBRACKET CONTAINEDA Type Codeblock
@@ -120,9 +137,9 @@ ParameterDec
 	;
 
 BitExp
-	: Exp AND BitExp {$$ = new NBinOp($1, $3, BAND);}
-	| Exp OR BitExp  {$$ = new NBinOp($1, $3, BOR);}
-	| Exp XOR BitExp {$$ = new NBinOp($1, $3, BXOR);}
+	: BitExp AND Exp {$$ = new NBinOp($1, $3, BAND);}
+	| BitExp OR Exp {$$ = new NBinOp($1, $3, BOR);}
+	| BitExp XOR Exp {$$ = new NBinOp($1, $3, BXOR);}
 	| Exp {$$ = $1;}
 	;
 Exp
@@ -153,22 +170,6 @@ Value
 	| ArrayVal {$$ = $1;}
 	| OBRACKET BitExp CBRACKET { $$ = $2;}
 	;
-/* 
- * (TODO) Look into TREF
- */
-Type
-	: TNUMBER { $$ = $1; }
-	| TCHAR { $$ = $1; }
-	| TSTRING {$$ = $1;}
- /* We need to get the type 'number' rather than value etc. */
- /* This is actually passing by reference and not a PTR type */
-	| TREF Type {}
-	;
-VarDeclaration
-	: Identifier WAS Type {$$ = new NVariableDeclaration($1,$3);}
-	| Identifier HAD BitExp Type {$$ = new NVariableDeclaration($1,$4,$3); }
-	;
-
 //Check string lit case!
 Assignment
 	: Identifier BECAME BitExp   { $$ = new NAssignment($1,$3);}
@@ -196,10 +197,6 @@ VarDeclarationAssignment
 //	: PRINT  {$$ = new NPrint();/**/}
 //	;
 
-/*
- * (TODO) Make a return node and
- * pass it an expression to return;
- */
 Return
 	: FOUND BitExp {$$ = new NReturn($2);}
 	;
@@ -243,7 +240,8 @@ Parameter
 	| BitExp {$$ = $1;}
 	;
 Read
-	: WHATWAS Identifier QUESTIONMARK {}
+	: WHATWAS Identifier QUESTIONMARK { $$ = new NAssignment($2, 
+										new NInput()); }
 	;
 Loop
 	: EVENTUALLY OBRACKET Predicate CBRACKET BECAUSE StatementList 
@@ -264,6 +262,7 @@ PredPrime
 	| BitExp LLTHANEQ BitExp  {$$ = new NPredicate($1,$2,$3);}
 	| BitExp LGTHAN BitExp  {$$ = new NPredicate($1,$2,$3);}
 	| BitExp LGTHANEQ BitExp  {$$ = new NPredicate($1,$2,$3);}
+	| BitExp LNOTEQU BitExp {$$ = new NPredicate($1,$2,$3);}
 	;
 
 Increment
@@ -303,7 +302,7 @@ Separator
 	;
 
 ArrayVal
-	: Identifier ARRINDO Value ARRINDC 
+	: Identifier ARRINDO BitExp ARRINDC 
 	{$$ = new NArrayAccess($1,$3); }
 	;
  
@@ -317,7 +316,6 @@ StringLit
 Char
 	: CHARLIT { $$ = new NCharLit($1); }
 	;
-
 %%
 
 int initTypeMap();
