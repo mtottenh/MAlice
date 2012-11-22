@@ -19,3 +19,8 @@ void error_type_mismatch(const string& varName, int t1, int t2) {
 		<< typemap_get(t1) << "' does not match expected type '" << 
 		typemap_get(t2) << "'" << endl;
 }
+
+void error_no_entry() {
+	cerr << "ERROR: No program entry point (function 'hatta') detected."
+		<< endl;
+}

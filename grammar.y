@@ -45,7 +45,6 @@ FOUND
 	char *string;
 	int token; /* should we explicitly state the length? e.g. int_32t?*/
 	Node *node;
-	NExpression *exp;
 	NPrint *print;
 	NStatementList *stat;
 	NIdentifier *id;

@@ -31,4 +31,9 @@ void error_var_not_found(const string&);
  */
 void error_type_mismatch(const string&, int, int);
 
+/*
+ * Prints an error stating that no program entry method ('hatta') was detected.
+ */
+void error_no_entry();
+
 #endif
