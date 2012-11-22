@@ -1,5 +1,4 @@
 #include "SymbolTableGenerator.hpp"
-#include "../Node/Node.hpp"
 #include "../Errors/SemanticErrors.hpp"
 #include "../Node/TypeDefs.hpp"
 
@@ -8,7 +7,9 @@ SymbolTableGenerator::SymbolTableGenerator(Node *tree) {
 	sym = new SymbolTable();		
 	
 }
-
+SymbolTable* SymbolTableGenerator::funcGen(Node *root) {
+	return NULL
+}
 SymbolTable* SymbolTableGenerator::generateTable(Node *root) {
 	std::vector<Node *> processQueue = root->getChildren();
 	int numberOfChildren = children.size();
@@ -24,7 +25,7 @@ SymbolTable* SymbolTableGenerator::generateTable(Node *root) {
 	root.addTable(sym);
 
 	/* If it is a Declaration Add to the symbol table */
-	if (type == ( FUNC || PROCEDURE || VARDEC || PARAMDEC)) {
+	if (type == ( FUNC || PROCEDURE)) {
 		/*check if  identifier exists in this scope */
 		Node* nodePtr = lookupCurrentScope(root.getID());
 		if (nodePtr != NULL) {
@@ -46,9 +47,14 @@ SymbolTable* SymbolTableGenerator::generateTable(Node *root) {
 		
 			sym.add(root.getID(), root);
 		}
+
+		/* Function declarations create a new scope block for their
+ 		 * paramaters and function body
+		 */
+		sym = new SymbolTable(sym);
 	}
 
-	/* if we hit a new codeblock create a new scope */
+	/* if we hit a new codeblock create a new scope  PROBLEM HERE WITH FUNCS*/
 	if (type == CODEBLOCK ) {
 		sym = new SymbolTable(sym);
 	} 
@@ -60,4 +66,6 @@ SymbolTable* SymbolTableGenerator::generateTable(Node *root) {
 	return sym;
 	
 }
+
+
 

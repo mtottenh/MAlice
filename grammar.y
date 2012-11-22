@@ -110,13 +110,13 @@ ProcedureDec
 	|  PROCEDURE Identifier OBRACKET CBRACKET Codeblock 
 	{$$ = new NFunctionDeclaration($2,$5);/* $$->children.push_back($5);*/}
 	;
-/* WE NEED TO EDIT THIS TO ADD TYPE INFORMATION TO THE CONSTRUCTOR!"
+/* WE NEED TO EDIT THIS TO ADD TYPE INFORMATION TO THE CONSTRUCTOR!" */
 ParamListDec
 	: ParameterDec {$$ = new NParamDeclarationBlock($1); }
 	| ParamListDec COMMA ParameterDec {$1->children.push_back($3); }
 	;
 ParameterDec
-	: Type Identifier {$$ = $2; }
+	: Type Identifier {$$ = new NVariableDeclaration($2,$1); }
 	;
 
 BitExp

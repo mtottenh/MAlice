@@ -7,9 +7,11 @@ class SymbolTableGenerator {
 private:
 	Node *root;
 	SymbolTable* sym;
+	SymbolTable* funcGen(Node*);
+	SymbolTable* init() {return NULL;};
 public:
-	SymbolTableGenerator(Node *);
-	SymbolTable* generateTable();
+	SymbolTableGenerator(Node*);
+	SymbolTable* generateTable(Node*);
 	
 }
 #endif
