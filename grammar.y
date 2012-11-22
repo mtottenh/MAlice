@@ -17,7 +17,6 @@ Node *root;
 /* Alice Keywords */
 %token OF WAS PROCEDURE FUNC BECAME INC DEC CONTAINEDA HAD WHATWAS 
 QUESTIONMARK EVENTUALLY BECAUSE ENOUGHTIMES THEN ELSE IF ENDIF MAYBE TOO
-nclude "NVariableDeclaration.hpp" 
 FOUND KEYWORD
 
 /* Primitives */
@@ -28,7 +27,7 @@ FOUND KEYWORD
 %token <token> MINUS PLUS MULT DIV MOD 
 %token <token> XOR AND OR NOT
 /* Logical operators */
-%token <token> LAND LOR LEQU LNOT LGTHAN LGTHANEQ LLTHAN LLTHANEQ
+%token <token> LAND LOR LEQU LNOT LNOTEQU LGTHAN LGTHANEQ LLTHAN LLTHANEQ
 /* bracket and braces */
 %token <token> OBRACKET CBRACKET ARRINDO ARRINDC
 %token <token> USCORE
@@ -103,14 +102,13 @@ Type
 	| TCHAR { $$ = $1; }
 	| TSTRING {$$ = $1;}
  /* We need to get the type 'number' rather than value etc. */
-	| REFCHAR {}
-	| REFNUMBER {}
-	| REFSTRING {}
+	| TREF TCHAR {$$ = REFCHAR;}
+	| TREF TNUMBER {$$ = REFNUMBER;}
+	| REFSTRING {$$ = REFSTRING;}
 	;
 VarDeclaration
 	: Identifier WAS Type {$$ = new NVariableDeclaration($1,$3);}
 	| Identifier HAD BitExp Type {$$ = new NVariableDeclaration($1,$4,$3); }
-	| Identifier WAS error {yyerror("Unknown type\n"); yyclearin;}
 	;
 
 FunctionDec
@@ -262,6 +260,7 @@ PredPrime
 	| BitExp LLTHANEQ BitExp  {$$ = new NPredicate($1,$2,$3);}
 	| BitExp LGTHAN BitExp  {$$ = new NPredicate($1,$2,$3);}
 	| BitExp LGTHANEQ BitExp  {$$ = new NPredicate($1,$2,$3);}
+	| BitExp LNOTEQU BitExp {$$ = new NPredicate($1,$2,$3);}
 	;
 
 Increment
@@ -287,8 +286,6 @@ Maybe
 Codeblock
 	: OBRACE StatementList CBRACE 
 	{$$ = $2;}
-	| error CBRACE {yyerror("Missing 'opened' brace");}
-	| OBRACE error {yyerror("Missing 'closed' brace");}
 	; 
 
 StatementList
@@ -300,11 +297,10 @@ Separator
 	: NULLTOK {}
 	| SEPARATOR {}
 	| COMMA {}
-	| error {yyerror("Expected a separator");}
 	;
 
 ArrayVal
-	: Identifier ARRINDO Value ARRINDC 
+	: Identifier ARRINDO BitExp ARRINDC 
 	{$$ = new NArrayAccess($1,$3); }
 	;
  
