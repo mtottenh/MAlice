@@ -52,13 +52,14 @@ ALICE FOUND THE ROOM VARDEC PARAMDEC WHICH UNSURE BECAUSE SAID SPOKE
 	NVariableDeclaration *var_dec;
 	NFunctionDeclaration *func_dec;
 	NDeclarationBlock *dec_list;
+	NCodeBlock *code_block;
 }
 
-%type <node> DeclarationList Declaration program ParameterDec VarDeclarationAssignment
+%type <node> Declaration program ParameterDec VarDeclarationAssignment
 %type <node> VarDeclaration Return PredPrime ParamListDec ParamList
 %type <node> Loop
 %type <func_dec> FunctionDec ProcedureDec
-%type <node> Codeblock Conditional Predicate Maybe
+%type <node> Conditional Predicate Maybe
 %type <node> BitExp Exp Term Factor Value ArrayVal Call 
 %type <assignment> Assignment Read
 %type <node> Statement
@@ -66,6 +67,8 @@ ALICE FOUND THE ROOM VARDEC PARAMDEC WHICH UNSURE BECAUSE SAID SPOKE
 %type <id> Identifier Increment Decrement
 %type <token> Type
 %type <stat> StatementList
+%type <dec_list> DeclarationList
+%type <code_block> Codeblock
 /* UNDCIDED ONES LOL */
  /*%type <stat> */
 %%
@@ -213,20 +216,14 @@ Found
  * user input / fix LoxExp print to be more generatlised 
  *  */
 Statement
-	: VarDeclaration Separator {$$ = $1;}
-	| VarDeclaration TOO Separator {$$ = $1;} 
-	| VarDeclarationAssignment Separator {$$ = $1;}
-	| Read {$$=$1;}
+	: Read {$$=$1;}
 	| Conditional { $$ = $1;}
 	| Loop {$$=$1;}
 	| Call Separator { $$ = $1;}
-	| ProcedureDec {$$ = $1;}
-	| FunctionDec {$$ = $1;}
 	| NULLTOK {$$ = new NNullToken();}
 	| Increment Separator {$$ = $1;}
 	| Decrement Separator {$$ = $1;}
 	| Codeblock {$$ = $1;}
-      /*| Generalise Print */
 	| Assignment Separator {$$ = $1;}
 	| BitExp Print Separator {$$ = new NPrint($1);}
 	| StringLit Print Separator {$$ = new NPrint($1);}
@@ -297,9 +294,10 @@ Maybe
 	;
 
 Codeblock
-	: OBRACE StatementList CBRACE 
-	{$$ = $2;}
-	| OBRACE CBRACE {$$ = new NStatementList();}
+	: OBRACE DeclarationList StatementList CBRACE 
+	{}
+	| OBRACE StatementList CBRACE {}
+	| OBRACE CBRACE {}
 	; 
 
 StatementList
