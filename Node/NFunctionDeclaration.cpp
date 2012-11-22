@@ -32,8 +32,8 @@ NFunctionDeclaration::NFunctionDeclaration (NIdentifier* ID, Node *params,
 	this->type = type;
 	name = ID->getID();
 	delete(ID);
-	children.push_back(params);
 	children.push_back(block);
+	children.push_back(params);
 	nodeType = FUNC;
 }
 
@@ -42,8 +42,8 @@ NFunctionDeclaration::NFunctionDeclaration (NIdentifier* ID, Node *params,Node *
 	this->type = VOID;
 	name = ID->getID();
 	delete(ID);
-	children.push_back(params);
 	children.push_back(block);
+	children.push_back(params);
 	nodeType = PROCEDURE;
 }
 

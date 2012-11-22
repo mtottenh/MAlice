@@ -4,23 +4,22 @@
 
 SymbolTableGenerator::SymbolTableGenerator(Node *tree) {
 	root = tree;
-	sym = new SymbolTable();		
  	processQueue = root->getChildren();	
 }
 
 /* The contract for this is that it generates a symbol table for a function 
- * and returns a poitner to it. THIS MUST NOT EDIT THE SYM POINTER
+ * and returns a poitner to it. 
  * The process queue's state after this function has been run
  * should just have the first element (The function) and any elements it adds
  * removed
  */
-SymbolTable* SymbolTableGenerator::funcGen(Node *func) {
+SymbolTable* SymbolTableGenerator::funcGen(Node *func, SymbolTable* sym) {
 	/*get funcs children and add them to the front of the queue*/
-	
+	addChildren(func);	
 	/*check if  identifier exists in this scope */
 	Node* nodePtr = lookupCurrentScope(func.getID());
 	if (nodePtr != NULL) {
-		error_var_exists(func.getID();
+		error_var_exists(func.getID());
 		return sym;
 
 	}
@@ -35,9 +34,11 @@ SymbolTable* SymbolTableGenerator::funcGen(Node *func) {
 		SymbolTable* t_sym = new SymbolTable(sym);
 		func = pop_fron_q();
 		if (type == CODEBLOCK) {
-			/* go straight to generating code for its children */
+			/* add the codeblocks children to the front of the queue*/
+			/* process them with t_sym as the symbol table*/
+		
 		} else {
-			generateTable(pq.pop());
+			generateTable();
 		}
 	}
 	
@@ -53,8 +54,8 @@ Node* SymbolTableGenerator::pop_front_q() {
 /* Augments the given AST starting at Node with a symbol table
  * containing all identifiers from variable and function declarations
  */
-SymbolTable* SymbolTableGenerator::generateTable(Node *node) {
-	/* Add a pointer to the symbol table */
+SymbolTable* SymbolTableGenerator::generateTable(Node *node, SymbolTable* sym) {
+	/* Add a pointer to the symbol table that the node is declared in*/
 	node.addTable(sym);
 		
 	int type = node->getNodeType();
@@ -65,34 +66,40 @@ SymbolTable* SymbolTableGenerator::generateTable(Node *node) {
 	 * nessecary	
 	 */
 
-	/* If it is a Func Declaration node Add to the symbol table*/
+	/* If it is a Func Declaration node add it to the symbol table
+	 * and deal with the nodes children
+	 */
 	if (type == ( FUNC || PROCEDURE)) {
-		funcGen(node);
-		while (!processQueue.empty()) {
-			node = pop_front_q();
-		 	generateTable(node);
-		}
-		return sym;
-		
+		funcGen(node,sym);
 	}
+	
 	/* If it is a variable declaration node then just add it 
-	 * to the table
+	 * to the table and deal with the rest of the queue...
 	 */
 	if (type == VARDEC) {
 		/*check if  identifier exists in this scope */
 		Node* nodePtr = lookupCurrentScope(func.getID());
 		if (nodePtr != NULL) {
-			error_var_exists(func.getID();
+			error_var_exists(node.getID());
 			return sym;
 
 		}
 		/* If it doesnt add it to the symbl table*/
-		sym.add(root.getID(), root);	
+		sym.add(node.getID(), root);	
+	}		
+	if (type == CODEBLOCKK) {
+		/* if we are processing a codeblock 
+		 * then create a new scope
+		 * and add the children to the font of th equeu
+		 */
 	}
-	
-
+	/* once we have dealt with the node deal with the rest of the process queue*/
+	while (!processQueue.empty()) {
+		node = pop_front_q();
+	 	generateTable(node,sym);
+	}
 	return sym;
-	
+
 }
 
 
