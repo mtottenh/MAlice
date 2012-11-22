@@ -104,7 +104,7 @@ Type
  /* We need to get the type 'number' rather than value etc. */
 	| TREF TCHAR {$$ = REFCHAR;}
 	| TREF TNUMBER {$$ = REFNUMBER;}
-	| REFSTRING {$$ = REFSTRING;}
+	| TREF TSTRING {$$ = REFSTRING;}
 	;
 VarDeclaration
 	: Identifier WAS Type {$$ = new NVariableDeclaration($1,$3);}
@@ -166,6 +166,8 @@ Value
 	| Identifier {$$ = $1;}
 	| Call { $$ = $1;}
 	| ArrayVal {$$ = $1;}
+	| Increment {$$ = $1;}
+	| Decrement {$$ = $1;}
 	| OBRACKET BitExp CBRACKET { $$ = $2;}
 	;
 //Check string lit case!
@@ -240,6 +242,7 @@ Parameter
 Read
 	: WHATWAS Identifier QUESTIONMARK { $$ = new NAssignment($2, 
 										new NInput()); }
+	| WHATWAS ArrayVal QUESTIONMARK {$$ = new NAssignment($2, new NInput());}
 	;
 Loop
 	: EVENTUALLY OBRACKET Predicate CBRACKET BECAUSE StatementList 
@@ -265,10 +268,12 @@ PredPrime
 
 Increment
 	: Identifier INC { $$ = new NInc($1);}
+	| ArrayVal INC {$$ = new NInc($1);}
 	;
 
 Decrement
 	: Identifier DEC { $$ = new NDec($1);}
+	| ArrayVal DEC {$$ = new NDec($1);}
 	;	
 
 Conditional
@@ -286,6 +291,7 @@ Maybe
 Codeblock
 	: OBRACE StatementList CBRACE 
 	{$$ = $2;}
+	| OBRACE CBRACE {$$ = new NStatementList();}
 	; 
 
 StatementList
@@ -306,8 +312,6 @@ ArrayVal
  
 Identifier
 	: STRING {$$ = new NIdentifier($1);}
-	| Increment {$$ = $1;}
-	| Decrement {$$ = $1;}
 	;
 StringLit
 	: STRINGLIT {$$ = new NStringLit($1);}
