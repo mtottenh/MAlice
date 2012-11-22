@@ -18,7 +18,7 @@ QUESTIONMARK EVENTUALLY BECAUSE ENOUGHTIMES THEN ELSE IF ENDIF MAYBE TOO
 FOUND
 
 /* Extra 'types' for semantic analysis (add to types enum). */
-%token INVALIDTYPE KEYWORD
+%token INVALIDTYPE BOOLEAN
 
 /* Primitives */
 %token <string> CHARLIT STRING STRINGLIT
@@ -44,7 +44,6 @@ FOUND
 	char *string;
 	int token; /* should we explicitly state the length? e.g. int_32t?*/
 	Node *node;
-	NCodeBlock *block;
 	NExpression *exp;
 	NPrint *print;
 	NStatementList *stat;

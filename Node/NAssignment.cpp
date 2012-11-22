@@ -50,17 +50,11 @@ int NAssignment::check() {
 		int lhsType = nodePtr->getType();
 		int rhsType = rval->getType();
 
-		/* Is the variable a keyword? */
-		if(lhsType == KEYWORD) {
-			error_keyword(lvalID);
-			isValid = 0;
-		}
-		
 		/*
 		 * Does the type of the var match the type of the expression's
 		 * RHS?
 		 */
-		else if(lhsType != rhsType) {
+		if(lhsType != rhsType) {
 			error_type_mismatch(lvalID, lhsType, rhsType);
 		}
 		

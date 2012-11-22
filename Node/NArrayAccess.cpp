@@ -30,12 +30,6 @@ int NArrayAccess::check() {
 		isValid = 0;
 	}
 
-	/* Is the identifier a keyword? */
-	else if(nodePtr->getType() == KEYWORD) {
-		error_keyword(name);
-		isValid = 0;
-	}
-
 	/* Is the index node valid? */
 	isValid &= indexNode->check();
 
