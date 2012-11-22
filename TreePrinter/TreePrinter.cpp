@@ -26,7 +26,7 @@ int treePrinter::print() {
 			temp->print();
 			cout << "\t"; 
 		
-		std::vector<Node *> children = temp->getChildren();
+		node_children_t children = temp->getChildren();
 /*		cout << "\tCurrent Node has: " << children.size() << " children" ; */
 		 				
 			for (unsigned int i = 0; i< children.size(); i++){

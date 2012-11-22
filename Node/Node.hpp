@@ -2,7 +2,7 @@
 #define _NODE_HPP_
 
 #include <iostream>
-#include <vector>
+#include <deque>
 #include <string>
 #include "../Errors/SemanticErrors.hpp"
 #include "../SymbolTable/SymbolTable.hpp"
@@ -18,7 +18,7 @@ typedef vector<NVariableDeclaration *> ViarableList;
 */
 
 class Node;
-typedef vector<Node *> node_children_t;
+typedef deque<Node *> node_children_t;
 
 class SymbolTable;
 /* Top level Base Class */
