@@ -358,10 +358,7 @@ int main(int argc, char* argv[])
  SymbolTable* sym = s->generateTable();
  treePrinter t(root);
  t.print(); 
-
-// sym->print();
 cout << "*****************BREAK*****************" << endl;
- t.print();
  }
  return 0;
 }

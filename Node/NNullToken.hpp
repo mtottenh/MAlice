@@ -6,7 +6,7 @@
 class NNullToken : public Node
 {
 public:
-	NNullToken() {}
+	NNullToken() { name = "NNullToken";}
 };
 
 #endif
