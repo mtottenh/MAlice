@@ -5,6 +5,7 @@
 #include "TreePrinter/TreePrinter.hpp"
 #include "Errors/TypeMap.hpp"
 #include "TreeWalker/SymbolTableGenerator.hpp"
+#include <stdio.h> /* for yyin*/
 extern void yyerror(char*);
 extern int yylex();
 Node *root;
@@ -82,7 +83,7 @@ DeclarationList
 	: DeclarationList Declaration 
 	{ $1->children.push_back($2); }
 	| Declaration 
-	{ $$ = new NDeclarationBlock($1); } 
+	{ $$ = new NDeclarationBlock(); $$->children.push_back($1); } 
 	;
 /*
  * The value of a declaration node is just defined as the 
@@ -337,9 +338,19 @@ Procedure
 %%
 
 int initTypeMap();
-
-int main()
+extern FILE * yyin;
+int main(int argc, char* argv[])
 {
+ if (argc != 2) {
+ 	cout << "Error usage is: " << argv[0] << " FILENAME";
+ } else {
+ cout << argv[1];
+ FILE *input = fopen(argv[1],"r");
+ if (input == NULL) {
+ cout << " CRASH AND BURN BURN BURN BURN\n";
+ return 0;
+ } 
+ yyin = input;
  initTypeMap();
  int node = yyparse();
  treePrinter t(root);
@@ -351,7 +362,8 @@ int main()
 // sym->print();
 cout << "*****************BREAK*****************" << endl;
  t.print();
- return node;
+ }
+ return 0;
 }
 
 int initTypeMap() { 
