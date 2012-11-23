@@ -2,7 +2,7 @@
 #define SYMBOLTABLE_HPP
 
 #include <string>
-#include <boost/unordered_map.hpp>  
+#include <map>  
 #include "../Node/Node.hpp"
 class Node;
 using namespace std;
@@ -11,7 +11,7 @@ using namespace std;
  * Typedef for symbol table internal identifier -> Node mapping. Implemented
  * as an unordered (hash) map from the Boost libraries. 
  */
-typedef boost::unordered_map<string, Node*> table_t;
+typedef map<string, Node*> table_t;
 
 /*
  * Symbol table for variables and identifiers contained within a MAlice program.

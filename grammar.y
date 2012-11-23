@@ -353,11 +353,11 @@ int main(int argc, char* argv[])
  yyin = input;
  initTypeMap();
  int node = yyparse();
- treePrinter t(root);
- t.print(); 
  SymbolTableGenerator* s = new SymbolTableGenerator(root);
  cout << "****************BREAK*****************" << endl;
  SymbolTable* sym = s->generateTable();
+ treePrinter t(root);
+ t.print(); 
 
 // sym->print();
 cout << "*****************BREAK*****************" << endl;

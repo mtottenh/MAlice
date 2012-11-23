@@ -1,4 +1,5 @@
 #include "SymbolTable.hpp"
+#include <iostream>
 
 
 
@@ -37,9 +38,14 @@ int SymbolTable::add(string name, Node* node) {
 	
 	if (currentNodePtr == NULL) {
 		table[name] = node;
+		/* debug code */
+		string tname = table.find(name)->first;
+		cout << "SYMTABLE: Adding " << tname << endl;
+		/* end debug code */
 		return 1;
 	}
 	else {
+		cout << "SYMTABLE: Did NOT add " << name << endl;
 		return 0;
 	}
 }
@@ -47,7 +53,7 @@ int SymbolTable::add(string name, Node* node) {
 Node* SymbolTable::lookup(const string& name) {
 	Node* currentNodePtr = lookupCurrentScope(name);
 
-	if (currentNodePtr != NULL) {
+	if (currentNodePtr != NULL || table.size() == 0) {
 		return currentNodePtr;
 	}
 	else if (parentExists()) {
@@ -62,7 +68,7 @@ Node* SymbolTable::lookup(const string& name) {
 Node* SymbolTable::lookupCurrentScope(const string& name) {
 	table_t::iterator nameNodePtr = table.find(name);
 
-	if (nameNodePtr == table.end()) {
+	if (nameNodePtr == table.end() || table.size() == 0) {
 		return NULL;
 	}
 	else {
