@@ -5,7 +5,6 @@
 #include "TreePrinter/TreePrinter.hpp"
 #include "Errors/TypeMap.hpp"
 #include "TreeWalker/SymbolTableGenerator.hpp"
-#include <stdio.h> /* for yyin*/
 extern void yyerror(char*);
 extern int yylex();
 Node *root;
@@ -138,20 +137,20 @@ ParameterDec
 	;
 
 BitExp
-	: BitExp AND Exp {$$ = new NBinOp($1, $3, BAND);}
-	| BitExp OR Exp {$$ = new NBinOp($1, $3, BOR);}
-	| BitExp XOR Exp {$$ = new NBinOp($1, $3, BXOR);}
+	: BitExp AND Exp {$$ = new NBinOp($1, $3, AND);}
+	| BitExp OR Exp {$$ = new NBinOp($1, $3, OR);}
+	| BitExp XOR Exp {$$ = new NBinOp($1, $3, XOR);}
 	| Exp {$$ = $1;}
 	;
 Exp
-	: Exp PLUS Term {$$ = new NBinOp($1, $3, BPLUS);}
-	| Exp DASH Term {$$ = new NBinOp($1, $3, BMINUS);}
+	: Exp PLUS Term {$$ = new NBinOp($1, $3, PLUS);}
+	| Exp DASH Term {$$ = new NBinOp($1, $3, DASH);}
 	| Term {$$ = $1;}
 	;
 Term
-	: Term MULT Factor {$$ = new NBinOp($1, $3, BMULT);}
-	| Term DIV Factor {$$ = new NBinOp($1, $3, BDIV);}
-	| Term MOD Factor {$$ = new NBinOp($1, $3, BMOD);}
+	: Term MULT Factor {$$ = new NBinOp($1, $3, MULT);}
+	| Term DIV Factor {$$ = new NBinOp($1, $3, DIV);}
+	| Term MOD Factor {$$ = new NBinOp($1, $3, MOD);}
 	| Factor {$$ = $1;}
 	;
 /*

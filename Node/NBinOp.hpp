@@ -3,17 +3,12 @@
 
 #include "Node.hpp"
 
-typedef enum
-{
-	BAND, BOR, BXOR, BPLUS, BMINUS, BMULT, BDIV, BMOD
-} BinaryOperator;
-
 class NBinOp : public Node {
 private:
+	int op;
 	virtual int resolveType();
 public:
-	BinaryOperator binOp;
-        NBinOp(Node*, Node*, BinaryOperator);
+        NBinOp(Node*, Node*, int);
 	virtual int check();
 };
 

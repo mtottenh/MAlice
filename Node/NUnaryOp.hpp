@@ -5,8 +5,10 @@
 class NUnaryOp : public Node { 
 private:
 	int op;
+	virtual int resolveType();
 public:
 	NUnaryOp(int, Node*);
+	virtual int check();
 };
 
 #endif
