@@ -3,7 +3,7 @@
 
 NDec::NDec(Node* child)
 {
-	name = child->name;
+	name = "Decrement";
 	children.push_back(child);
 }
 

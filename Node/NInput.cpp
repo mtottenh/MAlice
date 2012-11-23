@@ -2,5 +2,5 @@
 
 NInput::NInput()
 {
-	//Revise
+	name = "NInput";
 }

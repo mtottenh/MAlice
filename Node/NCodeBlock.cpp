@@ -21,4 +21,7 @@ NCodeBlock::NCodeBlock(Node *stat)
 	nodeType = CODEBLOCK;
 }
 
-NCodeBlock::NCodeBlock() {}
+NCodeBlock::NCodeBlock() 
+{
+	name = "CodeBlock";
+}

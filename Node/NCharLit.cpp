@@ -7,6 +7,7 @@ NCharLit::NCharLit() {
 }
 
 NCharLit::NCharLit(char *c) {
+	name = "Char";
 	this->character = *++c;
 	type = resolveType();
 }

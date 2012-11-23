@@ -6,7 +6,7 @@
 class NEndIf : public Node
 {
 public:
-	NEndIf() {}
+	NEndIf() {name = "EndIf";}
 };
 
 #endif
