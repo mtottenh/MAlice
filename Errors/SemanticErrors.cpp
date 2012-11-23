@@ -35,6 +35,11 @@ void error_type_mismatch(int op, int t1, const string& types) {
 
 }
 
+void error_type_mismatch_cond(int t1) {
+	cerr << "ERROR: Type mismatch. Conditional expected a predicate, but "
+		<< "got an expression of type " << t1 << endl;
+}
+
 void error_no_entry() {
 	cerr << "ERROR: No program entry point (function 'hatta') detected."
 		<< endl;

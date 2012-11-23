@@ -29,10 +29,13 @@ void error_var_not_found(const string&);
  * Prints an error stating that a variable (param 1) of type t1 (param 2) does
  * not match type t2 (param 3). Param 1 can also be an operator, or param 2
  * a string list of types.
+ * The cond variant is used when a predicate is not given in a conditional
+ * expression.
  */
 void error_type_mismatch(const string&, int, int);
 void error_type_mismatch(int, int, int);
 void error_type_mismatch(int, int, const string&);
+void error_type_mismatch_cond(int);
 
 /*
  * Prints an error stating that no program entry method ('hatta') was detected.
