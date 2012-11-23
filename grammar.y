@@ -338,28 +338,39 @@ Procedure
 
 int initTypeMap();
 extern FILE * yyin;
-int main(int argc, char* argv[])
-{
- if (argc != 2) {
- 	cout << "Error usage is: " << argv[0] << " FILENAME";
- } else {
- cout << argv[1];
- FILE *input = fopen(argv[1],"r");
- if (input == NULL) {
- cout << " CRASH AND BURN BURN BURN BURN\n";
- return 0;
- } 
- yyin = input;
- initTypeMap();
- int node = yyparse();
- SymbolTableGenerator* s = new SymbolTableGenerator(root);
- cout << "****************BREAK*****************" << endl;
- SymbolTable* sym = s->generateTable();
- treePrinter t(root);
- t.print(); 
-cout << "*****************BREAK*****************" << endl;
- }
- return 0;
+
+int main(int argc, char* argv[]) {
+	if (argc != 2) {
+		cout << "ERROR: Usage is: " << argv[0] << " FILENAME" << endl;
+		return 0;
+	}
+
+	/* Open file from argv[1]. Quit if null. */
+	FILE *input = fopen(argv[1],"r");
+	if (input == NULL) {
+ 		cout << "ERROR: Could not open file " << argv[1] << endl;
+ 		return 0;
+	}
+
+	yyin = input;
+	initTypeMap();
+	int node = yyparse();
+	
+	/* Create symbol table generator.*/
+	cout << "##### Creating symbol table generator #####" << endl;
+	SymbolTableGenerator* s = new SymbolTableGenerator(root);
+
+	/* Generate symbol table. */
+	cout << "##### Generating symbol table #####" << endl;
+	SymbolTable* sym = s->generateTable();
+
+	/* Print the AST */
+	cout << "##### Printing AST via TreePrinter #####" << endl;
+	treePrinter t(root);
+	t.print(); 
+
+	cout << "##### Complete! #####" << endl;
+	return 0;
 }
 
 int initTypeMap() { 
