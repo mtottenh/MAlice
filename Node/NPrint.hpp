@@ -5,11 +5,12 @@
 #include <string.h>
 class NPrint : public Node {
 private:
+	/* Type resolution and validity checking inherited from Node. */
 	char *message;
 public:
         NPrint();
-	NPrint(const char *msg) { message = strdup(msg); name = "print";}
-	NPrint(Node *child){ name = "print";children.push_back(child); }
+	NPrint(const char*); 
+	NPrint(Node*);
 };
 
 #endif

@@ -5,6 +5,10 @@
 
 class NReturn : public Node {
 public:
+	/*
+	 * Type resolution and checking inherited from Node. Although the
+	 * expression has a type, the actual return node does not.
+	 */
 	NReturn(Node *exp);
 };
 #endif
