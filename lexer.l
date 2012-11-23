@@ -33,29 +33,33 @@ whitespace	[ \t]+
  /* Keywords */
 too 		  { tokenpos += yyleng; return TOO;}
 became	 	  { tokenpos += yyleng; return BECAME; }
-"was a"	 	  { tokenpos += yyleng; return WAS; }
 number		  { tokenpos += yyleng; return TNUMBER; }
 letter		  { tokenpos += yyleng; return TCHAR; }
 sentence	{ tokenpos += yyleng; return TSTRING; }
 ate		  { tokenpos += yyleng; return INC;	  }
 drank 		  { tokenpos += yyleng; return DEC;	  }
-"contained a"     { tokenpos += yyleng; return CONTAINEDA; }
+contained     { tokenpos += yyleng; return CONTAINED; }
 had		  { tokenpos += yyleng; return HAD; }
-"what was"	  { tokenpos += yyleng; return WHATWAS; }
+what	  { tokenpos += yyleng; return WHAT; }
+was		  { tokenpos += yyleng; return WAS; }
+a		  { tokenpos += yyleng; return A; }
 \?		  { tokenpos += yyleng; return QUESTIONMARK; }
 \!		  { tokenpos += yyleng; return LNOT; }
 \!\=	  { tokenpos += yyleng; return LNOTEQU; }
 eventually	  { tokenpos += yyleng; return EVENTUALLY; }
 because		  { tokenpos += yyleng; return BECAUSE; }
-"enough times" 	  { tokenpos += yyleng; return ENOUGHTIMES; }
+enough 	  { tokenpos += yyleng; return ENOUGH; }
+times 	  { tokenpos += yyleng; return TIMES; }
 perhaps		  { tokenpos += yyleng; return IF; }
 so		  { tokenpos += yyleng; return THEN; }
 or		  { tokenpos += yyleng; return ELSE; }
 either		  { tokenpos += yyleng; return IF; }
 maybe		  { tokenpos += yyleng; return MAYBE; }
-"because Alice was unsure which" { tokenpos += yyleng; return ENDIF; }
+unsure 		{tokenpos += yyleng; return UNSURE; }
+which		{tokenpos += yyleng; return WHICH; }
 of		{tokenpos += yyleng; return OF; }
-"Alice found"		{tokenpos += yyleng; return FOUND; }
+found		{tokenpos += yyleng; return FOUND; }
+Alice	{tokenpos += yyleng; return ALICE; }
 spider	{tokenpos += yyleng; return TREF; }
  /* logical operators (e.g. used in loop predicates) */
 
@@ -68,13 +72,17 @@ spider	{tokenpos += yyleng; return TREF; }
 \>		 { tokenpos += yyleng; return LGTHAN; }
 
  /* functions and procedurs*/
-"The room"	  { tokenpos += yyleng;  return FUNC; }
-"The looking-glass" {tokenpos += yyleng; return PROCEDURE; }
+The	  { tokenpos += yyleng;  return THE; }
+room {tokenpos += yyleng; return ROOM; }
+looking {tokenpos += yyleng; return LOOKING; }
+\-		{tokenpos += yyleng; return DASH; }
+glass 	{tokenpos += yyleng; return GLASS; }
   /* Array acess patterns */
 \'s		{ tokenpos += yyleng; return ARRINDO; }
 piece		{ tokenpos += yyleng; return ARRINDC; }
   /* Print statements */
-("said Alice"|spoke) { tokenpos +=yyleng; return PRINT; }
+said		{tokenpos += yyleng; return SAID; }
+spoke { tokenpos +=yyleng; return SPOKE; }
 
   /* Char literals */
 {charlit}		{ tokenpos +=yyleng; yylval.string = strdup(yytext);
@@ -97,7 +105,6 @@ closed		 { tokenpos += yyleng; return CBRACE; }
 \.	 	{ tokenpos += yyleng; return NULLTOK; }
 \,		{ tokenpos += yyleng; return COMMA;	}
 \+		{ tokenpos += yyleng; return PLUS; }
--		{ tokenpos += yyleng; return MINUS; }
 \*		{ tokenpos += yyleng; return MULT; }
 \/		{ tokenpos += yyleng; return DIV; }
 \%		{ tokenpos += yyleng; return MOD; }

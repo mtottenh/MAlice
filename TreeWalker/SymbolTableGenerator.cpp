@@ -87,7 +87,7 @@ SymbolTable* SymbolTableGenerator::nodeTableGen(Node *node, SymbolTable* sym) {
 	/* If it is a Func Declaration node add it to the symbol table
 	 * and deal with the nodes children
 	 */
-	cout << "\nType in symbol table builder: " << type << endl;
+	cout << "\nType in symbol table builder: " << type << PROCEDURE << endl;
 	if ((type ==  FUNC) ||  (type == PROCEDURE)) {
 		cout << "Generating table for Function Declaration: " << type << endl;
 		sym = funcGen(node,sym);
@@ -121,7 +121,8 @@ SymbolTable* SymbolTableGenerator::nodeTableGen(Node *node, SymbolTable* sym) {
 			/* Like dat bad coding bro? */
 			nodeTableGen(node->getChildren()[i],sym);
 		}
-
+//	if (type == DECBLOCK) {
+//	}
 	}
 	return sym;
 

@@ -4,6 +4,7 @@
 
 NLoop::NLoop(Node* predicate, Node* statementList) 
 {
+	name = "Loop";
 	children.push_back(statementList);
 	children.push_back(predicate);
 }

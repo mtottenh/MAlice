@@ -14,9 +14,9 @@ Node *root;
 /* Type Tokens */
 %token<token> TCHAR TSTRING TREF TNUMBER REFCHAR REFSTRING REFNUMBER
 /* Alice Keywords */
-%token OF WAS PROCEDURE FUNC BECAME INC DEC CONTAINEDA HAD WHATWAS 
-QUESTIONMARK EVENTUALLY BECAUSE ENOUGHTIMES THEN ELSE IF ENDIF MAYBE TOO
-FOUND VARDEC PARAMDEC CODEBLOCK
+%token FUNC PROCEDURE OF WAS A LOOKING GLASS BECAME INC DEC CONTAINED 
+HAD WHAT QUESTIONMARK EVENTUALLY ENOUGH TIMES THEN ELSE IF MAYBE TOO
+ALICE FOUND THE ROOM VARDEC PARAMDEC WHICH UNSURE BECAUSE SAID SPOKE CODEBLOCK
 
 /* Extra 'types' for semantic analysis (add to types enum). */
 %token INVALIDTYPE BOOLEAN VOID 
@@ -26,7 +26,7 @@ FOUND VARDEC PARAMDEC CODEBLOCK
 %token <token> INTEGER
 %token SEPARATOR NULLTOK COMMA QUOTE
 /*Operators */
-%token <token> MINUS PLUS MULT DIV MOD 
+%token <token> DASH PLUS MULT DIV MOD 
 %token <token> XOR AND OR NOT
 /* Logical operators */
 %token <token> LAND LOR LEQU LNOT LNOTEQU LGTHAN LGTHANEQ LLTHAN LLTHANEQ
@@ -52,13 +52,14 @@ FOUND VARDEC PARAMDEC CODEBLOCK
 	NVariableDeclaration *var_dec;
 	NFunctionDeclaration *func_dec;
 	NDeclarationBlock *dec_list;
+	NCodeBlock *code_block;
 }
 
-%type <node> DeclarationList Declaration program ParameterDec VarDeclarationAssignment
+%type <node> Declaration program ParameterDec VarDeclarationAssignment
 %type <node> VarDeclaration Return PredPrime ParamListDec ParamList
 %type <node> Loop
 %type <func_dec> FunctionDec ProcedureDec
-%type <node> Codeblock Conditional Predicate Maybe
+%type <node> Conditional Predicate Maybe
 %type <node> BitExp Exp Term Factor Value ArrayVal Call 
 %type <assignment> Assignment Read
 %type <node> Statement
@@ -66,6 +67,8 @@ FOUND VARDEC PARAMDEC CODEBLOCK
 %type <id> Identifier Increment Decrement
 %type <token> Type
 %type <stat> StatementList
+%type <dec_list> DeclarationList
+%type <code_block> Codeblock
 /* UNDCIDED ONES LOL */
  /*%type <stat> */
 %%
@@ -106,22 +109,22 @@ Type
 	| TREF TSTRING {$$ = REFSTRING;}
 	;
 VarDeclaration
-	: Identifier WAS Type {$$ = new NVariableDeclaration($1,$3);}
+	: Identifier WAS A Type {$$ = new NVariableDeclaration($1,$4);}
 	| Identifier HAD BitExp Type {$$ = new NVariableDeclaration($1,$4,$3); }
 	;
 
 FunctionDec
-	: FUNC Identifier OBRACKET ParamListDec CBRACKET CONTAINEDA Type Codeblock
-	{$$ = new NFunctionDeclaration($2,$4,$8,$7);}
-	| FUNC Identifier OBRACKET CBRACKET CONTAINEDA Type Codeblock 
-	{$$ = new NFunctionDeclaration($2,$7,$6);}
+	: Func Identifier OBRACKET ParamListDec CBRACKET CONTAINED A Type Codeblock
+	{$$ = new NFunctionDeclaration($2,$4,$9,$8);}
+	| Func Identifier OBRACKET CBRACKET CONTAINED A Type Codeblock 
+	{$$ = new NFunctionDeclaration($2,$8,$7);}
 	;
 
 ProcedureDec
-	:  PROCEDURE Identifier OBRACKET ParamListDec CBRACKET Codeblock
+	:  Procedure Identifier OBRACKET ParamListDec CBRACKET Codeblock
 	{ $$ = new NFunctionDeclaration($2,$4,$6);
 	/*$$ = new procNode( $2,$6,$4) name/body/args */ }
-	|  PROCEDURE Identifier OBRACKET CBRACKET Codeblock 
+	|  Procedure Identifier OBRACKET CBRACKET Codeblock 
 	{$$ = new NFunctionDeclaration($2,$5);/* $$->children.push_back($5);*/}
 	;
 /* WE NEED TO EDIT THIS TO ADD TYPE INFORMATION TO THE CONSTRUCTOR!" */
@@ -141,7 +144,7 @@ BitExp
 	;
 Exp
 	: Exp PLUS Term {$$ = new NBinOp($1, $3, BPLUS);}
-	| Exp MINUS Term {$$ = new NBinOp($1, $3, BMINUS);}
+	| Exp DASH Term {$$ = new NBinOp($1, $3, BMINUS);}
 	| Term {$$ = $1;}
 	;
 Term
@@ -157,7 +160,7 @@ Term
  */
 Factor
 	: NOT Factor %prec UNARY {$$ = new NUnaryOp($1,$2);}
-	| MINUS Factor %prec UNARY {$$ = new NUnaryOp($1,$2);}
+	| DASH Factor %prec UNARY {$$ = new NUnaryOp($1,$2);}
 	| Value { $$ = $1;}
 	;
 Value
@@ -196,32 +199,35 @@ VarDeclarationAssignment
 //	: PRINT  {$$ = new NPrint();/**/}
 //	;
 
+Print
+	: SAID ALICE {}
+	| SPOKE {}
+	;
+
 Return
-	: FOUND BitExp {$$ = new NReturn($2);}
+	: Found BitExp {$$ = new NReturn($2);}
+	;
+
+Found
+	: ALICE FOUND {}
 	;
 
 /* Add rules for /ArrayAcess/FuncandProcedureCalls
  * user input / fix LoxExp print to be more generatlised 
  *  */
 Statement
-	: VarDeclaration Separator {$$ = $1;}
-	| VarDeclaration TOO Separator {$$ = $1;} 
-	| VarDeclarationAssignment Separator {$$ = $1;}
-	| Read {$$=$1;}
+	: Read {$$=$1;}
 	| Conditional { $$ = $1;}
 	| Loop {$$=$1;}
 	| Call Separator { $$ = $1;}
-	| ProcedureDec {$$ = $1;}
-	| FunctionDec {$$ = $1;}
 	| NULLTOK {$$ = new NNullToken();}
 	| Increment Separator {$$ = $1;}
 	| Decrement Separator {$$ = $1;}
 	| Codeblock {$$ = $1;}
-      /*| Generalise Print */
 	| Assignment Separator {$$ = $1;}
-	| BitExp PRINT Separator {$$ = new NPrint($1);}
-	| StringLit PRINT Separator {$$ = new NPrint($1);}
-	| Char PRINT Separator { $$ = new NPrint($1);}
+	| BitExp Print Separator {$$ = new NPrint($1);}
+	| StringLit Print Separator {$$ = new NPrint($1);}
+	| Char Print Separator { $$ = new NPrint($1);}
 	| Return Separator {$$ = $1;}
 	;
 
@@ -239,13 +245,13 @@ Parameter
 	| BitExp {$$ = $1;}
 	;
 Read
-	: WHATWAS Identifier QUESTIONMARK { $$ = new NAssignment($2, 
+	: WHAT WAS Identifier QUESTIONMARK { $$ = new NAssignment($3, 
 										new NInput()); }
-	| WHATWAS ArrayVal QUESTIONMARK {$$ = new NAssignment($2, new NInput());}
+	| WHAT WAS ArrayVal QUESTIONMARK {$$ = new NAssignment($3, new NInput());}
 	;
 Loop
 	: EVENTUALLY OBRACKET Predicate CBRACKET BECAUSE StatementList 
-		ENOUGHTIMES { $$ = new NLoop($3, $6); }
+		ENOUGH TIMES { $$ = new NLoop($3, $6); }
 	;
 
 Predicate
@@ -281,16 +287,18 @@ Conditional
 	;
 
 Maybe
-	: ELSE StatementList ENDIF {$$ = $2;}
-	| ENDIF {$$ = new NEndIf();}
+	: ELSE StatementList EndIf {$$ = $2;}
+	| EndIf {$$ = new NEndIf();}
 	| ELSE MAYBE OBRACKET Predicate CBRACKET THEN StatementList Maybe 
 	{$$ = new NConditional($4,$7,$8);}
 	;
 
 Codeblock
-	: OBRACE StatementList CBRACE 
-	{$$ = $2;}
-	| OBRACE CBRACE {$$ = new NStatementList();}
+	: OBRACE DeclarationList StatementList CBRACE 
+	{ $$ = new NCodeBlock($2, $3);}
+	| OBRACE StatementList CBRACE { $$ = new NCodeBlock($2);}
+	| OBRACE CBRACE {$$ = new NCodeBlock(); }
+	| OBRACE DeclarationList CBRACE { $$ = new NCodeBlock($2);}
 	; 
 
 StatementList
@@ -316,6 +324,15 @@ StringLit
 	: STRINGLIT {$$ = new NStringLit($1);}
 Char
 	: CHARLIT { $$ = new NCharLit($1); }
+	;
+EndIf
+	: BECAUSE ALICE WAS UNSURE WHICH {}
+	;
+Func
+	: THE ROOM {}
+	;
+Procedure
+	: THE LOOKING DASH GLASS {}
 	;
 %%
 

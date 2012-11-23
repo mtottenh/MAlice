@@ -3,11 +3,15 @@
 
 NDeclarationBlock::NDeclarationBlock() {
 	this->type = resolveType();
+	name = "Declaration Block";
+	nodeType = CODEBLOCK;
 }
 
 NDeclarationBlock::NDeclarationBlock(Node* child) {
 	this->type = resolveType();
 	children.push_back(child);
+	name = "Declaration Block";
+	nodeType = CODEBLOCK;
 }
 
 int NDeclarationBlock::check() {
