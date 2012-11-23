@@ -5,9 +5,11 @@
 #include <string.h>
 
 class NString : public Node {
+private:
+	virtual int resolveType();
 public:
-	NString(string s) { name = s; };
-	NString(char* s) { name = strdup(s);};
+	NString(string);
+	NString(char*);
 };  
 
 #endif
