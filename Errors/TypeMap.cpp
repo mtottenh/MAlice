@@ -10,7 +10,9 @@ int typemap_add(int typeval, string name) {
 string typemap_get(int typeval) {
 	map<int, string>::iterator it = typemap.find(typeval);
 	if(it == typemap.end()) {
-		return NULL;
+		cerr << "ERROR: Invalid lookup in TypeMap. A type int value "
+			<< "-> string representation is missing!" << endl;
+		return "unknown";
 	}
 	else {
 		return it->second;

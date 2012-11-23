@@ -1,20 +1,8 @@
 #include "SymbolTable.hpp"
 #include <iostream>
 
-
-
 /* See SymbolTable.hpp for detailed documentation. */
-/* print function faily self explanitory*/
-void SymbolTable::print() {
-	cout << "\n\n**** SYMBOL TABLE CONTENT ****\n\n";
- 	table_t::iterator it;
-//	it = table.begin();
-	for(it = table.begin(); it != table.end(); ++it) {
-		cout << "Name: " << it->first;
-		cout << endl;
-	}
-	cout << "\n**** END SYMBOL TABLE CONTENT ****\n";
-}
+
 /* Constructors and destructors. */
 SymbolTable::SymbolTable() : parent(NULL) {
 	/* Do nothing! */
@@ -62,6 +50,17 @@ Node* SymbolTable::lookup(const string& name) {
 	else {
 		return NULL;
 	}
+}
+
+void SymbolTable::print() {
+	cout << endl << "----- Printing Symbol Table -----" << endl;
+ 	table_t::iterator it;
+//	it = table.begin();
+	for(it = table.begin(); it != table.end(); ++it) {
+		cout << "Identifier: " << it->first;
+		cout << "\t\t\tNode name: " << it->second->getID() << endl;
+	}
+	cout << endl << "----- End Symbol Table -----" << endl;
 }
 
 /* Private methods. */

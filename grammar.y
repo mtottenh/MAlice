@@ -361,15 +361,18 @@ int main(int argc, char* argv[]) {
 	SymbolTableGenerator* s = new SymbolTableGenerator(root);
 
 	/* Generate symbol table. */
-	cout << "##### Generating symbol table #####" << endl;
+	cout << endl << "##### Generating symbol table #####" << endl;
 	SymbolTable* sym = s->generateTable();
 
 	/* Print the AST */
-	cout << "##### Printing AST via TreePrinter #####" << endl;
+	cout << endl << "##### Printing AST via TreePrinter #####" << endl;
+	cout << "Types showing as INVALID? Don't panic!" << endl 
+		<< "Type resolution only occurs after check() has been "
+		<< "called :)" << endl;
 	treePrinter t(root);
 	t.print(); 
 
-	cout << "##### Complete! #####" << endl;
+	cout << endl << "##### Complete! #####" << endl;
 	return 0;
 }
 

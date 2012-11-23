@@ -119,6 +119,7 @@ SymbolTable* SymbolTableGenerator::nodeTableGen(Node *node, SymbolTable* sym) {
 		sym = new SymbolTable(sym);
 		for (unsigned int i = 0; i < node->getChildren().size(); i++) {
 			/* Like dat bad coding bro? */
+			/* no.jpg */
 			nodeTableGen(node->getChildren()[i],sym);
 		}
 //	if (type == DECBLOCK) {
@@ -127,5 +128,3 @@ SymbolTable* SymbolTableGenerator::nodeTableGen(Node *node, SymbolTable* sym) {
 	return sym;
 
 }
-
-

@@ -19,7 +19,7 @@ Node::~Node() {
 }
 
 int Node::print() const {
-	cout << name;
+	cout << name << endl;
 	return 1;
 }
 
