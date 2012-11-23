@@ -4,7 +4,6 @@
 NInc::NInc(Node* child) {
 	name = "Increment"; 
 	children.push_back(child);
-	this->type = resolveType();
 }
 
 int NInc::resolveType() {
@@ -19,6 +18,8 @@ int NInc::resolveType() {
 }
 
 int NInc::check() {
+	this->type = resolveType();
+
 	/* Is this the expected type (number)? */
 	int isValid = (type == TNUMBER);
 	

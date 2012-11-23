@@ -22,6 +22,8 @@ int NBinOp::resolveType() {
 
 int NBinOp::check() {
 	int isValid = 1;
+
+	this->type = resolveType();
 	
 	/* Are the operands valid? And are they numbers? */
 	node_children_t::iterator it;

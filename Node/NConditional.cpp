@@ -10,6 +10,9 @@ NConditional::NConditional(Node* predicate, Node* left, Node* right) {
 	children.push_back(right);
 }
 
+/* This node is appararently broken, check/resolve type functions are dummy
+ * methods. Fix this! */
+
 int NConditional::resolveType() {
 	return 1;
 }

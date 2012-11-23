@@ -19,6 +19,8 @@ int NDec::resolveType() {
 }
 
 int NDec::check() {
+	this->type = resolveType();
+
 	/* Is this the expected type (number)? */
 	int isValid = (type == TNUMBER);
 	
