@@ -1,9 +1,16 @@
+#include <cstring>
+#include "TypeDefs.hpp"
 #include "NStringLit.hpp"
-#include <string.h>
 
 NStringLit::NStringLit(char* literal)
 {
-	//Remove the preceeding and following single quote
-	this->literal = strdup(literal);
-	this->literal = this->literal.substr(1, this->literal.size() - 1);
+	/* Remove the enclosing quotation marks from the string. */
+	string temp = strdup(literal);
+	this->literal = temp.substr(1, temp.size() - 1);
+	
+	this->type = resolveType();
+}
+
+int NStringLit::resolveType() {
+	return TSTRING;
 }

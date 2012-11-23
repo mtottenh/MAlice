@@ -8,6 +8,7 @@ class NStringLit : public Node
 public:
 	NStringLit(char*);
 	string literal;
+	virtual int resolveType();
 };
 
 #endif
