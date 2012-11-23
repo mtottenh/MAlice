@@ -374,6 +374,17 @@ int initTypeMap() {
 	typemap_add(REFSTRING, "spider sentence");
 	typemap_add(REFNUMBER, "spider number");
 	typemap_add(INVALIDTYPE, "INVALID");
+	typemap_add(BOOLEAN, "Boolean");
+	typemap_add(DASH, "-");
+	typemap_add(LNOT, "~");
+	typemap_add(LAND, "&&");
+	typemap_add(LOR, "||");
+	typemap_add(LEQU, "==");
+	typemap_add(LNOTEQU, "!=");
+	typemap_add(LGTHAN, ">");
+	typemap_add(LGTHANEQ, ">=");
+	typemap_add(LLTHAN, "<");
+	typemap_add(LLTHANEQ, "<=");
 	return 1;
 }
 /*

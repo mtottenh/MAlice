@@ -27,9 +27,12 @@ void error_var_not_found(const string&);
 
 /*
  * Prints an error stating that a variable (param 1) of type t1 (param 2) does
- * not match type t2 (param 3).
+ * not match type t2 (param 3). Param 1 can also be an operator, or param 2
+ * a string list of types.
  */
 void error_type_mismatch(const string&, int, int);
+void error_type_mismatch(int, int, int);
+void error_type_mismatch(int, int, const string&);
 
 /*
  * Prints an error stating that no program entry method ('hatta') was detected.
@@ -43,8 +46,10 @@ void error_not_func(const string&);
 
 /*
  * Prints an error that function name (param1) expected n arguments (param2)
- * but got m args (param 3).
+ * but got m args (param 3). If a type value is given for param1, resolve it to
+ * a string first.
  */
 void error_num_args(const string&, int, int);
+void error_num_args(int, int, int);
 
 #endif
