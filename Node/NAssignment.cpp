@@ -55,7 +55,7 @@ int NAssignment::check() {
 		 * RHS?
 		 */
 		if(lhsType != rhsType) {
-			error_type_mismatch(lvalID, lhsType, rhsType);
+			error_type_mismatch(lvalID, rhsType, lhsType);
 		}
 		
 	}
