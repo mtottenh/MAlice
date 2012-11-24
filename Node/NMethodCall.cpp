@@ -39,8 +39,8 @@ int NMethodCall::check() {
 	
 	else { 
 		/* Is the identifier a function or procedure? */
-		if(nodePtr->getNodeType() == FUNC 
-				|| nodePtr->getNodeType() == PROCEDURE) {
+		if(!(nodePtr->getNodeType() == FUNC 
+				|| nodePtr->getNodeType() == PROCEDURE)) {
 			error_not_func(name);
 			isValid = 0;
 		}
