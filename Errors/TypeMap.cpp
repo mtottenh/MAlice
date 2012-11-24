@@ -1,4 +1,5 @@
 #include "TypeMap.hpp"
+#include <boost/lexical_cast.hpp>
 
 map<int, string> typemap;
 
@@ -12,7 +13,7 @@ string typemap_get(int typeval) {
 	if(it == typemap.end()) {
 		cerr << "ERROR: Invalid lookup in TypeMap. A type int value "
 			<< "-> string representation is missing!" << endl;
-		return "unknown";
+		return boost::lexical_cast<string>(typeval);
 	}
 	else {
 		return it->second;

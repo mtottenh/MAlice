@@ -387,6 +387,7 @@ int initTypeMap() {
 	typemap_add(REFNUMBER, "spider number");
 	typemap_add(INVALIDTYPE, "INVALID");
 	typemap_add(BOOLEAN, "Boolean");
+	typemap_add(VOID, "void");
 	typemap_add(DASH, "-");
 	typemap_add(LNOT, "~");
 	typemap_add(LAND, "&&");
