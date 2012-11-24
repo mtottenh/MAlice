@@ -43,6 +43,7 @@ public:
 	virtual int addTable(SymbolTable*);
 	virtual int getNodeType();
 	int isRoot();
+	int compareTypes(int, int);
 };
 
 #endif

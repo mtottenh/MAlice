@@ -15,18 +15,3 @@ NVariableDeclaration::NVariableDeclaration(NIdentifier* id, int type, Node *bloc
 	delete(id);
 	nodeType = VARDEC;
 }
-
-int NVariableDeclaration::check() {
-	int isValid = 1;
-	/*THIS CHECK IS ALREADY PERFORMED IN THE SYMTABLE GENERATOR*/
-	/* Does the variable name already exist in current scope? */
-/*	if(table->lookupCurrentScope(name) != NULL) {
-		error_var_exists(name);
-		isValid = 0;
-	}
-*/
-	/* If we have children (i.e. array access bit expressions), check them. */
-	isValid &= Node::check();
-
-	return isValid;
-}

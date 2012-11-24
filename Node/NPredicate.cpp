@@ -107,7 +107,7 @@ int NPredicate::checkLEQU(int t1, int t2) {
 		return 0;
 	}
 
-	else if(t2 != t1) {
+	else if(!compareTypes(t1, t2)) {
 		error_type_mismatch(op, t2, t1);
 		return 0;
 	}
@@ -130,7 +130,7 @@ int NPredicate::checkPred(int t1, int t2) {
 		return 0;
 	}
 	
-	else if (t2 != t1) {
+	else if (!compareTypes(t1, t2)) {
 		error_type_mismatch(op, t2, t1);
 		return 0;
 	}

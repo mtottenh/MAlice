@@ -56,20 +56,5 @@ int NFunctionDeclaration::getType() const {
 	return type;
 }
 
-int NFunctionDeclaration::check() {
-	int isValid = 1;
-
-	Node* nodePtr = table->lookup(name);
-	/* This check is performed int he symbol table generator*/
-	/* Does the identifier exist in local scope? */
-/*	if(nodePtr != NULL) {
-		error_var_exists(name);
-		isValid = 0;
-	}*/
-	/* Check the function code block and arguments. */
-	isValid &= Node::check(); 
-
-	return isValid;
-}
 
 #endif

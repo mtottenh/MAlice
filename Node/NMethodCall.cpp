@@ -85,7 +85,7 @@ int NMethodCall::checkParams(Node* funcParams) {
 		expectedType = (*funcIt)->getType();
 		givenType = (*givenIt)->getType();
 
-		if(expectedType != givenType) {
+		if(!compareTypes(expectedType, givenType)) {
 			varName = (*givenIt)->getID();
 			error_type_mismatch(varName, givenType, expectedType);
 			isValid = 0;

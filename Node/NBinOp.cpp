@@ -15,8 +15,8 @@ int NBinOp::resolveType() const{
 	int t1 = children[0]->getType();
 	int t2 = children[1]->getType();
 
-	if(t1 != t2 && t1 != TNUMBER && t1 != REFNUMBER && t2 != TCHAR
-			&& t2 != REFCHAR) {
+	if(!(compareTypes(t1, t2)) && t1 != TNUMBER && t1 != REFNUMBER 
+			&& t2 != TCHAR && t2 != REFCHAR) {
 		return INVALIDTYPE;
 	}
 
