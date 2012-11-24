@@ -17,6 +17,7 @@ Node *root;
 %token FUNC PROCEDURE OF WAS A LOOKING GLASS BECAME INC DEC CONTAINED 
 HAD WHAT QUESTIONMARK EVENTUALLY ENOUGH TIMES THEN ELSE IF MAYBE TOO
 ALICE FOUND THE ROOM VARDEC PARAMDEC WHICH UNSURE BECAUSE SAID SPOKE CODEBLOCK
+DECLARATIONBLOCK STATLIST
 
 /* Extra 'types' for semantic analysis (add to types enum). */
 %token INVALIDTYPE BOOLEAN VOID ENDIF
@@ -371,8 +372,9 @@ int main(int argc, char* argv[]) {
 		<< "called :)" << endl;
 	treePrinter t(root);
 	t.print(); 
-
 	cout << endl << "##### Complete! #####" << endl;
+	root->check();
+	t.print();
 	return 0;
 }
 

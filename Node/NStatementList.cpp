@@ -6,14 +6,14 @@
 NStatementList::NStatementList() 
 { 
 	name = "StatList"; 
-	nodeType = CODEBLOCK;
+	nodeType = STATLIST;
 }
 
 NStatementList::NStatementList(Node *dec, Node *ass) {
 	name = "Dec&Assign";
 	children.push_back(dec);
 	children.push_back(ass);
-	nodeType = CODEBLOCK;
+	nodeType = STATLIST;
 }
 
 int NStatementList::check() {

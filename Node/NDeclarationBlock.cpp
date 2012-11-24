@@ -3,13 +3,13 @@
 
 NDeclarationBlock::NDeclarationBlock() {
 	name = "Declaration Block";
-	nodeType = CODEBLOCK;
+	nodeType = DECLARATIONBLOCK;
 }
 
 NDeclarationBlock::NDeclarationBlock(Node* child) {
 	children.push_back(child);
 	name = "Declaration Block";
-	nodeType = CODEBLOCK;
+	nodeType = DECLARATIONBLOCK;
 }
 
 int NDeclarationBlock::check() {
@@ -23,7 +23,7 @@ int NDeclarationBlock::check() {
 	}
 
 	/* We have a 'hatta', but is it a function declaration? */
-	else if(nodePtr->getNodeType() != FUNC) {
+	else if(nodePtr->getNodeType() != PROCEDURE) {
 		error_no_entry();
 		isValid = 0;
 	}

@@ -28,11 +28,11 @@ int treePrinter::print() {
 		if (temp != NULL) {
 			cout << "~~~~~ New node! ~~~~~" << endl;	
 			cout << "Type: " << typemap_get(temp->getType()) 
-				<< endl;
+			     <<  "\tName : " << temp->name << endl;
 			if (temp->table != NULL)
 				temp->table->print();
 			else
-				cout << "Null symbol table detected!" << endl;
+				cout << "Null symbol table detected" << endl;
 		
 		node_children_t children = temp->getChildren();
 /*		cout << "\tCurrent Node has: " << children.size() << " children" ; */
