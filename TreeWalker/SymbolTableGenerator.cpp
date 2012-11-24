@@ -41,7 +41,7 @@ SymbolTable* SymbolTableGenerator::funcGen(Node *func, SymbolTable* sym) {
 
 		
 //		cout << "Generating table for CodeBlock: " << type << endl;
-				}
+	}
 	
 	return sym;
 
@@ -54,52 +54,43 @@ Node* SymbolTableGenerator::pop_front_q() {
 	processQueue.pop_front();
 	return front;
 }
-/* Augments the given AST starting at
- * root with a symbol table
-* containing all identifiers from variable and function declarations
+/*
+ * Augments the given AST starting at root with a symbol table,
+ * containing all identifiers from variable and function declarations.
  */
 SymbolTable* SymbolTableGenerator::generateTable() {
 	SymbolTable* sym = new SymbolTable();
 	root->addTable(sym);
 	while(!processQueue.empty()) {
 		root = pop_front_q();
-//		cout << "---Generating symbol table for node:---\n";
-//		root->print();
-
 		sym = nodeTableGen(root,sym);
-
-//		cout << "---Table Generated: --";
-//		sym->print();
-//		cout << "--end--\n";
 	}
 	return sym;
 }
-/* Takes an AST Beginning at node and generates a symbolTable Hierarchy
- * from that node onwards
+
+/* Takes an AST starting at node and generates a symbol table hierarchy
+ * from that node onwards.
  */
 SymbolTable* SymbolTableGenerator::nodeTableGen(Node *node, SymbolTable* sym) {
-	/* Add a pointer to the symbol table that the node is declared in*/
+	/* Add a pointer to the symbol table that the node is declared in. */
 	if(!node->addTable(sym)) {
-		cout << "VILLAGES HAVE BEEN BURNT RUN FOR YOUR LIVES\n";	
+		cout << "ERROR: Could not add symbol table to node!" << endl;	
 	}
-		
+	
 	int type = node->getNodeType();
-	/* Check the type of the Node, if it is not a Declaration
-         * Or paramter declaration then do not add its ID
-  	 * to the symbol table but just update the node with the
-	 * symbol table and  create a new scope if
-	 * nessecary	
-	 */
 
-	/* If it is a Func Declaration node add it to the symbol table
-	 * and deal with the nodes children
+	/*
+	 * If the node is a function declaration or procedure declaration, 
+	 * delegate to the funcGen function.
 	 */
 	if ((type ==  FUNC) ||  (type == PROCEDURE)) {
 		sym = funcGen(node,sym);
 	}
 	
-	/* If it is a variable declaration node then just add it 
-	 * to the table and deal with the rest of the queue...
+	/*
+	 * If it is a variable declaration node, add its ID to the symbol
+	 * table. Checking that the variable is not already declared is a job
+	 * for semantic analysis, so is not done here.
 	 */
 	if (type == VARDEC) {
 		/*check if  identifier exists in this scope */
@@ -145,7 +136,7 @@ SymbolTable* SymbolTableGenerator::nodeTableGen(Node *node, SymbolTable* sym) {
 	}
 	
 	
-	
 	return sym;
-
 }
+
+

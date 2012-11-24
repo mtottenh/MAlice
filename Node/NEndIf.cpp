@@ -1,6 +1,7 @@
 #include "NEndIf.hpp"
-
+#include "TypeDefs.hpp"
 
 NEndIf::NEndIf() {
-	name = "Endif";
+	this->name = "EndIf";
+	this->nodeType = ENDIF;
 }

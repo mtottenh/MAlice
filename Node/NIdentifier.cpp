@@ -3,7 +3,7 @@
 
 #include "NIdentifier.hpp"
 #include <string.h>
-
+#include "TypeDefs.hpp"
 NIdentifier::NIdentifier() 
 { 
 	name = "ID"; 
@@ -30,7 +30,7 @@ int NIdentifier::getType() const {
 	if ( variable != NULL)
 		return variable->getType();
 	else
-		return INVALID;
+		return INVALIDTYPE;
 }
 #endif
 
