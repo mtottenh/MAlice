@@ -50,7 +50,7 @@ int NPredicate::check() {
 		case LNOT: /* NOT accepts a boolean. */
 			isValid &= checkLNOT(t1);
 			break;
-		case LEQU: /* LEQU (e.g. x == y) accepts booleans. */
+		case LEQU: /* LEQU (e.g. x == y) accepts identical num/char. */
 			t2 = children[1]->getType();
 			isValid &= checkLEQU(t1, t2);
 			break;
@@ -96,19 +96,22 @@ int NPredicate::checkDASH(int type) {
 }
 
 int NPredicate::checkLEQU(int t1, int t2) {
-	int isValid = 1;
+	if(t1 != TNUMBER && t1 != TCHAR) {
+		error_type_mismatch(op, t1, "number/letter");
+		
+		if(t2 != TNUMBER && t2 != TCHAR) {
+			error_type_mismatch(op, t2, "number/letter");	
+		}
 
-	if(t1 != BOOLEAN) {
-		error_type_mismatch(op, t1, BOOLEAN);
-		isValid = 0;
-	}
-	
-	if(t2 != BOOLEAN) {
-		error_type_mismatch(op, t2, BOOLEAN);
-		isValid = 0;
+		return 0;
 	}
 
-	return isValid;
+	else if(t2 != t1) {
+		error_type_mismatch(op, t2, t1);
+		return 0;
+	}
+
+	return 1;
 }
 
 int NPredicate::checkPred(int t1, int t2) {
@@ -125,7 +128,7 @@ int NPredicate::checkPred(int t1, int t2) {
 	}
 	
 	else if (t2 != t1) {
-		error_type_mismatch(op, t1, t2);
+		error_type_mismatch(op, t2, t1);
 		return 0;
 	}
 
