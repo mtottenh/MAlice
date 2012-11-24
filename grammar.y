@@ -374,7 +374,7 @@ int main(int argc, char* argv[]) {
 	t.print(); 
 	cout << endl << "##### Complete! #####" << endl;
 	root->check();
-	t.print();
+//	t.print();
 	return 0;
 }
 
@@ -397,6 +397,7 @@ int initTypeMap() {
 	typemap_add(LGTHANEQ, ">=");
 	typemap_add(LLTHAN, "<");
 	typemap_add(LLTHANEQ, "<=");
+	typemap_add(VOID, "void");
 	return 1;
 }
 /*
