@@ -12,7 +12,9 @@ NUnaryOp::NUnaryOp(int op, Node* exp) {
 
 int NUnaryOp::resolveType() {
 	/* Is the type of the expression a number? */
-	if(children[0]->getType() != TNUMBER) {
+	int childType = children[0]->getType();
+
+	if(childType != TNUMBER && childType != REFNUMBER) {
 		return INVALIDTYPE;
 	}
 	else {
@@ -24,7 +26,7 @@ int NUnaryOp::check() {
 	this->type = resolveType();
 
 	/* Valid if the type is a number and the children are valid. */
-	return (type == TNUMBER) && Node::check();
+	return (type == TNUMBER || type == REFNUMBER) && Node::check();
 }
 
 #endif
