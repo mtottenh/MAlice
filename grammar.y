@@ -101,9 +101,9 @@ Declaration
  * (TODO) Look into TREF
  */
 Type
-	: TNUMBER { $$ = $1; }
-	| TCHAR { $$ = $1; }
-	| TSTRING {$$ = $1;}
+	: TNUMBER { $$ = TNUMBER; }
+	| TCHAR { $$ = TCHAR; }
+	| TSTRING {$$ = TSTRING;}
  /* We need to get the type 'number' rather than value etc. */
 	| TREF TCHAR {$$ = REFCHAR;}
 	| TREF TNUMBER {$$ = REFNUMBER;}
