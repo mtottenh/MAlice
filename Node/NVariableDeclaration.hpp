@@ -6,8 +6,8 @@
 #include <string>
 
 class NVariableDeclaration : public Node {
-private:
-	int type;
+//private:
+//	int type;
 public:
 	/* args are identifier & type */
 	NVariableDeclaration(NIdentifier*, int);
