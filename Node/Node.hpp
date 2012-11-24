@@ -27,6 +27,7 @@ public: /* This should be changed to private at some point. */
 	SymbolTable* table;
 	int nodeType;
 	int type;
+	int isRootNode = 0;
 	virtual int resolveType();
 public:
 	node_children_t children; /* This shouldn't be publicly exposed. Fix! */
@@ -41,6 +42,7 @@ public:
 	virtual int check();
 	virtual int addTable(SymbolTable*);
 	virtual int getNodeType();
+	int isRoot();
 };
 
 #endif
