@@ -63,7 +63,9 @@ int NMethodCall::check() {
 
 int NMethodCall::checkParams(Node* funcParams) {
 	int isValid = 1;
-	int thisSize = children.size();
+
+	node_children_t thisParams = children[0]->getChildren();
+	int thisSize = thisParams.size();
 	int expectedSize = funcParams->children.size();
 	
 	/* Do we have the same number of expected and given arguments? */
@@ -74,12 +76,12 @@ int NMethodCall::checkParams(Node* funcParams) {
 
 	/* Compare the arguments and ensure they are of the same type. */
 	node_children_t::iterator funcIt = funcParams->children.begin();
-	node_children_t::iterator givenIt = children.begin();
+	node_children_t::iterator givenIt = thisParams.begin();
 
 	int expectedType, givenType;
 	string varName;
 	while(funcIt != funcParams->children.end() 
-			&& givenIt != children.end()) {
+			&& givenIt != thisParams.end()) {
 		expectedType = (*funcIt)->getType();
 		givenType = (*givenIt)->getType();
 
