@@ -6,10 +6,11 @@
 class NBinOp : public Node {
 private:
 	int op;
-	virtual int resolveType();
+	virtual int resolveType() const;
 public:
         NBinOp(Node*, Node*, int);
 	virtual int check();
+	virtual int getType() const;
 };
 
 #endif

@@ -26,6 +26,8 @@ int NIdentifier::check() {
 }
 
 int NIdentifier::getType() const {
+	if (table == NULL) 
+		return INVALIDTYPE;
 	Node* variable = table->lookup(name);
 	if ( variable != NULL)
 		return variable->getType();

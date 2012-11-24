@@ -7,16 +7,27 @@ NBinOp::NBinOp(Node* left, Node* right, int op) {
 	children.push_back(left);
 	children.push_back(right);
 }
-
-int NBinOp::resolveType() {
+int NBinOp::getType() const {
+	return resolveType();
+}
+int NBinOp::resolveType() const{
 	/* Do the types of the children match? */
 	int t1 = children[0]->getType();
 	int t2 = children[1]->getType();
 
-	if(t1 != t2 && t1 != TNUMBER && t2 != TCHAR) {
+	/* This if statement makes no sense*/
+	/*	if(t1 != t2 && t1 != TNUMBER && t2 != TCHAR) {
 		return INVALIDTYPE;
 	}
 	else {
+		return t1;
+	i}*/
+	cout << " Type 1: " << typemap_get(t1) << endl;
+	cout << " Type 2: " << typemap_get(t2) << endl;
+
+	if (t1 != t2) {
+		return INVALIDTYPE;
+	} else {
 		return t1;
 	}
 }

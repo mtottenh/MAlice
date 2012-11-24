@@ -24,17 +24,17 @@ int NStatementList::check() {
 		return isValid;
 	}
 
-	/*
+	/* THIS CODE IS BROKEN! 
 	 * Check that the declaration child and assignment child have the same
 	 * type.
 	 */
-	int t1 = children[0]->getType(); /* Type of declaration node */
-	int t2 = children[1]->getType(); /* Type of assignment node */
+//	int t1 = children[0]->getType(); /* Type of declaration node */
+//	int t2 = children[1]->getType(); /* Type of assignment node */
 
-	if(t1 != t2) {
-		error_type_mismatch(children[0]->getID(), t1, t2);
-		isValid = 0;
-	}
+//	if(t1 != t2) {
+//		error_type_mismatch(children[0]->getID(), t1, t2);
+//		isValid = 0;
+//	}
 
 	/* Check the children via the Node superclass. */
 	isValid &= Node::check();
