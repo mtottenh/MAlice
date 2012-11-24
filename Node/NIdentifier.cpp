@@ -24,5 +24,13 @@ int NIdentifier::check() {
 		return 1;
 	return 0;
 }
+
+int NIdentifier::getType() const {
+	Node* variable = table->lookup(name);
+	if ( variable != NULL)
+		return variable->getType();
+	else
+		return INVALID;
+}
 #endif
 
