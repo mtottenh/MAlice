@@ -389,7 +389,7 @@ int initTypeMap() {
 	typemap_add(BOOLEAN, "Boolean");
 	typemap_add(VOID, "void");
 	typemap_add(DASH, "-");
-	typemap_add(LNOT, "~");
+	typemap_add(LNOT, "!");
 	typemap_add(LAND, "&&");
 	typemap_add(LOR, "||");
 	typemap_add(LEQU, "==");
@@ -398,6 +398,14 @@ int initTypeMap() {
 	typemap_add(LGTHANEQ, ">=");
 	typemap_add(LLTHAN, "<");
 	typemap_add(LLTHANEQ, "<=");
+	typemap_add(PLUS, "+");
+	typemap_add(MULT, "*");
+	typemap_add(DIV, "/");
+	typemap_add(MOD, "%");
+	typemap_add(XOR, "^");
+	typemap_add(AND, "&");
+	typemap_add(OR, "|");
+	typemap_add(NOT, "~");
 	typemap_add(VOID, "void");
 	return 1;
 }

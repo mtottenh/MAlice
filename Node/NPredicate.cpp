@@ -27,11 +27,9 @@ int NPredicate::check() {
 	int isValid = 1;
 	int numOperands = children.size();
 
-	/*
-	 * If the operator is unary (LNOT or DASH (negate)), we expect 1 
-	 * operand.
-	 */
-	if(op == LNOT || op == DASH) {
+	
+	/* If the operator is unary (LNOT), we expect 1 operand. */
+	if(op == LNOT) {
 		isValid &= compareArity(1, numOperands);
 	}
 
@@ -51,9 +49,6 @@ int NPredicate::check() {
 		switch(op) {
 		case LNOT: /* NOT accepts a boolean. */
 			isValid &= checkLNOT(t1);
-			break;
-		case DASH: /* DASH (- e.g. -3) accepts a number. */
-			isValid &= checkDASH(t1);
 			break;
 		case LEQU: /* LEQU (e.g. x == y) accepts booleans. */
 			t2 = children[1]->getType();
