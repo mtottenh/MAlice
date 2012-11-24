@@ -17,7 +17,7 @@ Node *root;
 %token FUNC PROCEDURE OF WAS A LOOKING GLASS BECAME INC DEC CONTAINED 
 HAD WHAT QUESTIONMARK EVENTUALLY ENOUGH TIMES THEN ELSE IF MAYBE TOO
 ALICE FOUND THE ROOM VARDEC PARAMDEC WHICH UNSURE BECAUSE SAID SPOKE CODEBLOCK
-DECLARATIONBLOCK STATLIST
+DECLARATIONBLOCK STATLIST INPUTNODE
 
 /* Extra 'types' for semantic analysis (add to types enum). */
 %token INVALIDTYPE BOOLEAN VOID ENDIF
@@ -246,8 +246,7 @@ Parameter
 	| BitExp {$$ = $1;}
 	;
 Read
-	: WHAT WAS Identifier QUESTIONMARK { $$ = new NAssignment($3, 
-										new NInput()); }
+	: WHAT WAS Identifier QUESTIONMARK { $$ = new NAssignment($3, new NInput()); }
 	| WHAT WAS ArrayVal QUESTIONMARK {$$ = new NAssignment($3, new NInput());}
 	;
 Loop
