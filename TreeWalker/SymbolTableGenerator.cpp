@@ -19,15 +19,15 @@ SymbolTable* SymbolTableGenerator::funcGen(Node *func, SymbolTable* sym) {
 	std::deque<Node *> children = func->getChildren();
 	sym->add(func->getID(),func);
 	Node* Codeblock, Declist, Statlist, Paramlist;
-
+	SymbolTable *t_sym;
 	if (numberOfChildren > 1) {
 		/* if we have a function that takes paramaters 
 		 * Create a new scope block and add the params too it.
 		 */
 		Codeblock = children[0];
 		Paramlist = children[1];
-				sym = new SymbolTable(sym);	
-		SymbolTable *t_sym = nodeTableGen(children[1],sym);
+		t_sym = new SymbolTable(sym);	
+		t_sym = nodeTableGen(children[1],t_sym);
 
 		nodeTableGen(children[0],t_sym);
 	} else {
@@ -36,14 +36,14 @@ SymbolTable* SymbolTableGenerator::funcGen(Node *func, SymbolTable* sym) {
 		/*If it takes no args just process its child with a new scope */
 //		sym->print();
 		
-		SymbolTable *t_sym = new SymbolTable(sym);
+		t_sym = new SymbolTable(sym);
 		nodeTableGen(children[0],t_sym);
 
 		
 //		cout << "Generating table for CodeBlock: " << type << endl;
 	}
 	
-	return sym;
+	return t_sym;
 
 }
 /* Wapper for getting the fisrt elem of a queue then
@@ -84,7 +84,8 @@ SymbolTable* SymbolTableGenerator::nodeTableGen(Node *node, SymbolTable* sym) {
 	 * delegate to the funcGen function.
 	 */
 	if ((type ==  FUNC) ||  (type == PROCEDURE)) {
-		sym = funcGen(node,sym);
+		funcGen(node,sym);
+		return sym;
 	}
 	
 	/*
