@@ -256,20 +256,20 @@ Loop
 	;
 
 Predicate
-	: PredPrime LOR Predicate {$$ = new NPredicate($1,$2,$3);}
-	| PredPrime LAND Predicate {$$ = new NPredicate($1,$2,$3);}
+	: PredPrime LOR Predicate {$$ = new NPredicate($1,LOR,$3);}
+	| PredPrime LAND Predicate {$$ = new NPredicate($1,LAND,$3);}
 	| PredPrime {$$ = $1;}
-	| LNOT OBRACKET Predicate CBRACKET {$$ = new NPredicate($1,$3);}
+	| LNOT OBRACKET Predicate CBRACKET {$$ = new NPredicate(LNOT,$3);}
 	| OBRACKET Predicate CBRACKET {$$ = $2;}
 	;
 
 PredPrime
-	: BitExp LEQU BitExp  {$$ = new NPredicate($1,$2,$3);}
+	: BitExp LEQU BitExp  {$$ = new NPredicate($1,LEQU,$3);}
 	| BitExp LLTHAN BitExp {$$ = new NPredicate($1,LLTHAN,$3);}
-	| BitExp LLTHANEQ BitExp  {$$ = new NPredicate($1,$2,$3);}
-	| BitExp LGTHAN BitExp  {$$ = new NPredicate($1,$2,$3);}
-	| BitExp LGTHANEQ BitExp  {$$ = new NPredicate($1,$2,$3);}
-	| BitExp LNOTEQU BitExp {$$ = new NPredicate($1,$2,$3);}
+	| BitExp LLTHANEQ BitExp  {$$ = new NPredicate($1,LLTHANEQ,$3);}
+	| BitExp LGTHAN BitExp  {$$ = new NPredicate($1,LGTHAN,$3);}
+	| BitExp LGTHANEQ BitExp  {$$ = new NPredicate($1,LGTHANEQ,$3);}
+	| BitExp LNOTEQU BitExp {$$ = new NPredicate($1,LNOTEQU,$3);}
 	;
 
 Increment
