@@ -15,19 +15,11 @@ int NBinOp::resolveType() const{
 	int t1 = children[0]->getType();
 	int t2 = children[1]->getType();
 
-	/* This if statement makes no sense*/
-	/*	if(t1 != t2 && t1 != TNUMBER && t2 != TCHAR) {
+	if(t1 != t2 && t1 != TNUMBER && t2 != TCHAR) {
 		return INVALIDTYPE;
 	}
-	else {
-		return t1;
-	i}*/
-	cout << " Type 1: " << typemap_get(t1) << endl;
-	cout << " Type 2: " << typemap_get(t2) << endl;
 
-	if (t1 != t2) {
-		return INVALIDTYPE;
-	} else {
+	else {
 		return t1;
 	}
 }

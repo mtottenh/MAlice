@@ -13,6 +13,7 @@ private:
 public:
 	NArrayAccess(NIdentifier*, Node*);
 	virtual int check();
+	virtual int getType();
 };
 
 #endif
