@@ -160,8 +160,8 @@ Term
  * a pointer to the subexpression to apply to operator too
  */
 Factor
-	: NOT Factor %prec UNARY {$$ = new NUnaryOp($1,$2);}
-	| DASH Factor %prec UNARY {$$ = new NUnaryOp($1,$2);}
+	: NOT Factor %prec UNARY {$$ = new NUnaryOp(NOT,$2);}
+	| DASH Factor %prec UNARY {$$ = new NUnaryOp(DASH,$2);}
 	| Value { $$ = $1;}
 	;
 Value
@@ -265,7 +265,7 @@ Predicate
 
 PredPrime
 	: BitExp LEQU BitExp  {$$ = new NPredicate($1,$2,$3);}
-	| BitExp LLTHAN BitExp {$$ = new NPredicate($1,$2,$3);}
+	| BitExp LLTHAN BitExp {$$ = new NPredicate($1,LLTHAN,$3);}
 	| BitExp LLTHANEQ BitExp  {$$ = new NPredicate($1,$2,$3);}
 	| BitExp LGTHAN BitExp  {$$ = new NPredicate($1,$2,$3);}
 	| BitExp LGTHANEQ BitExp  {$$ = new NPredicate($1,$2,$3);}
