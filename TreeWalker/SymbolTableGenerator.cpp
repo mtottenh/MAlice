@@ -120,6 +120,7 @@ SymbolTable* SymbolTableGenerator::nodeTableGen(Node *node, SymbolTable* sym) {
 			/* no.jpg */
 			sym = nodeTableGen(node->getChildren()[i],sym);
 		}
+		return sym;
 	}
 	if (type == DECLARATIONBLOCK) {
 		for (unsigned int i = 0; i < node->getChildren().size(); i++) {

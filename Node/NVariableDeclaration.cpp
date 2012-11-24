@@ -6,10 +6,6 @@ NVariableDeclaration::NVariableDeclaration(NIdentifier* id, int type) {
 	name = id->getID();
 	delete(id);
 	nodeType = VARDEC;
-	cout << typemap_get(type) << endl;
-	cout << typemap_get(this->type) << endl;
-	cout << typemap_get(this->getType()) << endl;
-	cout << typemap_get(this->resolveType()) << endl;
 }
 
 NVariableDeclaration::NVariableDeclaration(NIdentifier* id, int type, Node *block) {
@@ -18,7 +14,6 @@ NVariableDeclaration::NVariableDeclaration(NIdentifier* id, int type, Node *bloc
 	name = id->getID();
 	delete(id);
 	nodeType = VARDEC;
-	cout << typemap_get(type);
 }
 
 int NVariableDeclaration::check() {

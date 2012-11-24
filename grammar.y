@@ -371,7 +371,7 @@ int main(int argc, char* argv[]) {
 		<< "Type resolution only occurs after check() has been "
 		<< "called :)" << endl;
 	treePrinter t(root);
-	t.print(); 
+//	t.print(); 
 	cout << endl << "##### Complete! #####" << endl;
 	root->check();
 	t.print();
