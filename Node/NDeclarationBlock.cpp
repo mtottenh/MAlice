@@ -15,19 +15,20 @@ NDeclarationBlock::NDeclarationBlock(Node* child) {
 int NDeclarationBlock::check() {
 	int isValid = 1;
 
+	/* Check for 'hatta' entry point, if this is the topmost root node. */
+	if(isRootNode) {
+		Node* nodePtr = table->lookup("hatta");
 
-	/* THIS SHOULD ONLY HAPPEN ON THE VERY 1st DECLARATION BLOCK*/
-	/* Check for 'hatta' entry point. */
-	Node* nodePtr = table->lookup("hatta");
-	if(nodePtr == NULL) {
-		error_no_entry();
-		isValid = 0;
-	}
+		if(nodePtr == NULL) {
+			error_no_entry();
+			isValid = 0;
+		}
 
-	/* We have a 'hatta', but is it a function declaration? */
-	else if(nodePtr->getNodeType() != PROCEDURE) {
-		error_no_entry();
-		isValid = 0;
+		/* We have a 'hatta', but is it a function declaration? */
+		else if(nodePtr->getNodeType() != PROCEDURE) {
+			error_no_entry();
+			isValid = 0;
+		}
 	}
 
 	/* Now proceed as a generic node. */

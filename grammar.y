@@ -76,7 +76,7 @@ DECLARATIONBLOCK STATLIST
 
 /* We define a program as a list of Declarations, this allows global vaiables*/
 
-program : DeclarationList { root = $1; }
+program : DeclarationList { root = $1; root->isRoot(); }
 	;
 
 DeclarationList

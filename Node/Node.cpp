@@ -59,6 +59,12 @@ int Node::addTable(SymbolTable* table) {
 		return 1;
 	}
 }
+
 int Node::getNodeType() {
 	return nodeType;
 }
+
+int Node::isRoot() {
+	isRootNode = 1;
+	return isRootNode;
+}	
