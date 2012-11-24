@@ -41,7 +41,7 @@ int SymbolTable::add(string name, Node* node) {
 Node* SymbolTable::lookup(const string& name) {
 	Node* currentNodePtr = lookupCurrentScope(name);
 
-	if (currentNodePtr != NULL || table.size() == 0) {
+	if (currentNodePtr != NULL ) {
 		return currentNodePtr;
 	}
 	else if (parentExists()) {
