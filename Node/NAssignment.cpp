@@ -52,6 +52,7 @@ NAssignment::NAssignment(Node* id, char *exp) {
 int NAssignment::check() {
 	int isValid = 1;
 	string lvalID = lval->getID();
+	isValid &= rval->check();
 
 	Node* nodePtr = table->lookup(lvalID);
 
@@ -76,7 +77,6 @@ int NAssignment::check() {
 	}
 
 	/* Check the RHS of the assignment. */
-	isValid &= rval->check();
-
+	
 	return isValid;
 }

@@ -28,16 +28,16 @@ SymbolTable* SymbolTableGenerator::funcGen(Node *func, SymbolTable* sym) {
 		Codeblock = children[0];
 		Paramlist = children[1];
 			
-		sym = nodeTableGen(children[0],sym);
+		SymbolTable *t_sym = nodeTableGen(children[0],sym);
 
-		nodeTableGen(children[1],sym);
+		nodeTableGen(children[1],t_sym);
 	} else {
 //		cout << "Number of children: " << numberOfChildren << endl;
 //		cout << "Child Type: " << children[0]->getNodeType();
 		/*If it takes no args just process its child with a new scope */
 //		sym->print();
-		sym = new SymbolTable(sym);
-		nodeTableGen(children[0],sym);
+		SymbolTable *t_sym = new SymbolTable(sym);
+		nodeTableGen(children[0],t_sym);
 
 		
 //		cout << "Generating table for CodeBlock: " << type << endl;
