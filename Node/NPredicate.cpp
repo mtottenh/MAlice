@@ -113,9 +113,11 @@ int NPredicate::checkLEQU(int t1, int t2) {
 
 int NPredicate::checkPred(int t1, int t2) {
 	if(t1 != BOOLEAN && t1 != TNUMBER && t1 != TCHAR) {
+		cout << "LHS BROKE";
 		error_type_mismatch(op, t1, "number/letter/boolean");
 		
 		if(t2 != BOOLEAN && t2 != TNUMBER && t2 != TCHAR) {
+			cout << "RHS BROKE";
 			error_type_mismatch(op, t2, "number/letter/boolean");
 		}
 

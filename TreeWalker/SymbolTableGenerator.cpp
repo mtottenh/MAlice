@@ -22,20 +22,20 @@ SymbolTable* SymbolTableGenerator::funcGen(Node *func, SymbolTable* sym) {
 
 	if (numberOfChildren > 1) {
 		/* if we have a function that takes paramaters 
-		 * let the codeblock create the new scope
-		 * and then pass that to the Params node
+		 * Create a new scope block and add the params too it.
 		 */
 		Codeblock = children[0];
 		Paramlist = children[1];
-			
-		SymbolTable *t_sym = nodeTableGen(children[0],sym);
+				sym = new SymbolTable(sym);	
+		SymbolTable *t_sym = nodeTableGen(children[1],sym);
 
-		nodeTableGen(children[1],t_sym);
+		nodeTableGen(children[0],t_sym);
 	} else {
 //		cout << "Number of children: " << numberOfChildren << endl;
 //		cout << "Child Type: " << children[0]->getNodeType();
 		/*If it takes no args just process its child with a new scope */
 //		sym->print();
+		
 		SymbolTable *t_sym = new SymbolTable(sym);
 		nodeTableGen(children[0],t_sym);
 
@@ -108,7 +108,7 @@ SymbolTable* SymbolTableGenerator::nodeTableGen(Node *node, SymbolTable* sym) {
 		 * then create a new scope
 		 * and add the children to the font of th equeu
 		 */
-		sym = new SymbolTable(sym);
+
 		if (node->getChildren().size() > 1) {
 		/* If we consists of more than just a dec list we 
 		 * need to propagate the symbol table to the statlist
