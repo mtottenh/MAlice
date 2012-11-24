@@ -110,7 +110,7 @@ SymbolTable* SymbolTableGenerator::nodeTableGen(Node *node, SymbolTable* sym) {
 
 		}
 		/* If it doesnt add it to the symbl table*/
-		sym->add(node->getID(), root);	
+		sym->add(node->getID(), node);	
 	}		
 	if (type == CODEBLOCK) {
 		/* if we are processing a codeblock 
@@ -136,7 +136,7 @@ SymbolTable* SymbolTableGenerator::nodeTableGen(Node *node, SymbolTable* sym) {
 			/* no.jpg */
 			nodeTableGen(node->getChildren()[i],sym);
 		}
-	
+		return sym;	
 	}
 	for (unsigned int i = 0; i < node->getChildren().size(); i++) {
 		/* Like dat bad coding bro? */

@@ -9,7 +9,8 @@ class NIdentifier : public Node {
         	NIdentifier();
 		string getID();
 		NIdentifier(string);
-	      	NIdentifier(char*);                                 
+	      	NIdentifier(char*);                                
+		int check(); 
 };  
 
 #endif

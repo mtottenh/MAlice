@@ -18,5 +18,11 @@ NIdentifier::NIdentifier(char *name) {
 NIdentifier::NIdentifier(string name) {
 	this->name = name;
 }
+/* Dummy check function just trying to get something working */
+int NIdentifier::check() {
+	if (table->lookup(name) != NULL) 
+		return 1;
+	return 0;
+}
 #endif
 

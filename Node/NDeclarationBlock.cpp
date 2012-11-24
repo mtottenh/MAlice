@@ -15,6 +15,8 @@ NDeclarationBlock::NDeclarationBlock(Node* child) {
 int NDeclarationBlock::check() {
 	int isValid = 1;
 
+
+	/* THIS SHOULD ONLY HAPPEN ON THE VERY 1st DECLARATION BLOCK*/
 	/* Check for 'hatta' entry point. */
 	Node* nodePtr = table->lookup("hatta");
 	if(nodePtr == NULL) {

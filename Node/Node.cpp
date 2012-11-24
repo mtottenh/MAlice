@@ -28,11 +28,11 @@ node_children_t Node::getChildren() const {
 }
 
 int Node::getType() const {
-	return type;
+	return this->type;
 }
 
 int Node::resolveType() {
-	return INVALIDTYPE;
+	return type;
 }
 
 string Node::getID() {
