@@ -87,7 +87,7 @@ int NPredicate::checkLNOT(int type) {
 }
 
 int NPredicate::checkDASH(int type) {
-	if(type != TNUMBER) {
+	if(type != TNUMBER && type != REFNUMBER) {
 		error_type_mismatch(op, type, TNUMBER);
 		return 0;
 	}
@@ -96,10 +96,11 @@ int NPredicate::checkDASH(int type) {
 }
 
 int NPredicate::checkLEQU(int t1, int t2) {
-	if(t1 != TNUMBER && t1 != TCHAR) {
+	if(t1 != TNUMBER && t1 != REFNUMBER && t1 != TCHAR && t1 != REFCHAR) {
 		error_type_mismatch(op, t1, "number/letter");
 		
-		if(t2 != TNUMBER && t2 != TCHAR) {
+		if(t2 != TNUMBER && t2 != REFNUMBER && t2 != TCHAR
+				&& t2 != REFCHAR) {
 			error_type_mismatch(op, t2, "number/letter");	
 		}
 
@@ -115,11 +116,13 @@ int NPredicate::checkLEQU(int t1, int t2) {
 }
 
 int NPredicate::checkPred(int t1, int t2) {
-	if(t1 != BOOLEAN && t1 != TNUMBER && t1 != TCHAR) {
+	if(t1 != BOOLEAN && t1 != TNUMBER && t1 != REFNUMBER && t1 != TCHAR
+			&& t1 != REFCHAR) {
 		cout << "LHS BROKE";
 		error_type_mismatch(op, t1, "number/letter/boolean");
 		
-		if(t2 != BOOLEAN && t2 != TNUMBER && t2 != TCHAR) {
+		if(t2 != BOOLEAN && t2 != TNUMBER && t2 != REFNUMBER
+				&& t2 != TCHAR && t2 != REFCHAR) {
 			cout << "RHS BROKE";
 			error_type_mismatch(op, t2, "number/letter/boolean");
 		}
