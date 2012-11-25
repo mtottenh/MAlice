@@ -44,7 +44,7 @@ int NArrayAccess::resolveType() {
 int NArrayAccess::check() {
 	int isValid = 1;
 	
-	cerr << "NArrayAccess::check() called!" << endl;
+	/*cerr << "NArrayAccess::check() called!" << endl;*/
 	this->type = resolveType();
 	
 	/* Does the identifier exist in scope? */
