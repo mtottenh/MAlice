@@ -169,8 +169,6 @@ Value
 	| Identifier {$$ = $1;}
 	| Call { $$ = $1;}
 	| ArrayVal {$$ = $1;}
-	| Increment {$$ = $1;}
-	| Decrement {$$ = $1;}
 	| OBRACKET BitExp CBRACKET { $$ = $2;}
 	| Char {$$ = $1;}
 	| StringLiti {$$ = $1;}
