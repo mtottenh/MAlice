@@ -172,10 +172,10 @@ Value
 	| Increment {$$ = $1;}
 	| Decrement {$$ = $1;}
 	| OBRACKET BitExp CBRACKET { $$ = $2;}
-	| Char
-	| StringLit
+	| Char {$$ = $1;}
+	| StringLiti {$$ = $1;}
 	;
-//Check string lit case!
+
 Assignment
 	: Identifier BECAME Value   { $$ = new NAssignment($1,$3);}
 	| ArrayVal BECAME Value {$$ = new NAssignment($1,$3);}
@@ -186,11 +186,6 @@ VarDeclarationAssignment
 	  Node* Assignment =  new NAssignment(Declaration->getID(), $3);
 	  $$ = new NStatementList(Declaration,Assignment);}
 	;
-
-/*Print Token matches said allice and spoke*/
-//Print 
-//	: PRINT  {$$ = new NPrint();/**/}
-//	;
 
 Print
 	: SAID ALICE {}
