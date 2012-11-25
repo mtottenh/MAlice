@@ -171,7 +171,7 @@ Value
 	| ArrayVal {$$ = $1;}
 	| OBRACKET BitExp CBRACKET { $$ = $2;}
 	| Char {$$ = $1;}
-	| StringLiti {$$ = $1;}
+	| StringLit {$$ = $1;}
 	;
 
 Assignment
@@ -202,9 +202,6 @@ Found
 	: ALICE FOUND {}
 	;
 
-/* Add rules for /ArrayAcess/FuncandProcedureCalls
- * user input / fix LoxExp print to be more generatlised 
- *  */
 Statement
 	: Read {$$=$1;}
 	| Conditional { $$ = $1;}
