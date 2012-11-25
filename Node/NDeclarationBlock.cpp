@@ -31,7 +31,7 @@ int NDeclarationBlock::check() {
 		}
 
 		/* No hatta. Sad face :( */
-		else {
+		else if (nodePtr->getNodeType() != PROCEDURE) {
 			error_no_entry();
 			isValid = 0;
 		}
