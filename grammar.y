@@ -96,6 +96,7 @@ Declaration
 	| VarDeclarationAssignment Separator { $$ = $1;}
 	| FunctionDec	 { $$ = $1; }
 	| ProcedureDec     { $$= $1;  }
+	| error Separator {yyerrok;}
 	;
 /* 
  * (TODO) Look into TREF
@@ -214,6 +215,7 @@ Statement
 	| Assignment Separator {$$ = $1;}
 	| PrintStatement	{$$ = $1;}
 	| Return Separator {$$ = $1;}
+	| error Separator {yyerrok;}
 	;
 
 Call 
@@ -221,8 +223,8 @@ Call
 	| Identifier OBRACKET CBRACKET {$$ = new NMethodCall($1);}
 	;
 ParamList
-	: ParamList COMMA Value { $1->children.push_back($3); }
-	| Value { $$ = new NParamBlock($1); }
+	: ParamList COMMA BitExp { $1->children.push_back($3); }
+	| BitExp { $$ = new NParamBlock($1); }
 	;
 Read
 	: WHAT WAS Identifier QUESTIONMARK { $$ = new NAssignment($3, new NInput()); }
