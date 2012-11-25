@@ -1,6 +1,6 @@
 CC = g++
 CFLAGS = -Wall -pedantic -g -O0
-YFLAGS = --verbose --debug --defines
+YFLAGS = --verbose --debug --defines --locations
 LFLAGS = --yylineno
 
 all: lex.yy.c y.tab.c parser

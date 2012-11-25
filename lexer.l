@@ -9,11 +9,18 @@
 
 //extern char *strdup(const char *s);
 //extern int fileno(FILE *stream);
-void yyerror(char *s);
+extern void yyerror(char *s, ...);
 int lineno = 1;
 char linebuf[500];
 int tokenpos = 0;
 char error_message[] = {"Lexer Error"};
+
+/* handle locations */
+int yycolumn = 1;
+
+#define YY_USER_ACTION yylloc.first_line = yylloc.last_line = yylineno; \
+    yylloc.first_column = yycolumn; yylloc.last_column = yycolumn+yyleng-1; \
+    yycolumn += yyleng;
 %}
 
 %option nounput yylineno
@@ -24,7 +31,6 @@ charlit		['][^'][']
 stringlit   ["][^"]*["]
 string 		{char}[a-zA-Z0-9_]*
 whitespace	[ \t]+  
-%s INIT
 %%
  /* Start state */
  
@@ -118,17 +124,17 @@ closed		 { tokenpos += yyleng; return CBRACE; }
 {whitespace}	{ tokenpos += yyleng;} /* ignore any whitespace */
 (###[^\n]*)		{}
 [\n].*		{ strncpy(linebuf, yytext+1,sizeof(linebuf)); 
-		  lineno++; yyless(1); tokenpos = 0; } 
+		  lineno++; yyless(1); tokenpos = 0; yycolumn = 1;} 
 			/*rescan all but the \n*/
 .		{ tokenpos += yyleng; yyerror(error_message);}
 
 
 %%
 
-void yyerror (char *s) {
+ /*void yyerror (char *s) {
 	fprintf(stderr, "line %d: pos %d %s:\n%s\n", lineno, tokenpos, s, linebuf);
 	fprintf(stderr, "%*s\n", tokenpos, "^");
-}
+}*/
  /*
 main()
 {
