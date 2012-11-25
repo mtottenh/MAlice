@@ -191,7 +191,7 @@ Print
 	;
 
 PrintStatement
-	: Value Print Separator { $$ = new NPrint($1);}
+	: BitExp Print Separator { $$ = new NPrint($1);}
 	;
 
 Return
