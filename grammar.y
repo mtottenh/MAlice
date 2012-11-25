@@ -8,7 +8,9 @@
 #include "TreeWalker/SymbolTableGenerator.hpp"
 extern int yylex();
 extern void yyerror (char *s, ...);
+fileLocation generateLocation();
 Node *root;
+
 %}
 
 %locations
@@ -172,7 +174,7 @@ Factor
 	| Value { $$ = $1;}
 	;
 Value
-	: INTEGER {$$ = new NInteger($1);}
+	: INTEGER {$$ = new NInteger($1); $$->setLocation(generateLocation());}
 	| Identifier {$$ = $1;}
 	| Call { $$ = $1;}
 	| ArrayVal {$$ = $1;}
@@ -304,12 +306,15 @@ ArrayVal
 	;
  
 Identifier
-	: STRING {$$ = new NIdentifier($1);}
+	: STRING {$$ = new NIdentifier($1);
+				$$->setLocation(generateLocation());}
 	;
 StringLit
-	: STRINGLIT {$$ = new NStringLit($1);}
+	: STRINGLIT {$$ = new NStringLit($1);
+				$$->setLocation(generateLocation());}
 Char
-	: CHARLIT { $$ = new NCharLit($1); }
+	: CHARLIT { $$ = new NCharLit($1); 
+				$$->setLocation(generateLocation()); }
 	;
 EndIf
 	: BECAUSE ALICE WAS UNSURE WHICH {}
@@ -420,17 +425,14 @@ void yyerror(char *s, ...)
   fprintf(stderr, " on Line(s) %d-%d. Column %d-%d: Token: %d", yylloc.first_line,
 	yylloc.last_line, yylloc.first_column, yylloc.last_column, yylval.values.token);
   fprintf(stderr, "\n");
-
-}
-/*
-yyerror(s)
-char *s;
-{
-  fprintf(stderr, "%s\n",s);
 }
 
-yywrap()
+fileLocation generateLocation()
 {
-  return(1);
+	fileLocation data;
+	data.startLine = yylloc.first_line;
+	data.endLine = yylloc.last_line;
+	data.startColumn = yylloc.first_column;
+	data.endColumn = yylloc.last_column;
+	return data;
 }
-*/

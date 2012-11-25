@@ -23,6 +23,11 @@ int NInc::check() {
 
 	/* Is this the expected type (number)? */
 	if(type != TNUMBER && type != REFNUMBER) {
+		fileLocation location = this->getLocation();
+		cerr << "Error between " << location.startLine << " and " <<
+			location.endLine << ", between column numbers " << 
+			location.startColumn << " and " << location.endColumn
+			<< endl;
 		error_type_mismatch(INC, children[0]->getType(), TNUMBER);
 		isValid = 0;
 	}
