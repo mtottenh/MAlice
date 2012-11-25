@@ -408,6 +408,8 @@ int initTypeMap() {
 	typemap_add(OR, "|");
 	typemap_add(NOT, "~");
 	typemap_add(VOID, "void");
+	typemap_add(INC, "ate");
+	typemap_add(DEC, "drank");
 	return 1;
 }
 /*
