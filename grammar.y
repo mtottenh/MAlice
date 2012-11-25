@@ -335,6 +335,7 @@ int main(int argc, char* argv[]) {
 	initTypeMap();
 	int node = yyparse();
 	if (root == NULL) {
+		cerr << "ERROR: Parse tree broke, stopping compiler" << endl;
 		return -1;
 	}	
 	/* Create symbol table generator.*/
