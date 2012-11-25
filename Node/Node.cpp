@@ -70,7 +70,8 @@ int Node::isRoot() {
 }
 
 int Node::compareTypes(int t1, int t2) const {
-	switch(t1) {
+	return (t1 == t2);
+/*	switch(t1) {
 		case TNUMBER:
 		case REFNUMBER:
 			return (t2 == TNUMBER || t2 == REFNUMBER);
@@ -86,5 +87,5 @@ int Node::compareTypes(int t1, int t2) const {
 		default:
 			return (t1 == t2);
 			break;
-	}		
+	} */		
 }	
