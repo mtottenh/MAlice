@@ -11,15 +11,21 @@ int NBinOp::getType() {
 	return resolveType();
 }
 int NBinOp::resolveType()  {
-	/* Do the types of the children match? */
+	/* Do the types of the children match? If not, invalid. */
 	int t1 = children[0]->getType();
 	int t2 = children[1]->getType();
 
-	if(!(Node::compareTypes(t1, t2)) && t1 != TNUMBER && t1 != REFNUMBER 
-			&& t2 != TCHAR && t2 != REFCHAR) {
+	if(!Node::compareTypes(t1, t2)) {
 		return INVALIDTYPE;
 	}
 
+	/* Are they numbers of letters? If not, invalid. */
+	else if(t1 != TNUMBER && t1 != REFNUMBER && t1 != TCHAR 
+			&& t1 != REFCHAR) {
+		return INVALIDTYPE;
+	}
+
+	/* Yay, everything is fine :D */
 	else {
 		return t1;
 	}
