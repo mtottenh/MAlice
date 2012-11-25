@@ -24,11 +24,12 @@ charlit		['][^'][']
 stringlit   ["][^"]*["]
 string 		{char}[a-zA-Z0-9_]*
 whitespace	[ \t]+  
-%s INIT
 %%
  /* Start state */
  
   /*need to formulate rules for ( ) * / % ^ & | - _ ~ to be turned into tokens*/
+\n.*		{ strncpy(linebuf, yytext+1,sizeof(linebuf)); 
+		  lineno++; yyless(1); tokenpos = 0; } 
 
  /* Keywords */
 too 		  { tokenpos += yyleng; return TOO;}
@@ -117,8 +118,6 @@ closed		 { tokenpos += yyleng; return CBRACE; }
 
 {whitespace}	{ tokenpos += yyleng;} /* ignore any whitespace */
 (###[^\n]*)		{}
-[\n].*		{ strncpy(linebuf, yytext+1,sizeof(linebuf)); 
-		  lineno++; yyless(1); tokenpos = 0; } 
 			/*rescan all but the \n*/
 .		{ tokenpos += yyleng; yyerror(error_message);}
 

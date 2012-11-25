@@ -320,14 +320,14 @@ extern FILE * yyin;
 
 int main(int argc, char* argv[]) {
 	if (argc != 2) {
-		cout << "ERROR: Usage is: " << argv[0] << " FILENAME" << endl;
+		cerr << "ERROR: Usage is: " << argv[0] << " FILENAME" << endl;
 		return 0;
 	}
 
 	/* Open file from argv[1]. Quit if null. */
 	FILE *input = fopen(argv[1],"r");
 	if (input == NULL) {
- 		cout << "ERROR: Could not open file " << argv[1] << endl;
+ 		cerr << "ERROR: Could not open file " << argv[1] << endl;
  		return 0;
 	}
 

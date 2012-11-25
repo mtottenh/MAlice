@@ -32,7 +32,7 @@ int treePrinter::print() {
 			if (temp->table != NULL)
 				temp->table->print();
 			else
-				cout << "Null symbol table detected" << endl;
+				cout << "ERROR: this->table = 0x0 " << endl;
 		
 		node_children_t children = temp->getChildren();
 /*		cout << "\tCurrent Node has: " << children.size() << " children" ; */
