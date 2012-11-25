@@ -278,7 +278,6 @@ Codeblock
 	{ $$ = new NCodeBlock($2, $3);}
 	| OBRACE StatementList CBRACE { $$ = new NCodeBlock($2);}
 	| OBRACE CBRACE {$$ = new NCodeBlock(); }
-	| OBRACE DeclarationList CBRACE { $$ = new NCodeBlock($2);}
 	; 
 
 StatementList
