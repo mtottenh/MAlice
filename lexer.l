@@ -93,23 +93,23 @@ said		{tokenpos += yyleng; return SAID; }
 spoke { tokenpos +=yyleng; return SPOKE; }
 
   /* Char literals */
-{charlit}		{ tokenpos +=yyleng; yylval.string = strdup(yytext);
+{charlit}		{ tokenpos +=yyleng; yylval.values.string = strdup(yytext);
 					 return CHARLIT; }
 
   /* String literals */
-{stringlit}		{ tokenpos += yyleng; yylval.string = strdup(yytext);
+{stringlit}		{ tokenpos += yyleng; yylval.values.string = strdup(yytext);
 					return STRINGLIT; }
 
  /* Scope blocks */
 opened		 { tokenpos += yyleng; return OBRACE; }
 closed		 { tokenpos += yyleng; return CBRACE; }
-{separator}	 { tokenpos += yyleng; yylval.string = strdup(yytext);
+{separator}	 { tokenpos += yyleng; yylval.values.string = strdup(yytext);
 		    return SEPARATOR; }
 
-{string}	 { tokenpos += yyleng; yylval.string = strdup(yytext);
+{string}	 { tokenpos += yyleng; yylval.values.string = strdup(yytext);
 		   return STRING; }
 
-{integer}	{ tokenpos += yyleng; yylval.token = atoi(yytext); return INTEGER; }
+{integer}	{ tokenpos += yyleng; yylval.values.token = atoi(yytext); return INTEGER; }
 \.	 	{ tokenpos += yyleng; return NULLTOK; }
 \,		{ tokenpos += yyleng; return COMMA;	}
 \+		{ tokenpos += yyleng; return PLUS; }

@@ -47,6 +47,10 @@ DECLARATIONBLOCK STATLIST INPUTNODE
 %union {
 	char *string;
 	int token; /* should we explicitly state the length? e.g. int_32t?*/
+	struct value {
+		char *string;
+		int token;
+	} values;
 	Node *node;
 	NPrint *print;
 	NStatementList *stat;
@@ -320,14 +324,14 @@ Procedure
 
 int initTypeMap();
 extern FILE * yyin;
-
+bool error_flag;
 int main(int argc, char* argv[]) {
 	if (argc < 2) {
 		cout << "ERROR: Usage is: " << argv[0] << " FILENAME "
 			<< "[-d]" << endl;
 		return 0;
 	}
-
+	error_flag = false;
 	/* Open file from argv[1]. Quit if null. */
 	FILE *input = fopen(argv[1],"r");
 	if (input == NULL) {
@@ -338,7 +342,8 @@ int main(int argc, char* argv[]) {
 	yyin = input;
 	initTypeMap();
 	int node = yyparse();
-	if (root == NULL || node == 1) {
+
+	if (root == NULL || node == 1 || error_flag) {
 		cerr << "ERROR: Parse tree broke, stopping compiler" << endl;
 		return -1;
 	}	
@@ -405,11 +410,15 @@ void yyerror(char *s, ...)
 {
   va_list ap;
   va_start(ap, s);
-
+  error_flag = true;
   if(yylloc.first_line)
-  vfprintf(stderr, s, ap);
+   vfprintf(stderr, s, ap);
+  if (yylval.values.string != NULL)
   fprintf(stderr, " on Line(s) %d-%d. Column %d-%d: Token: %s", yylloc.first_line,
-yylloc.last_line, yylloc.first_column, yylloc.last_column, yylval.string);
+	yylloc.last_line, yylloc.first_column, yylloc.last_column, yylval.values.string);
+  else
+  fprintf(stderr, " on Line(s) %d-%d. Column %d-%d: Token: %d", yylloc.first_line,
+	yylloc.last_line, yylloc.first_column, yylloc.last_column, yylval.values.token);
   fprintf(stderr, "\n");
 
 }
