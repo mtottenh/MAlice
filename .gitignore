@@ -2,7 +2,7 @@
 malice_examples
 #ignore temp files
 *~
-
+output
 #ignore pdf files (just keep source files)
 *.pdf
 

@@ -70,23 +70,7 @@ int Node::isRoot() {
 }
 
 int Node::compareTypes(int t1, int t2) const {
-	switch(t1) {
-		case TNUMBER:
-		case REFNUMBER:
-			return (t2 == TNUMBER || t2 == REFNUMBER);
-			break;
-		case TCHAR:
-		case REFCHAR:
-			return (t2 == TCHAR || t2 == REFCHAR);
-			break;
-		case TSTRING:
-		case REFSTRING:
-			return (t2 == TSTRING || t2 == REFSTRING);
-			break;
-		default:
-			return (t1 == t2);
-			break;
-	}		
+	return (t1 == t2);
 }
 
 void Node::setLocation(fileLocation location) 
@@ -104,4 +88,4 @@ fileLocation Node::getLocation()
 		location.endColumn = children.back()->getLocation().endColumn;
 	}
 	return location;
-}
+}	

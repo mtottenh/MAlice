@@ -11,6 +11,7 @@ public:
         NPrint();
 	NPrint(const char*); 
 	NPrint(Node*);
+	virtual int check();
 };
 
 #endif
