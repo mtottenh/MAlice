@@ -170,7 +170,7 @@ Factor
 	| Value { $$ = $1;}
 	;
 Value
-	: INTEGER {$$ = new NInteger($1);}
+	: INTEGER {$$ = new NInteger($1); $$->setLocation(generateLocation());}
 	| Identifier {$$ = $1;}
 	| Call { $$ = $1;}
 	| ArrayVal {$$ = $1;}
@@ -302,12 +302,15 @@ ArrayVal
 	;
  
 Identifier
-	: STRING {$$ = new NIdentifier($1);}
+	: STRING {$$ = new NIdentifier($1);
+				$$->setLocation(generateLocation());}
 	;
 StringLit
-	: STRINGLIT {$$ = new NStringLit($1);}
+	: STRINGLIT {$$ = new NStringLit($1);
+				$$->setLocation(generateLocation());}
 Char
-	: CHARLIT { $$ = new NCharLit($1); }
+	: CHARLIT { $$ = new NCharLit($1); 
+				$$->setLocation(generateLocation()); }
 	;
 EndIf
 	: BECAUSE ALICE WAS UNSURE WHICH {}

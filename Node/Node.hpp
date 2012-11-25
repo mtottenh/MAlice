@@ -32,6 +32,8 @@ typedef struct file
 class SymbolTable;
 /* Top level Base Class */
 class Node {
+private:
+	fileLocation location;
 public: /* This should be changed to private at some point. */
 	SymbolTable* table;
 	int nodeType;
@@ -54,6 +56,7 @@ public:
 	int isRoot();
 	virtual int compareTypes(int, int) const;
 	void setLocation(fileLocation);
+	fileLocation getLocation();
 };
 
 #endif
