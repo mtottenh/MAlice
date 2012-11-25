@@ -21,6 +21,7 @@ DECLARATIONBLOCK STATLIST INPUTNODE
 
 /* Extra 'types' for semantic analysis (add to types enum). */
 %token INVALIDTYPE BOOLEAN VOID ENDIF
+%token ARRNUMBER ARRCHAR ARRSTRING
 
 /* Primitives */
 %token <string> CHARLIT STRING STRINGLIT
@@ -320,8 +321,9 @@ int initTypeMap();
 extern FILE * yyin;
 
 int main(int argc, char* argv[]) {
-	if (argc != 2) {
-		cout << "ERROR: Usage is: " << argv[0] << " FILENAME" << endl;
+	if (argc < 2) {
+		cout << "ERROR: Usage is: " << argv[0] << " FILENAME "
+			<< "[-d]" << endl;
 		return 0;
 	}
 
@@ -347,14 +349,17 @@ int main(int argc, char* argv[]) {
 	cout << endl << "##### Generating symbol table #####" << endl;
 	SymbolTable* sym = s->generateTable();
 
-	/* Print the AST */
-	cout << endl << "##### Printing AST via TreePrinter #####" << endl;
-	cout << "Types showing as INVALID? Don't panic!" << endl 
-		<< "Type resolution only occurs after check() has been "
-		<< "called :)" << endl;
-	treePrinter t(root);
-	t.print(); 
-	cout << endl << "##### Complete! #####" << endl;
+	/* Print the AST if debug flag enabled*/
+	if(argc >= 3 && strcmp(argv[2], "-d") == 0) {
+		cout << endl << "##### Printing AST via TreePrinter #####" << endl;
+		cout << "Types showing as INVALID? Don't panic!" << endl 
+			<< "Type resolution only occurs after check() has been "
+			<< "called :)" << endl;
+		treePrinter t(root);
+		t.print();
+	}
+
+	cout << endl << "##### Semantic Analysis (check()) #####" << endl;
 	root->check();
 //	t.print();
 	return 0;
@@ -367,6 +372,9 @@ int initTypeMap() {
 	typemap_add(REFCHAR, "spider letter");
 	typemap_add(REFSTRING, "spider sentence");
 	typemap_add(REFNUMBER, "spider number");
+	typemap_add(ARRCHAR, "letter array");
+	typemap_add(ARRSTRING, "sentence array");
+	typemap_add(ARRNUMBER, "number array");
 	typemap_add(INVALIDTYPE, "INVALID");
 	typemap_add(BOOLEAN, "Boolean");
 	typemap_add(VOID, "void");
@@ -391,6 +399,7 @@ int initTypeMap() {
 	typemap_add(VOID, "void");
 	typemap_add(INC, "ate");
 	typemap_add(DEC, "drank");
+	typemap_add(SAID, "said");
 	return 1;
 }
 /*

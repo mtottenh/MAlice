@@ -19,7 +19,7 @@ int NBinOp::resolveType()  {
 		return INVALIDTYPE;
 	}
 
-	/* Are they numbers of letters? If not, invalid. */
+	/* Are they numbers or letters? If not, invalid. */
 	else if(t1 != TNUMBER && t1 != REFNUMBER && t1 != TCHAR 
 			&& t1 != REFCHAR) {
 		return INVALIDTYPE;

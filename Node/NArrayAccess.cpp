@@ -16,14 +16,28 @@ int NArrayAccess::getType() {
 }
 
 int NArrayAccess::resolveType() {
-	/* Return type of the identifier. */
+	/* Return type of the identifier, excluding the 'array' bit. */
 	Node* nodePtr = table->lookup(name);
 	if(nodePtr == NULL) {
 		return INVALIDTYPE;
 	}
-	else {
-		return nodePtr->getType();
-	}	
+
+	int idType = nodePtr->getType();
+
+	switch(idType) {
+	case ARRCHAR:
+		return TCHAR;
+		break;
+	case ARRNUMBER:
+		return TNUMBER;
+		break;
+	case ARRSTRING:
+		return TSTRING;
+		break;
+	default:
+		return INVALIDTYPE;
+		break;
+	}
 }
 
 int NArrayAccess::check() {

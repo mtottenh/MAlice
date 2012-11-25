@@ -64,6 +64,16 @@ int NAssignment::check() {
 	
 	else { 
 		int lhsType = nodePtr->getType();
+
+		/*
+		 * If we have an array, we need the type of the array access
+		 * node as opposed to the array declaration node.
+		 */
+		if(lhsType == ARRNUMBER || lhsType == ARRCHAR
+				|| lhsType == ARRSTRING) {
+			lhsType = children[0]->getType();
+		}
+		
 		int rhsType = rval->getType();
 		/*cout << "RHS TYPE : " << typemap_get(rhsType) << endl;*/
 		if (rval->getNodeType() == INPUTNODE) {
