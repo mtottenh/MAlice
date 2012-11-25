@@ -175,8 +175,8 @@ Value
 	;
 
 Assignment
-	: Identifier BECAME Value   { $$ = new NAssignment($1,$3);}
-	| ArrayVal BECAME Value {$$ = new NAssignment($1,$3);}
+	: Identifier BECAME BitExp   { $$ = new NAssignment($1,$3);}
+	| ArrayVal BECAME BitExp {$$ = new NAssignment($1,$3);}
 	;
 VarDeclarationAssignment
 	: VarDeclaration OF Value 
