@@ -38,58 +38,58 @@ whitespace	[ \t]+
 		  lineno++; yyless(1); tokenpos = 0; yycolumn = 1; } 
 
  /* Keywords */
-too 		  { tokenpos += yyleng; return TOO;}
-became	 	  { tokenpos += yyleng; return BECAME; }
-number		  { tokenpos += yyleng; return TNUMBER; }
-letter		  { tokenpos += yyleng; return TCHAR; }
-sentence	{ tokenpos += yyleng; return TSTRING; }
-ate		  { tokenpos += yyleng; return INC;	  }
-drank 		  { tokenpos += yyleng; return DEC;	  }
-contained     { tokenpos += yyleng; return CONTAINED; }
-had		  { tokenpos += yyleng; return HAD; }
-what	  { tokenpos += yyleng; return WHAT; }
-was		  { tokenpos += yyleng; return WAS; }
-a		  { tokenpos += yyleng; return A; }
-\?		  { tokenpos += yyleng; return QUESTIONMARK; }
-\!		  { tokenpos += yyleng; return LNOT; }
-\!\=	  { tokenpos += yyleng; return LNOTEQU; }
-eventually	  { tokenpos += yyleng; return EVENTUALLY; }
-because		  { tokenpos += yyleng; return BECAUSE; }
-enough 	  { tokenpos += yyleng; return ENOUGH; }
-times 	  { tokenpos += yyleng; return TIMES; }
-perhaps		  { tokenpos += yyleng; return IF; }
-so		  { tokenpos += yyleng; return THEN; }
-or		  { tokenpos += yyleng; return ELSE; }
-either		  { tokenpos += yyleng; return IF; }
-maybe		  { tokenpos += yyleng; return MAYBE; }
-unsure 		{tokenpos += yyleng; return UNSURE; }
-which		{tokenpos += yyleng; return WHICH; }
-of		{tokenpos += yyleng; return OF; }
-found		{tokenpos += yyleng; return FOUND; }
-Alice	{tokenpos += yyleng; return ALICE; }
-spider	{tokenpos += yyleng; return TREF; }
+too 		  { tokenpos += yyleng; yylval.values.string = strdup(yytext);  return TOO;}
+became	 	  { tokenpos += yyleng; yylval.values.string = strdup(yytext);  return BECAME; }
+number		  { tokenpos += yyleng; yylval.values.string = strdup(yytext);  return TNUMBER; }
+letter		  { tokenpos += yyleng; yylval.values.string = strdup(yytext);  return TCHAR; }
+sentence	{ tokenpos += yyleng; yylval.values.string = strdup(yytext);  return TSTRING; }
+ate		  { tokenpos += yyleng; yylval.values.string = strdup(yytext);  return INC;	  }
+drank 		  { tokenpos += yyleng; yylval.values.string = strdup(yytext);  return DEC;	  }
+contained     { tokenpos += yyleng; yylval.values.string = strdup(yytext);  return CONTAINED; }
+had		  { tokenpos += yyleng; yylval.values.string = strdup(yytext);  return HAD; }
+what	  { tokenpos += yyleng; yylval.values.string = strdup(yytext);  return WHAT; }
+was		  { tokenpos += yyleng; yylval.values.string = strdup(yytext);  return WAS; }
+a		  { tokenpos += yyleng; yylval.values.string = strdup(yytext);  return A; }
+\?		  { tokenpos += yyleng; yylval.values.string = strdup(yytext);  return QUESTIONMARK; }
+\!		  { tokenpos += yyleng; yylval.values.string = strdup(yytext);  return LNOT; }
+\!\=	  { tokenpos += yyleng; yylval.values.string = strdup(yytext);  return LNOTEQU; }
+eventually	  { tokenpos += yyleng; yylval.values.string = strdup(yytext);  return EVENTUALLY; }
+because		  { tokenpos += yyleng; yylval.values.string = strdup(yytext);  return BECAUSE; }
+enough 	  { tokenpos += yyleng; yylval.values.string = strdup(yytext);  return ENOUGH; }
+times 	  { tokenpos += yyleng; yylval.values.string = strdup(yytext);  return TIMES; }
+perhaps		  { tokenpos += yyleng; yylval.values.string = strdup(yytext);  return IF; }
+so		  { tokenpos += yyleng; yylval.values.string = strdup(yytext);  return THEN; }
+or		  { tokenpos += yyleng; yylval.values.string = strdup(yytext);  return ELSE; }
+either		  { tokenpos += yyleng; yylval.values.string = strdup(yytext);  return IF; }
+maybe		  { tokenpos += yyleng; yylval.values.string = strdup(yytext);  return MAYBE; }
+unsure 		{tokenpos += yyleng; yylval.values.string = strdup(yytext);  return UNSURE; }
+which		{tokenpos += yyleng; yylval.values.string = strdup(yytext);  return WHICH; }
+of		{tokenpos += yyleng; yylval.values.string = strdup(yytext);  return OF; }
+found		{tokenpos += yyleng; yylval.values.string = strdup(yytext);  return FOUND; }
+Alice	{tokenpos += yyleng; yylval.values.string = strdup(yytext);  return ALICE; }
+spider	{tokenpos += yyleng; yylval.values.string = strdup(yytext);  return TREF; }
  /* logical operators (e.g. used in loop predicates) */
 
-&&		 { tokenpos += yyleng; return LAND; }
-\|\|		 { tokenpos += yyleng; return LOR; }
-==		 { tokenpos += yyleng; return LEQU; }
-\<		 { tokenpos += yyleng; return LLTHAN; }
-\<=		 { tokenpos += yyleng; return LLTHANEQ; }
-\>=		 { tokenpos += yyleng; return LGTHANEQ; }
-\>		 { tokenpos += yyleng; return LGTHAN; }
+&&		 { tokenpos += yyleng; yylval.values.string = strdup(yytext);  yylval.values.string = strdup(yytext); return LAND; }
+\|\|		 { tokenpos += yyleng; yylval.values.string = strdup(yytext);  return LOR; }
+==		 { tokenpos += yyleng; yylval.values.string = strdup(yytext);  return LEQU; }
+\<		 { tokenpos += yyleng; yylval.values.string = strdup(yytext);  return LLTHAN; }
+\<=		 { tokenpos += yyleng; yylval.values.string = strdup(yytext);  return LLTHANEQ; }
+\>=		 { tokenpos += yyleng; yylval.values.string = strdup(yytext);  return LGTHANEQ; }
+\>		 { tokenpos += yyleng; yylval.values.string = strdup(yytext);  return LGTHAN; }
 
  /* functions and procedurs*/
-The	  { tokenpos += yyleng;  return THE; }
-room {tokenpos += yyleng; return ROOM; }
-looking {tokenpos += yyleng; return LOOKING; }
-\-		{tokenpos += yyleng; return DASH; }
-glass 	{tokenpos += yyleng; return GLASS; }
+The	  { tokenpos += yyleng; yylval.values.string = strdup(yytext);   return THE; }
+room {tokenpos += yyleng; yylval.values.string = strdup(yytext);  return ROOM; }
+looking {tokenpos += yyleng; yylval.values.string = strdup(yytext);  return LOOKING; }
+\-		{tokenpos += yyleng; yylval.values.string = strdup(yytext);  return DASH; }
+glass 	{tokenpos += yyleng; yylval.values.string = strdup(yytext);  return GLASS; }
   /* Array acess patterns */
-\'s		{ tokenpos += yyleng; return ARRINDO; }
-piece		{ tokenpos += yyleng; return ARRINDC; }
+\'s		{ tokenpos += yyleng; yylval.values.string = strdup(yytext);  return ARRINDO; }
+piece		{ tokenpos += yyleng; yylval.values.string = strdup(yytext);  return ARRINDC; }
   /* Print statements */
-said		{tokenpos += yyleng; return SAID; }
-spoke { tokenpos +=yyleng; return SPOKE; }
+said		{tokenpos += yyleng; yylval.values.string = strdup(yytext);  return SAID; }
+spoke { tokenpos +=yyleng; yylval.values.string = strdup(yytext);  return SPOKE; }
 
   /* Char literals */
 {charlit}		{ tokenpos +=yyleng; yylval.values.string = strdup(yytext);
@@ -100,31 +100,31 @@ spoke { tokenpos +=yyleng; return SPOKE; }
 					return STRINGLIT; }
 
  /* Scope blocks */
-opened		 { tokenpos += yyleng; return OBRACE; }
-closed		 { tokenpos += yyleng; return CBRACE; }
+opened		 { tokenpos += yyleng; yylval.values.string = strdup(yytext);  return OBRACE; }
+closed		 { tokenpos += yyleng; yylval.values.string = strdup(yytext);  return CBRACE; }
 {separator}	 { tokenpos += yyleng; yylval.values.string = strdup(yytext);
 		    return SEPARATOR; }
 
-{string}	 { tokenpos += yyleng; yylval.values.string = strdup(yytext);
+{string}	 { tokenpos += yyleng;yylval.values.string = strdup(yytext);
 		   return STRING; }
 
 {integer}	{ tokenpos += yyleng; yylval.values.token = atoi(yytext); return INTEGER; }
-\.	 	{ tokenpos += yyleng; return NULLTOK; }
-\,		{ tokenpos += yyleng; return COMMA;	}
-\+		{ tokenpos += yyleng; return PLUS; }
-\*		{ tokenpos += yyleng; return MULT; }
-\/		{ tokenpos += yyleng; return DIV; }
-\%		{ tokenpos += yyleng; return MOD; }
-\^		{ tokenpos += yyleng; return XOR; }
-&		{ tokenpos += yyleng; return AND; }
-\|		{ tokenpos += yyleng; return OR; }
-~		{ tokenpos += yyleng; return NOT; }
-\(		{ tokenpos += yyleng; return OBRACKET; }
-\)		{ tokenpos += yyleng; return CBRACKET; }
+\.	 	{ tokenpos += yyleng; yylval.values.string = strdup(yytext);  return NULLTOK; }
+\,		{ tokenpos += yyleng; yylval.values.string = strdup(yytext);  return COMMA;	}
+\+		{ tokenpos += yyleng; yylval.values.string = strdup(yytext);  return PLUS; }
+\*		{ tokenpos += yyleng; yylval.values.string = strdup(yytext);  return MULT; }
+\/		{ tokenpos += yyleng; yylval.values.string = strdup(yytext);  return DIV; }
+\%		{ tokenpos += yyleng; yylval.values.string = strdup(yytext);  return MOD; }
+\^		{ tokenpos += yyleng; yylval.values.string = strdup(yytext);  return XOR; }
+&		{ tokenpos += yyleng; yylval.values.string = strdup(yytext);  return AND; }
+\|		{ tokenpos += yyleng; yylval.values.string = strdup(yytext);  return OR; }
+~		{ tokenpos += yyleng; yylval.values.string = strdup(yytext);  return NOT; }
+\(		{ tokenpos += yyleng; yylval.values.string = strdup(yytext);  return OBRACKET; }
+\)		{ tokenpos += yyleng; yylval.values.string = strdup(yytext);  return CBRACKET; }
 
-{whitespace}	{ tokenpos += yyleng;} /* ignore any whitespace */
+{whitespace}	{ tokenpos += yyleng; yylval.values.string = strdup(yytext); } /* ignore any whitespace */
 (###[^\n]*)		{}
-.		{ tokenpos += yyleng; yyerror(error_message);}
+.		{ tokenpos += yyleng; yylval.values.string = strdup(yytext);  yyerror(error_message);}
 
 
 %%
