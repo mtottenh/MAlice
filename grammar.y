@@ -64,7 +64,7 @@ DECLARATIONBLOCK STATLIST INPUTNODE
 %type <node> BitExp Exp Term Factor Value ArrayVal Call 
 %type <node> Assignment Read
 %type <node> Statement PrintStatement
-%type <node> StringLit Char Parameter
+%type <node> StringLit Char
 %type <id> Identifier Increment Decrement
 %type <token> Type
 %type <stat> StatementList
