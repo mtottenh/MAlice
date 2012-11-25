@@ -36,7 +36,7 @@ whitespace	[ \t]+
  
   /*need to formulate rules for ( ) * / % ^ & | - _ ~ to be turned into tokens*/
 \n.*		{ strncpy(linebuf, yytext+1,sizeof(linebuf)); 
-		  lineno++; yyless(1); tokenpos = 0; } 
+		  lineno++; yyless(1); tokenpos = 0; yycolumn = 1; } 
 
  /* Keywords */
 too 		  { tokenpos += yyleng; return TOO;}

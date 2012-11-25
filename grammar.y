@@ -6,7 +6,6 @@
 #include "TreePrinter/TreePrinter.hpp"
 #include "Errors/TypeMap.hpp"
 #include "TreeWalker/SymbolTableGenerator.hpp"
- /*extern void yyerror(char*);*/
 extern int yylex();
 extern void yyerror (char *s, ...);
 Node *root;
@@ -396,32 +395,17 @@ int initTypeMap() {
 	return 1;
 }
 
-
-
 void yyerror(char *s, ...)
 {
   va_list ap;
   va_start(ap, s);
 
   if(yylloc.first_line)
-    fprintf(stderr, "%d.%d-%d.%d: error: ", yylloc.first_line, yylloc.first_column,
-	    yylloc.last_line, yylloc.last_column);
   vfprintf(stderr, s, ap);
+  fprintf(stderr, " on Line(s) %d-%d. Column %d-%d: Token: %s", yylloc.first_line,
+yylloc.last_line, yylloc.first_column, yylloc.last_column, yylval.string);
   fprintf(stderr, "\n");
 
-}
-
-void
-lyyerror(YYLTYPE t, char *s, ...)
-{
-  va_list ap;
-  va_start(ap, s);
-
-  if(t.first_line)
-    fprintf(stderr, "%d.%d-%d.%d: error: ", t.first_line, t.first_column,
-	    t.last_line, t.last_column);
-  vfprintf(stderr, s, ap);
-  fprintf(stderr, "\n");
 }
 /*
 yyerror(s)
