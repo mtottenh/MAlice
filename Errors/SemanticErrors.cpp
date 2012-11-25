@@ -62,3 +62,13 @@ void error_num_args(int typeVal, int expected, int given) {
 		<< endl;
 
 }
+
+void error_input_type(const string& name, int typeVal) {
+	cerr << "ERROR: Variable '" << name << "' of type '" << 
+		typemap_get(typeVal) << "' cannot be given user input." << endl;
+}
+
+void error_not_array(const string& name, int typeVal) {
+	cerr << "ERROR: Variable '" << name << "' of type '" <<
+		typemap_get(typeVal) << "' is not an array." << endl;
+}

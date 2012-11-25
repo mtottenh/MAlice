@@ -55,4 +55,15 @@ void error_not_func(const string&);
 void error_num_args(const string&, int, int);
 void error_num_args(int, int, int);
 
+/*
+ * Prints an error that input was attempted on a variable (param 1) of type 
+   param 2 that cannot accept input.
+ */
+void error_input_type(const string&, int);
+
+/*
+ * Prints an error that a var string (param 1) of type param 2 is not an array.
+ */
+void error_not_array(const string&, int);
+
 #endif

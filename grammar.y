@@ -64,7 +64,7 @@ DECLARATIONBLOCK STATLIST INPUTNODE
 %type <func_dec> FunctionDec ProcedureDec
 %type <node> Conditional Predicate Maybe
 %type <node> BitExp Exp Term Factor Value ArrayVal Call 
-%type <assignment> Assignment Read
+%type <node> Assignment Read
 %type <node> Statement PrintStatement
 %type <node> StringLit Char
 %type <id> Identifier Increment Decrement
@@ -228,8 +228,8 @@ ParamList
 	| BitExp { $$ = new NParamBlock($1); }
 	;
 Read
-	: WHAT WAS Identifier QUESTIONMARK { $$ = new NAssignment($3, new NInput()); }
-	| WHAT WAS ArrayVal QUESTIONMARK {$$ = new NAssignment($3, new NInput());}
+	: WHAT WAS Identifier QUESTIONMARK { $$ = new NInput($3); }
+	| WHAT WAS ArrayVal QUESTIONMARK {$$ = new NInput($3); }
 	;
 Loop
 	: EVENTUALLY OBRACKET Predicate CBRACKET BECAUSE StatementList 
@@ -322,8 +322,9 @@ int initTypeMap();
 extern FILE * yyin;
 
 int main(int argc, char* argv[]) {
-	if (argc != 2) {
-		cout << "ERROR: Usage is: " << argv[0] << " FILENAME" << endl;
+	if (argc < 2) {
+		cout << "ERROR: Usage is: " << argv[0] << " FILENAME "
+			<< "[-d]" << endl;
 		return 0;
 	}
 
@@ -337,7 +338,8 @@ int main(int argc, char* argv[]) {
 	yyin = input;
 	initTypeMap();
 	int node = yyparse();
-	if (root == NULL) {
+	if (root == NULL || node == 1) {
+		cerr << "ERROR: Parse tree broke, stopping compiler" << endl;
 		return -1;
 	}	
 	/* Create symbol table generator.*/
@@ -348,14 +350,17 @@ int main(int argc, char* argv[]) {
 	cout << endl << "##### Generating symbol table #####" << endl;
 	SymbolTable* sym = s->generateTable();
 
-	/* Print the AST */
-	cout << endl << "##### Printing AST via TreePrinter #####" << endl;
-	cout << "Types showing as INVALID? Don't panic!" << endl 
-		<< "Type resolution only occurs after check() has been "
-		<< "called :)" << endl;
-	treePrinter t(root);
-	t.print(); 
-	cout << endl << "##### Complete! #####" << endl;
+	/* Print the AST if debug flag enabled*/
+	if(argc >= 3 && strcmp(argv[2], "-d") == 0) {
+		cout << endl << "##### Printing AST via TreePrinter #####" << endl;
+		cout << "Types showing as INVALID? Don't panic!" << endl 
+			<< "Type resolution only occurs after check() has been "
+			<< "called :)" << endl;
+		treePrinter t(root);
+		t.print();
+	}
+
+	cout << endl << "##### Semantic Analysis (check()) #####" << endl;
 	root->check();
 //	t.print();
 	return 0;
@@ -392,6 +397,7 @@ int initTypeMap() {
 	typemap_add(VOID, "void");
 	typemap_add(INC, "ate");
 	typemap_add(DEC, "drank");
+	typemap_add(SAID, "said Alice/spoke");
 	return 1;
 }
 

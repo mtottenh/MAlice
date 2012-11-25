@@ -51,8 +51,12 @@ NAssignment::NAssignment(Node* id, char *exp) {
 
 int NAssignment::check() {
 	int isValid = 1;
+	
 	string lvalID = lval->getID();
+
+	/* Check both sides of the assignment. */
 	isValid &= rval->check();
+	isValid &= lval->check();
 
 	Node* nodePtr = table->lookup(lvalID);
 
@@ -64,6 +68,16 @@ int NAssignment::check() {
 	
 	else { 
 		int lhsType = nodePtr->getType();
+
+		/*
+		 * If we have an array, we need the type of the array access
+		 * node as opposed to the array declaration node.
+		 */
+		if(lhsType == REFNUMBER || lhsType == REFCHAR
+				|| lhsType == REFSTRING) {
+			lhsType = children[0]->getType();
+		}
+		
 		int rhsType = rval->getType();
 		/*cout << "RHS TYPE : " << typemap_get(rhsType) << endl;*/
 		if (rval->getNodeType() == INPUTNODE) {
@@ -79,7 +93,5 @@ int NAssignment::check() {
 		
 	}
 
-	/* Check the RHS of the assignment. */
-	
 	return isValid;
 }
