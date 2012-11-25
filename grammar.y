@@ -96,7 +96,7 @@ Declaration
 	| VarDeclarationAssignment Separator { $$ = $1;}
 	| FunctionDec	 { $$ = $1; }
 	| ProcedureDec     { $$= $1;  }
-	| error Separator {yyerrok;}
+	| error Separator {yyerrok; }
 	;
 /* 
  * (TODO) Look into TREF
@@ -215,7 +215,6 @@ Statement
 	| Assignment Separator {$$ = $1;}
 	| PrintStatement	{$$ = $1;}
 	| Return Separator {$$ = $1;}
-	| error Separator {yyerrok;}
 	;
 
 Call 
