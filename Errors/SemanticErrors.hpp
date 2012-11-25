@@ -66,4 +66,10 @@ void error_input_type(const string&, int);
  */
 void error_not_array(const string&, int);
 
+/*
+ * Prints an error saying that a method 'hatta' was detected (program entry
+ * point), but it was a function rather than a procedure as required.
+ */
+void error_entry_not_proc();
+
 #endif

@@ -41,7 +41,7 @@ void error_type_mismatch_cond(int t1) {
 }
 
 void error_no_entry() {
-	cerr << "ERROR: No program entry point (function 'hatta') detected."
+	cerr << "ERROR: No program entry point (procedure 'hatta') detected."
 		<< endl;
 }
 
@@ -71,4 +71,10 @@ void error_input_type(const string& name, int typeVal) {
 void error_not_array(const string& name, int typeVal) {
 	cerr << "ERROR: Variable '" << name << "' of type '" <<
 		typemap_get(typeVal) << "' is not an array." << endl;
+}
+
+void error_entry_not_proc() {
+	cerr << "ERROR: A program entry point ('hatta') was detected, but it "
+		<< "is a function. The entry point should be a procedure."
+		<< endl;
 }

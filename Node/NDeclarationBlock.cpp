@@ -24,8 +24,14 @@ int NDeclarationBlock::check() {
 			isValid = 0;
 		}
 
-		/* We have a 'hatta', but is it a function declaration? */
-		else if(nodePtr->getNodeType() != PROCEDURE) {
+		/* We have a 'hatta', but is it a procedure? */
+		else if(nodePtr->getNodeType() == FUNC) {
+			error_entry_not_proc();
+			isValid = 0;
+		}
+
+		/* No hatta. Sad face :( */
+		else {
 			error_no_entry();
 			isValid = 0;
 		}
