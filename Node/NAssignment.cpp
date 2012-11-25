@@ -73,7 +73,7 @@ int NAssignment::check() {
 		 * Does the type of the var match the type of the expression's
 		 * RHS?
 		 */
-		if(lhsType != rhsType) {
+		if(!compareTypes(lhsType, rhsType)) {
 			error_type_mismatch(lvalID, lhsType, rhsType);
 		}
 		
