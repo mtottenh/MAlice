@@ -10,12 +10,12 @@ NBinOp::NBinOp(Node* left, Node* right, int op) {
 int NBinOp::getType() const {
 	return resolveType();
 }
-int NBinOp::resolveType() const{
+int NBinOp::resolveType()  const {
 	/* Do the types of the children match? */
 	int t1 = children[0]->getType();
 	int t2 = children[1]->getType();
 
-	if(!(compareTypes(t1, t2)) && t1 != TNUMBER && t1 != REFNUMBER 
+	if(!(Node::compareTypes(t1, t2)) && t1 != TNUMBER && t1 != REFNUMBER 
 			&& t2 != TCHAR && t2 != REFCHAR) {
 		return INVALIDTYPE;
 	}

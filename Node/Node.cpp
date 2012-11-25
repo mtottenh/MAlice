@@ -69,7 +69,7 @@ int Node::isRoot() {
 	return isRootNode;
 }
 
-int Node::compareTypes(int t1, int t2) {
+int Node::compareTypes(int t1, int t2) const {
 	switch(t1) {
 		case TNUMBER:
 		case REFNUMBER:

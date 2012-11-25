@@ -49,7 +49,7 @@ Node* SymbolTable::lookup(const string& name) {
 	}
 	else {
 		return NULL;
-	}
+	 }
 }
 
 void SymbolTable::print() {
@@ -65,9 +65,11 @@ void SymbolTable::print() {
 
 /* Private methods. */
 Node* SymbolTable::lookupCurrentScope(const string& name) {
+	if (table.empty()) {
+		return NULL;
+	}
 	table_t::iterator nameNodePtr = table.find(name);
-
-	if (nameNodePtr == table.end() || table.size() == 0) {
+	if (nameNodePtr == table.end()) {
 		return NULL;
 	}
 	else {

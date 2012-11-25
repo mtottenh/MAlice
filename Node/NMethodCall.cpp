@@ -11,7 +11,7 @@ NMethodCall::NMethodCall()
 
 NMethodCall::NMethodCall(NIdentifier* id, Node* params) {
 	name = id->getID();
-	type = id->getType();
+//	type = id->getType();
 	children.push_back(params);
 	delete(id);
 }
@@ -23,9 +23,16 @@ NMethodCall::NMethodCall(NIdentifier* id) {
 }
 
 int NMethodCall::resolveType() {
-	return type;
+	Node* nodePtr = table->lookup(name);
+	if (nodePtr == NULL)
+		return INVALIDTYPE;
+	cout << "type: " << nodePtr->getType();
+	return nodePtr->getType();
 }
-
+int NMethodCall::getType() {
+	cout << "Getting type through resolving.." << endl;
+	return resolveType();
+}
 int NMethodCall::check() {
 	int isValid = 1;
 	
@@ -44,7 +51,8 @@ int NMethodCall::check() {
 			error_not_func(name);
 			isValid = 0;
 		}
-
+		/* Check that the parameters (child nodes) are valid. */
+		isValid &= Node::check();	
 		/*
 		 * Get the types of the expected paramaters. We have a list of
 		 * parameters if the size of the function node's children = 2.
@@ -55,8 +63,7 @@ int NMethodCall::check() {
 		}
 	}
 
-	/* Check that the parameters (child nodes) are valid. */
-	isValid &= Node::check();	
+
 
 	return isValid;
 }
@@ -84,7 +91,7 @@ int NMethodCall::checkParams(Node* funcParams) {
 			&& givenIt != thisParams.end()) {
 		expectedType = (*funcIt)->getType();
 		givenType = (*givenIt)->getType();
-
+		cout << (*givenIt)->getID() << (*funcIt)->getID(); 
 		if(!compareTypes(expectedType, givenType)) {
 			varName = (*givenIt)->getID();
 			error_type_mismatch(varName, givenType, expectedType);
