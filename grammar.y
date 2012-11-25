@@ -62,7 +62,7 @@ DECLARATIONBLOCK STATLIST INPUTNODE
 %type <func_dec> FunctionDec ProcedureDec
 %type <node> Conditional Predicate Maybe
 %type <node> BitExp Exp Term Factor Value ArrayVal Call 
-%type <assignment> Assignment Read
+%type <node> Assignment Read
 %type <node> Statement
 %type <node> StringLit Char Parameter
 %type <id> Identifier Increment Decrement
@@ -246,8 +246,8 @@ Parameter
 	| BitExp {$$ = $1;}
 	;
 Read
-	: WHAT WAS Identifier QUESTIONMARK { $$ = new NAssignment($3, new NInput()); }
-	| WHAT WAS ArrayVal QUESTIONMARK {$$ = new NAssignment($3, new NInput());}
+	: WHAT WAS Identifier QUESTIONMARK { $$ = new NInput($3); }
+	| WHAT WAS ArrayVal QUESTIONMARK {$$ = new NInput($3); }
 	;
 Loop
 	: EVENTUALLY OBRACKET Predicate CBRACKET BECAUSE StatementList 

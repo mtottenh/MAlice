@@ -43,7 +43,8 @@ int NArrayAccess::resolveType() {
 
 int NArrayAccess::check() {
 	int isValid = 1;
-
+	
+	cerr << "NArrayAccess::check() called!" << endl;
 	this->type = resolveType();
 	
 	/* Does the identifier exist in scope? */
@@ -51,6 +52,17 @@ int NArrayAccess::check() {
 	if(nodePtr == NULL) {
 		error_var_not_found(name);
 		isValid = 0;
+	}
+
+	/* Is the identifier an array type? */
+	else {
+		int nodeType = nodePtr->getType();
+ 
+		if(nodeType != REFNUMBER && nodeType != REFCHAR 
+				&& nodeType != REFSTRING) {
+			error_not_array(nodePtr->getID(), nodeType);
+			isValid = 0;
+		}
 	}
 
 	/* Is the index node valid? Call node superclass. */
