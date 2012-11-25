@@ -13,7 +13,7 @@ public:
 	NMethodCall(NIdentifier*,Node*);
 	NMethodCall(NIdentifier*);
 	virtual int check();
-	int getType() const;
+	int getType() ;
 }; 
 
 #endif

@@ -28,7 +28,7 @@ public: /* This should be changed to private at some point. */
 	int nodeType;
 	int type;
 	int isRootNode;
-	virtual int resolveType() const;
+	virtual int resolveType() ;
 public:
 	node_children_t children; /* This shouldn't be publicly exposed. Fix! */
 	string name; /* Same here... */
@@ -36,7 +36,7 @@ public:
 	Node(Node*);
 	virtual ~Node();
 	virtual int print() const;
-	virtual int getType() const;
+	virtual int getType() ;
 	virtual string getID();
 	node_children_t getChildren() const;
 	virtual int check();
