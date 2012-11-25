@@ -71,21 +71,21 @@ int Node::isRoot() {
 
 int Node::compareTypes(int t1, int t2) const {
 	return (t1 == t2);
-/*	switch(t1) {
-		case TNUMBER:
-		case REFNUMBER:
-			return (t2 == TNUMBER || t2 == REFNUMBER);
-			break;
-		case TCHAR:
-		case REFCHAR:
-			return (t2 == TCHAR || t2 == REFCHAR);
-			break;
-		case TSTRING:
-		case REFSTRING:
-			return (t2 == TSTRING || t2 == REFSTRING);
-			break;
-		default:
-			return (t1 == t2);
-			break;
-	} */		
+}
+
+void Node::setLocation(fileLocation location) 
+{
+	this->location = location;
+}
+fileLocation Node::getLocation()
+{
+	//location.startLine == 0 iff location has not been initialised.
+	if (location.startLine == 0)
+	{
+		location.startLine = children.front()->getLocation().startLine;
+		location.startColumn = children.front()->getLocation().startColumn;
+		location.endLine = children.back()->getLocation().endLine;
+		location.endColumn = children.back()->getLocation().endColumn;
+	}
+	return location;
 }	

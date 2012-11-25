@@ -1,15 +1,19 @@
 %{
 #include <string>
 #include <iostream>
+#include <cstdarg>
 #include "Node/NodeIncludes.hpp"
 #include "TreePrinter/TreePrinter.hpp"
 #include "Errors/TypeMap.hpp"
 #include "TreeWalker/SymbolTableGenerator.hpp"
-extern void yyerror(char*);
 extern int yylex();
+extern void yyerror (char *s, ...);
+fileLocation generateLocation();
 Node *root;
+
 %}
 
+%locations
 
 /* Type Tokens */
 %token<token> TCHAR TSTRING TREF TNUMBER REFCHAR REFSTRING REFNUMBER
@@ -45,6 +49,10 @@ DECLARATIONBLOCK STATLIST INPUTNODE
 %union {
 	char *string;
 	int token; /* should we explicitly state the length? e.g. int_32t?*/
+	struct value {
+		char *string;
+		int token;
+	} values;
 	Node *node;
 	NPrint *print;
 	NStatementList *stat;
@@ -166,7 +174,7 @@ Factor
 	| Value { $$ = $1;}
 	;
 Value
-	: INTEGER {$$ = new NInteger($1);}
+	: INTEGER {$$ = new NInteger($1); $$->setLocation(generateLocation());}
 	| Identifier {$$ = $1;}
 	| Call { $$ = $1;}
 	| ArrayVal {$$ = $1;}
@@ -297,12 +305,15 @@ ArrayVal
 	;
  
 Identifier
-	: STRING {$$ = new NIdentifier($1);}
+	: STRING {$$ = new NIdentifier($1);
+				$$->setLocation(generateLocation());}
 	;
 StringLit
-	: STRINGLIT {$$ = new NStringLit($1);}
+	: STRINGLIT {$$ = new NStringLit($1);
+				$$->setLocation(generateLocation());}
 Char
-	: CHARLIT { $$ = new NCharLit($1); }
+	: CHARLIT { $$ = new NCharLit($1); 
+				$$->setLocation(generateLocation()); }
 	;
 EndIf
 	: BECAUSE ALICE WAS UNSURE WHICH {}
@@ -317,14 +328,14 @@ Procedure
 
 int initTypeMap();
 extern FILE * yyin;
-
+bool error_flag;
 int main(int argc, char* argv[]) {
 	if (argc < 2) {
 		cout << "ERROR: Usage is: " << argv[0] << " FILENAME "
 			<< "[-d]" << endl;
 		return 0;
 	}
-
+	error_flag = false;
 	/* Open file from argv[1]. Quit if null. */
 	FILE *input = fopen(argv[1],"r");
 	if (input == NULL) {
@@ -335,7 +346,8 @@ int main(int argc, char* argv[]) {
 	yyin = input;
 	initTypeMap();
 	int node = yyparse();
-	if (root == NULL || node == 1) {
+
+	if (root == NULL || node == 1 || error_flag) {
 		cerr << "ERROR: Parse tree broke, stopping compiler" << endl;
 		return -1;
 	}	
@@ -397,15 +409,29 @@ int initTypeMap() {
 	typemap_add(SAID, "said Alice/spoke");
 	return 1;
 }
-/*
-yyerror(s)
-char *s;
+
+void yyerror(char *s, ...)
 {
-  fprintf(stderr, "%s\n",s);
+  va_list ap;
+  va_start(ap, s);
+  error_flag = true;
+  if(yylloc.first_line)
+   vfprintf(stderr, s, ap);
+  if (yylval.values.string != NULL)
+  fprintf(stderr, " on Line(s) %d-%d. Column %d-%d: Token: %s", yylloc.first_line,
+	yylloc.last_line, yylloc.first_column, yylloc.last_column, yylval.values.string);
+  else
+  fprintf(stderr, " on Line(s) %d-%d. Column %d-%d: Token: %d", yylloc.first_line,
+	yylloc.last_line, yylloc.first_column, yylloc.last_column, yylval.values.token);
+  fprintf(stderr, "\n");
 }
 
-yywrap()
+fileLocation generateLocation()
 {
-  return(1);
+	fileLocation data;
+	data.startLine = yylloc.first_line;
+	data.endLine = yylloc.last_line;
+	data.startColumn = yylloc.first_column;
+	data.endColumn = yylloc.last_column;
+	return data;
 }
-*/
