@@ -175,11 +175,11 @@ Value
 	;
 
 Assignment
-	: Identifier BECAME Value   { $$ = new NAssignment($1,$3);}
-	| ArrayVal BECAME Value {$$ = new NAssignment($1,$3);}
+	: Identifier BECAME BitExp   { $$ = new NAssignment($1,$3);}
+	| ArrayVal BECAME BitExp {$$ = new NAssignment($1,$3);}
 	;
 VarDeclarationAssignment
-	: VarDeclaration OF Value 
+	: VarDeclaration OF BitExp 
 	{ NVariableDeclaration* Declaration = (NVariableDeclaration *)$1; 
 	  Node* Assignment =  new NAssignment(Declaration->getID(), $3);
 	  $$ = new NStatementList(Declaration,Assignment);}
@@ -320,14 +320,14 @@ extern FILE * yyin;
 
 int main(int argc, char* argv[]) {
 	if (argc != 2) {
-		cerr << "ERROR: Usage is: " << argv[0] << " FILENAME" << endl;
+		cout << "ERROR: Usage is: " << argv[0] << " FILENAME" << endl;
 		return 0;
 	}
 
 	/* Open file from argv[1]. Quit if null. */
 	FILE *input = fopen(argv[1],"r");
 	if (input == NULL) {
- 		cerr << "ERROR: Could not open file " << argv[1] << endl;
+ 		cout << "ERROR: Could not open file " << argv[1] << endl;
  		return 0;
 	}
 
