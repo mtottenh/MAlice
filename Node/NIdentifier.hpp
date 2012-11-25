@@ -11,7 +11,7 @@ class NIdentifier : public Node {
 		NIdentifier(string);
 	      	NIdentifier(char*);                                
 		int check(); 
-		int getType() const;
+		int getType() ;
 };  
 
 #endif
