@@ -72,4 +72,10 @@ void error_not_array(const string&, int);
  */
 void error_entry_not_proc();
 
+/*
+ * Prints an error stating that inout was attempted on an identifier 
+ * (given by param 1) representing a function or procedure.
+ */
+void error_input_node_type(const string&);
+
 #endif

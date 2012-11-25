@@ -78,3 +78,8 @@ void error_entry_not_proc() {
 		<< "is a function. The entry point should be a procedure."
 		<< endl;
 }
+
+void error_input_node_type(const string& name) {
+	cerr << "ERROR: Function or prodecure '" << name << "' cannot be " 
+		<< "given user input - it's not a variable!" << endl;
+}
