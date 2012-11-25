@@ -33,6 +33,7 @@ SymbolTable.o: SymbolTable/SymbolTable.cpp
 	$(CC) $(CFLAGS) $^ -c -o $@ -lfl
 
 clean: 
+	rm -f *.o
 	rm -f lex.yy.c 
 	rm -f scanner
 	rm -f parser

@@ -8,14 +8,14 @@ treePrinter::treePrinter(Node *tree) {
 	root = tree; 
 }
 int treePrinter::print() {
-	std::queue<const Node *> printList;
+	std::queue<Node *> printList;
 	std::queue<int> level;
 	int print_level = 1;
 	level.push(print_level);
 	printList.push(root);
 	while(!printList.empty()) {
 		cout << endl;
-		const Node *temp = printList.front();
+		Node *temp = printList.front();
 		printList.pop();
 		int current_level = level.front();
 		level.pop();
