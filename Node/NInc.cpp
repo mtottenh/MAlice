@@ -18,10 +18,14 @@ int NInc::resolveType() {
 }
 
 int NInc::check() {
+	int isValid;
 	this->type = resolveType();
 
 	/* Is this the expected type (number)? */
-	int isValid = (type == TNUMBER || type == REFNUMBER);
+	if(type != TNUMBER && type != REFNUMBER) {
+		error_type_mismatch(INC, children[0]->getType(), TNUMBER);
+		isValid = 0;
+	}
 	
 	/* Is the child valid? */
 	isValid &= children[0]->check();

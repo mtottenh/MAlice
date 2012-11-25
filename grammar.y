@@ -66,8 +66,8 @@ DECLARATIONBLOCK STATLIST INPUTNODE
 %type <node> Conditional Predicate Maybe
 %type <node> BitExp Exp Term Factor Value ArrayVal Call 
 %type <assignment> Assignment Read
-%type <node> Statement
-%type <node> StringLit Char Parameter
+%type <node> Statement PrintStatement
+%type <node> StringLit Char
 %type <id> Identifier Increment Decrement
 %type <token> Type
 %type <stat> StatementList
@@ -99,6 +99,7 @@ Declaration
 	| VarDeclarationAssignment Separator { $$ = $1;}
 	| FunctionDec	 { $$ = $1; }
 	| ProcedureDec     { $$= $1;  }
+	| error Separator {yyerrok; }
 	;
 /* 
  * (TODO) Look into TREF
@@ -172,40 +173,29 @@ Value
 	| Identifier {$$ = $1;}
 	| Call { $$ = $1;}
 	| ArrayVal {$$ = $1;}
-	| Increment {$$ = $1;}
-	| Decrement {$$ = $1;}
 	| OBRACKET BitExp CBRACKET { $$ = $2;}
+	| Char {$$ = $1;}
+	| StringLit {$$ = $1;}
 	;
-//Check string lit case!
+
 Assignment
 	: Identifier BECAME BitExp   { $$ = new NAssignment($1,$3);}
-	| Identifier BECAME Char {$$ = new NAssignment($1,$3);/*need to check errors*/}
-	| ArrayVal BECAME BitExp {$$ = new NAssignment($1,$3); }
-	| ArrayVal BECAME Char {$$ = new NAssignment($1,$3);}
+	| ArrayVal BECAME BitExp {$$ = new NAssignment($1,$3);}
 	;
 VarDeclarationAssignment
 	: VarDeclaration OF BitExp 
 	{ NVariableDeclaration* Declaration = (NVariableDeclaration *)$1; 
 	  Node* Assignment =  new NAssignment(Declaration->getID(), $3);
 	  $$ = new NStatementList(Declaration,Assignment);}
-	| VarDeclaration OF Char 
-	{ NVariableDeclaration* Declaration = (NVariableDeclaration *)$1; 
-	  Node* Assignment =  new NAssignment(Declaration->getID(), $3);
-	  $$ = new NStatementList(Declaration,Assignment);}
-	| VarDeclaration OF StringLit 
-	{ NVariableDeclaration* Declaration = (NVariableDeclaration *)$1; 
-	  Node* Assignment =  new NAssignment(Declaration->getID(), $3);
-	  $$ = new NStatementList(Declaration,Assignment);}
 	;
-
-/*Print Token matches said allice and spoke*/
-//Print 
-//	: PRINT  {$$ = new NPrint();/**/}
-//	;
 
 Print
 	: SAID ALICE {}
 	| SPOKE {}
+	;
+
+PrintStatement
+	: BitExp Print Separator { $$ = new NPrint($1);}
 	;
 
 Return
@@ -216,9 +206,6 @@ Found
 	: ALICE FOUND {}
 	;
 
-/* Add rules for /ArrayAcess/FuncandProcedureCalls
- * user input / fix LoxExp print to be more generatlised 
- *  */
 Statement
 	: Read {$$=$1;}
 	| Conditional { $$ = $1;}
@@ -229,9 +216,7 @@ Statement
 	| Decrement Separator {$$ = $1;}
 	| Codeblock {$$ = $1;}
 	| Assignment Separator {$$ = $1;}
-	| BitExp Print Separator {$$ = new NPrint($1);}
-	| StringLit Print Separator {$$ = new NPrint($1);}
-	| Char Print Separator { $$ = new NPrint($1);}
+	| PrintStatement	{$$ = $1;}
 	| Return Separator {$$ = $1;}
 	;
 
@@ -240,13 +225,8 @@ Call
 	| Identifier OBRACKET CBRACKET {$$ = new NMethodCall($1);}
 	;
 ParamList
-	: ParamList COMMA Parameter { $1->children.push_back($3); }
-	| Parameter { $$ = new NParamBlock($1); }
-	;
-Parameter
-	: StringLit {$$ = $1;}
-	| Char {$$ = $1;}
-	| BitExp {$$ = $1;}
+	: ParamList COMMA BitExp { $1->children.push_back($3); }
+	| BitExp { $$ = new NParamBlock($1); }
 	;
 Read
 	: WHAT WAS Identifier QUESTIONMARK { $$ = new NAssignment($3, new NInput()); }
@@ -411,6 +391,8 @@ int initTypeMap() {
 	typemap_add(OR, "|");
 	typemap_add(NOT, "~");
 	typemap_add(VOID, "void");
+	typemap_add(INC, "ate");
+	typemap_add(DEC, "drank");
 	return 1;
 }
 
