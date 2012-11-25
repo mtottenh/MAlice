@@ -19,6 +19,15 @@ typedef vector<NVariableDeclaration *> ViarableList;
 
 class Node;
 typedef deque<Node *> node_children_t;
+typedef struct file
+{
+    int startLine;
+    int endLine;
+    int startColumn;
+    int endColumn;
+} fileLocation;
+
+
 
 class SymbolTable;
 /* Top level Base Class */
@@ -44,6 +53,7 @@ public:
 	virtual int getNodeType();
 	int isRoot();
 	virtual int compareTypes(int, int) const;
+	void setLocation(fileLocation);
 };
 
 #endif
