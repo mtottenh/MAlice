@@ -24,12 +24,15 @@ SymbolTable* SymbolTableGenerator::generateTable() {
 SymbolTable* SymbolTableGenerator::nodeTableGen(Node *node, SymbolTable* table) {
 	int nodeType = node->getNodeType();
 	Node* nodePtr = NULL;
+	std::deque<Node *> children = node->getChildren();
+	unsigned int size = children.size();
+
 	if(!node->addTable(table)) {
 		cerr << "ERROR: Unable to  update node with symbol table pointer" 
 		     << endl;
 		return table;
 	}
-/*	cerr << "NODE TYPE: " << typemap_get(nodeType) << endl;*/
+	
 	switch(nodeType) {
 		case FUNC:
 		case PROCEDURE:
@@ -50,6 +53,10 @@ SymbolTable* SymbolTableGenerator::nodeTableGen(Node *node, SymbolTable* table) 
 			} else {
 				error_var_exists(node->getID());
 			}	
+			for (unsigned int i = 0; i < size; i++) {
+				nodeTableGen(children[i],table);		
+			}
+
 			break;
 
 		case CODEBLOCK:
@@ -58,8 +65,6 @@ SymbolTable* SymbolTableGenerator::nodeTableGen(Node *node, SymbolTable* table) 
 			 */
 			table = new SymbolTable(table);
 		default:
-			std::deque<Node *> children = node->getChildren();
-			unsigned int size = children.size();
 			for (unsigned int i = 0; i < size; i++) {
 				nodeTableGen(children[i],table);		
 			}

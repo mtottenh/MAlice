@@ -7,7 +7,7 @@ NVariableDeclaration::NVariableDeclaration(NIdentifier* id, int type) {
 	delete(id);
 	nodeType = VARDEC;
 }
-
+/* Arrays*/
 NVariableDeclaration::NVariableDeclaration(NIdentifier* id, int type, Node *block) {
 	this->type = type;
 	children.push_back(block);
