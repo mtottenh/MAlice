@@ -1,5 +1,6 @@
 #include "NBinOp.hpp"
 #include "TypeDefs.hpp"
+#include "../Errors/TypeMap.hpp" /* debug include only! remove this! */
 
 NBinOp::NBinOp(Node* left, Node* right, int op) {
 	this->op = op;
@@ -20,8 +21,7 @@ int NBinOp::resolveType()  {
 	}
 
 	/* Are they numbers or letters? If not, invalid. */
-	else if(t1 != TNUMBER && t1 != REFNUMBER && t1 != TCHAR 
-			&& t1 != REFCHAR) {
+	else if(t1 != TNUMBER && t1 != TCHAR) {
 		return INVALIDTYPE;
 	}
 
@@ -35,7 +35,7 @@ int NBinOp::check() {
 	int isValid = 1;
 
 	this->type = resolveType();
-	
+
 	/* Are the operands valid? Superclass check will evaluate child nodes */
 	isValid &= Node::check();
 	
@@ -43,20 +43,19 @@ int NBinOp::check() {
 	 * Is the result of resolveType invalid? If so, we have a type
 	 * mismatch.
 	 */
+
 	if(type == INVALIDTYPE) {
 		int t1 = children[0]->getType();
 		int t2 = children[1]->getType();
-		
+
 		/* If t1 is a num or char, we expect t2 to be of type t1. */
-		if(t1 == TNUMBER || t1 == REFNUMBER || t1 == TCHAR
-				|| t1 == REFCHAR) {
+		if(t1 == TNUMBER || t1 == TCHAR) {
 			error_type_mismatch(op, t2, t1);
 			isValid = 0;
 		}
 		
 		/* If t2 is a num or char, we expect t1 to be of type t2. */
-		else if(t2 == TNUMBER || t2 == REFNUMBER || t2 == TCHAR
-				|| t2 == REFCHAR) {
+		else if(t2 == TNUMBER || t2 == TCHAR) {
 			error_type_mismatch(op, t1, t2);
 			isValid = 0;
 		}

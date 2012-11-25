@@ -1,5 +1,6 @@
 #include "NArrayAccess.hpp"
 #include "TypeDefs.hpp"
+#include "../Errors/TypeMap.hpp" /* debug include, remove this! */
 
 NArrayAccess::NArrayAccess(NIdentifier* id, Node* indexNode)
 {
@@ -25,13 +26,13 @@ int NArrayAccess::resolveType() {
 	int idType = nodePtr->getType();
 
 	switch(idType) {
-	case ARRCHAR:
+	case REFCHAR:
 		return TCHAR;
 		break;
-	case ARRNUMBER:
+	case REFNUMBER:
 		return TNUMBER;
 		break;
-	case ARRSTRING:
+	case REFSTRING:
 		return TSTRING;
 		break;
 	default:
