@@ -5,7 +5,7 @@
 #include "NIdentifier.hpp"
                                                                                  
 class NFunctionDeclaration : public Node {                          
-private:
+public:
 	int type;
                                                                                 
 public:                                                                          
@@ -15,7 +15,7 @@ public:
 	NFunctionDeclaration(NIdentifier*, Node*, Node*);
 	NFunctionDeclaration(NIdentifier*, Node*);
 	int print() const;
-	int getType() const;
+	int getType() ;
 };    
 
 #endif

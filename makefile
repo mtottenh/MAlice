@@ -3,7 +3,7 @@ CFLAGS = -Wall -pedantic -g -O0
 YFLAGS = --verbose --debug --defines
 LFLAGS = --yylineno
 
-all: parser
+all: lex.yy.c y.tab.c parser
 
 lex.yy.c: lexer.l
 	flex $(LFLAGS) lexer.l

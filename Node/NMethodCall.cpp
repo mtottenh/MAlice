@@ -26,7 +26,8 @@ int NMethodCall::resolveType() {
 	Node* nodePtr = table->lookup(name);
 	if (nodePtr == NULL)
 		return INVALIDTYPE;
-	cout << "type: " << nodePtr->getType() << " Identifier: " << nodePtr->getID() << "\t";
+	cerr << "Type: " << nodePtr->getType() << " Identifier: " 
+	     << nodePtr->getID() << " NodeType: " << nodePtr->getNodeType() << "\t";
 	return nodePtr->getType();
 }
 int NMethodCall::getType() {

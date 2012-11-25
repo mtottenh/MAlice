@@ -7,10 +7,10 @@ NBinOp::NBinOp(Node* left, Node* right, int op) {
 	children.push_back(left);
 	children.push_back(right);
 }
-int NBinOp::getType() const {
+int NBinOp::getType() {
 	return resolveType();
 }
-int NBinOp::resolveType()  const {
+int NBinOp::resolveType()  {
 	/* Do the types of the children match? */
 	int t1 = children[0]->getType();
 	int t2 = children[1]->getType();

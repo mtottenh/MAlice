@@ -52,7 +52,7 @@ int NFunctionDeclaration::print() const {
 	cout << name ;                                                   
 	return 1;                                                        
 }
-int NFunctionDeclaration::getType() const {
+int NFunctionDeclaration::getType() {
 	return type;
 }
 

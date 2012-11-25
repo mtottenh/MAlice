@@ -4,13 +4,13 @@
 #include "Node.hpp"
 
 class NBinOp : public Node {
-private:
+public:
 	int op;
-	virtual int resolveType() const;
+	virtual int resolveType() ;
 public:
         NBinOp(Node*, Node*, int);
 	virtual int check();
-	virtual int getType() const;
+	virtual int getType() ;
 };
 
 #endif
