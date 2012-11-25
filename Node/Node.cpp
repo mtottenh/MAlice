@@ -28,7 +28,7 @@ node_children_t Node::getChildren() const {
 }
 
 int Node::getType() const {
-	return this->type;
+	return resolveType();
 }
 
 int Node::resolveType() {

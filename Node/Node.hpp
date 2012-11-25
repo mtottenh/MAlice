@@ -28,7 +28,7 @@ public: /* This should be changed to private at some point. */
 	int nodeType;
 	int type;
 	int isRootNode;
-	virtual int resolveType();
+	virtual int resolveType() const;
 public:
 	node_children_t children; /* This shouldn't be publicly exposed. Fix! */
 	string name; /* Same here... */

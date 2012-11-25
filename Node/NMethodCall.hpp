@@ -5,7 +5,7 @@
 #include "NIdentifier.hpp"
 /* Fix this class - could also be expression?*/                                  
 class NMethodCall : public Node {                                          
-private:
+public:
 	virtual int resolveType();
 	int checkParams(Node*);
 public:
@@ -13,7 +13,7 @@ public:
 	NMethodCall(NIdentifier*,Node*);
 	NMethodCall(NIdentifier*);
 	virtual int check();
-	int getType();
+	int getType() const;
 }; 
 
 #endif
