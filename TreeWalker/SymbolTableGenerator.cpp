@@ -1,144 +1,131 @@
 #include "SymbolTableGenerator.hpp"
 #include "../Errors/SemanticErrors.hpp"
+#include "../Errors/TypeMap.hpp"
 #include "../Node/TypeDefs.hpp"
 
-SymbolTableGenerator::SymbolTableGenerator(Node *tree) {
+SymbolTableGenerator::SymbolTableGenerator(Node* tree) {
 	root = tree;
- 	processQueue = root->getChildren();	
 }
 
-/* The contract for this is that it generates a symbol table for a function 
- * and returns a poitner to it. 
- * The process queue's state after this function has been run
- * should just have the first element (The function) and any elements it adds
- * removed
- */
-SymbolTable* SymbolTableGenerator::funcGen(Node *func, SymbolTable* sym) {
-	/*get funcs children and add them to the front of the queue*/
-	int numberOfChildren = func->getChildren().size();
-	std::deque<Node *> children = func->getChildren();
-	sym->add(func->getID(),func);
-	Node* Codeblock, Declist, Statlist, Paramlist;
-	SymbolTable *t_sym;
-	if (numberOfChildren > 1) {
-		/* if we have a function that takes paramaters 
-		 * Create a new scope block and add the params too it.
-		 */
-		Codeblock = children[0];
-		Paramlist = children[1];
-		t_sym = new SymbolTable(sym);	
-		t_sym = nodeTableGen(children[1],t_sym);
 
-		nodeTableGen(children[0],t_sym);
-	} else {
-//		cout << "Number of children: " << numberOfChildren << endl;
-//		cout << "Child Type: " << children[0]->getNodeType();
-		/*If it takes no args just process its child with a new scope */
-//		sym->print();
-		
-		t_sym = new SymbolTable(sym);
-		nodeTableGen(children[0],t_sym);
-
-		
-//		cout << "Generating table for CodeBlock: " << type << endl;
-	}
-	
-	return t_sym;
-
-}
-/* Wapper for getting the fisrt elem of a queue then
- * deleting that element from the queue
- */
-Node* SymbolTableGenerator::pop_front_q() {
-	Node* front = processQueue.front();
-	processQueue.pop_front();
-	return front;
-}
-/*
- * Augments the given AST starting at root with a symbol table,
- * containing all identifiers from variable and function declarations.
- */
 SymbolTable* SymbolTableGenerator::generateTable() {
-	SymbolTable* sym = new SymbolTable();
-	root->addTable(sym);
-	while(!processQueue.empty()) {
-		root = pop_front_q();
-		sym = nodeTableGen(root,sym);
+	SymbolTable *table = new SymbolTable();
+	root->addTable(table);
+	std::deque<Node*> children = root->getChildren();
+	Node* node;
+	while(!children.empty()) {
+		node = children.front();
+		children.pop_front();
+		nodeTableGen(node,table);
 	}
-	return sym;
+	return table;
 }
 
-/* Takes an AST starting at node and generates a symbol table hierarchy
- * from that node onwards.
- */
-SymbolTable* SymbolTableGenerator::nodeTableGen(Node *node, SymbolTable* sym) {
-	/* Add a pointer to the symbol table that the node is declared in. */
-	if(!node->addTable(sym)) {
-		cout << "ERROR: Could not add symbol table to node!" << endl;	
+SymbolTable* SymbolTableGenerator::nodeTableGen(Node *node, SymbolTable* table) {
+	int nodeType = node->getNodeType();
+	Node* nodePtr = NULL;
+	if(!node->addTable(table)) {
+		cerr << "ERROR: Unable to  update node with symbol table pointer" 
+		     << endl;
+		return table;
 	}
-	
-	int type = node->getNodeType();
+/*	cerr << "NODE TYPE: " << typemap_get(nodeType) << endl;*/
+	switch(nodeType) {
+		case FUNC:
+		case PROCEDURE:
+			nodePtr = table->lookupCurrentScope(node->getID());
+			if (nodePtr == NULL) {
+				table->add(node->getID(), node);
+			} else {
+				error_var_exists(node->getID());
+				return table;
+			}	
+			funcGen(node,table);
+			break;
 
-	/*
-	 * If the node is a function declaration or procedure declaration, 
-	 * delegate to the funcGen function.
-	 */
-	if ((type ==  FUNC) ||  (type == PROCEDURE)) {
-		funcGen(node,sym);
-		return sym;
+		case VARDEC:
+			nodePtr = table->lookupCurrentScope(node->getID());
+			if (nodePtr == NULL) {
+				table->add(node->getID(), node);
+			} else {
+				error_var_exists(node->getID());
+			}	
+			break;
+
+		case CODEBLOCK:
+			/* Codeblocks have their own scope so we need to 
+			 * create a new scope and do the children
+			 */
+			table = new SymbolTable(table);
+		default:
+			std::deque<Node *> children = node->getChildren();
+			unsigned int size = children.size();
+			for (unsigned int i = 0; i < size; i++) {
+				nodeTableGen(children[i],table);		
+			}
+			break;
 	}
-	
-	/*
-	 * If it is a variable declaration node, add its ID to the symbol
-	 * table. Checking that the variable is not already declared is a job
-	 * for semantic analysis, so is not done here.
-	 */
-	if (type == VARDEC) {
-		/*check if  identifier exists in this scope */
-		Node* nodePtr = sym->lookupCurrentScope(node->getID());
-		if (nodePtr != NULL) {
-			error_var_exists(node->getID());
-			return sym;
+	return table;
+}
 
+
+SymbolTable* SymbolTableGenerator::funcGen(Node* func, SymbolTable* table) {
+	std::deque<Node *> children = func->getChildren();
+	unsigned int size = children.size();
+	/*Functions with no paramaters*/
+	if (size == 1) {
+		nodeTableGen(children[0],table);
+	} else {
+		/*Deal with paramaters */
+		Node* codeBlock = children[0];
+		Node* paramBlock = children[1];
+		SymbolTable* localScope = new SymbolTable(table);
+		nodeTableGen(paramBlock,localScope);
+		
+		/*Deal with the function body*/
+		children = codeBlock->getChildren();
+		size = children.size();
+		Node *decList, *statList;
+
+		/* Deal with declarations if nessecary*/
+		if (size > 1) {
+			decList = children[0];
+			statList = children[1];
+			nodeTableGen(decList,localScope);
+		} else {
+			statList = children[0];
 		}
-		/* If it doesnt add it to the symbl table*/
-		sym->add(node->getID(), node);	
-	}		
-	if (type == CODEBLOCK) {
-		/* if we are processing a codeblock 
-		 * then create a new scope
-		 * and add the children to the font of th equeu
-		 */
-
-		if (node->getChildren().size() > 1) {
-		/* If we consists of more than just a dec list we 
-		 * need to propagate the symbol table to the statlist
- 		 */
 			
-		}
-		for (unsigned int i = 0; i < node->getChildren().size(); i++) {
-			/* Like dat bad coding bro? */
-			/* no.jpg */
-			sym = nodeTableGen(node->getChildren()[i],sym);
-		}
-		return sym;
-	}
-	if (type == DECLARATIONBLOCK) {
-		for (unsigned int i = 0; i < node->getChildren().size(); i++) {
-			/* Like dat bad coding bro? */
-			/* no.jpg */
-			nodeTableGen(node->getChildren()[i],sym);
-		}
-		return sym;	
-	}
-	for (unsigned int i = 0; i < node->getChildren().size(); i++) {
-		/* Like dat bad coding bro? */
-		/* no.jpg */
-		nodeTableGen(node->getChildren()[i],sym);
-	}
-	
-	
-	return sym;
+		nodeTableGen(statList,localScope);
+	}	
+	return  table;	
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
