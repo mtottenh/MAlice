@@ -26,12 +26,12 @@ int NMethodCall::resolveType() {
 	Node* nodePtr = table->lookup(name);
 	if (nodePtr == NULL)
 		return INVALIDTYPE;
-	cerr << "Type: " << nodePtr->getType() << " Identifier: " 
-	     << nodePtr->getID() << " NodeType: " << nodePtr->getNodeType() << "\t";
+	/*cerr << "Type: " << nodePtr->getType() << " Identifier: " 
+	     << nodePtr->getID() << " NodeType: " << nodePtr->getNodeType() << "\t";*/
 	return nodePtr->getType();
 }
 int NMethodCall::getType() {
-	cout << "Getting type through resolving.." << endl;
+/*	cout << "Getting type through resolving.." << endl;*/
 	return resolveType();
 }
 int NMethodCall::check() {
@@ -92,7 +92,6 @@ int NMethodCall::checkParams(Node* funcParams) {
 			&& givenIt != thisParams.end()) {
 		expectedType = (*funcIt)->getType();
 		givenType = (*givenIt)->getType();
-		cout << (*givenIt)->getID() << (*funcIt)->getID(); 
 		if(!compareTypes(expectedType, givenType)) {
 			varName = (*givenIt)->getID();
 			error_type_mismatch(varName, givenType, expectedType);

@@ -355,7 +355,9 @@ int main(int argc, char* argv[]) {
 	yyin = input;
 	initTypeMap();
 	int node = yyparse();
-	
+	if (root == NULL) {
+		return -1;
+	}	
 	/* Create symbol table generator.*/
 	cout << "##### Creating symbol table generator #####" << endl;
 	SymbolTableGenerator* s = new SymbolTableGenerator(root);

@@ -65,7 +65,7 @@ int NAssignment::check() {
 	else { 
 		int lhsType = nodePtr->getType();
 		int rhsType = rval->getType();
-		cout << "RHS TYPE : " << typemap_get(rhsType) << endl;
+		/*cout << "RHS TYPE : " << typemap_get(rhsType) << endl;*/
 		if (rval->getNodeType() == INPUTNODE) {
 			return isValid;
 		}
