@@ -84,6 +84,7 @@ SymbolTable* SymbolTableGenerator::funcGen(Node* func, SymbolTable* table) {
 		
 		/*Deal with the function body*/
 		children = codeBlock->getChildren();
+		codeBlock->addTable(localScope);
 		size = children.size();
 		Node *decList, *statList;
 
