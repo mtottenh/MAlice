@@ -32,3 +32,6 @@ output
 #ignore binaries
 parser
 scanner
+
+#ignore MAlice reference compiler junk
+*.py
