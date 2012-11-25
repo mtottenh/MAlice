@@ -336,7 +336,7 @@ int main(int argc, char* argv[]) {
 	yyin = input;
 	initTypeMap();
 	int node = yyparse();
-	if (root == NULL) {
+	if (root == NULL || node == 1) {
 		cerr << "ERROR: Parse tree broke, stopping compiler" << endl;
 		return -1;
 	}	
