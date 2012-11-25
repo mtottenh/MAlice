@@ -19,13 +19,13 @@ NVariableDeclaration::NVariableDeclaration(NIdentifier* id, int type, Node *bloc
 int NVariableDeclaration::getArrayType(int type) {
 	switch(type) {
 	case TNUMBER:
-		return ARRNUMBER;
+		return REFNUMBER;
 		break;
 	case TCHAR:
-		return ARRCHAR;
+		return REFCHAR;
 		break;
 	case TSTRING:
-		return ARRSTRING;
+		return REFSTRING;
 		break;
 	default:
 		return INVALIDTYPE;

@@ -69,8 +69,8 @@ int NAssignment::check() {
 		 * If we have an array, we need the type of the array access
 		 * node as opposed to the array declaration node.
 		 */
-		if(lhsType == ARRNUMBER || lhsType == ARRCHAR
-				|| lhsType == ARRSTRING) {
+		if(lhsType == REFNUMBER || lhsType == REFCHAR
+				|| lhsType == REFSTRING) {
 			lhsType = children[0]->getType();
 		}
 		

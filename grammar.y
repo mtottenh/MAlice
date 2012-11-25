@@ -21,7 +21,6 @@ DECLARATIONBLOCK STATLIST INPUTNODE
 
 /* Extra 'types' for semantic analysis (add to types enum). */
 %token INVALIDTYPE BOOLEAN VOID ENDIF
-%token ARRNUMBER ARRCHAR ARRSTRING
 
 /* Primitives */
 %token <string> CHARLIT STRING STRINGLIT
@@ -391,9 +390,6 @@ int initTypeMap() {
 	typemap_add(REFCHAR, "spider letter");
 	typemap_add(REFSTRING, "spider sentence");
 	typemap_add(REFNUMBER, "spider number");
-	typemap_add(ARRCHAR, "letter array");
-	typemap_add(ARRSTRING, "sentence array");
-	typemap_add(ARRNUMBER, "number array");
 	typemap_add(INVALIDTYPE, "INVALID");
 	typemap_add(BOOLEAN, "Boolean");
 	typemap_add(VOID, "void");
@@ -418,7 +414,7 @@ int initTypeMap() {
 	typemap_add(VOID, "void");
 	typemap_add(INC, "ate");
 	typemap_add(DEC, "drank");
-	typemap_add(SAID, "said");
+	typemap_add(SAID, "said Alice/spoke");
 	return 1;
 }
 /*
