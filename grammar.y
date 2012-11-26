@@ -215,7 +215,7 @@ Statement
 	: Read {$$=$1;}
 	| Conditional { $$ = $1;}
 	| Loop {$$=$1;}
-	| Call Separator { $$ = $1;}
+	| Call Separator {$$ = new NAssignment($1);}
 	| NULLTOK {$$ = new NNullToken();}
 	| Increment Separator {$$ = $1;}
 	| Decrement Separator {$$ = $1;}
