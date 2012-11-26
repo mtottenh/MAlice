@@ -8,7 +8,7 @@
 #include "TreeWalker/SymbolTableGenerator.hpp"
 extern int yylex();
 extern void yyerror (char *s, ...);
-FileLocation generateLocation();
+FileLocation* generateLocation();
 Node *root;
 
 %}
@@ -192,7 +192,7 @@ Assignment
 VarDeclarationAssignment
 	: VarDeclaration OF Predicate 
 	{ NVariableDeclaration* Declaration = (NVariableDeclaration *)$1; 
-	  Node* Assignment =  new NAssignment(Declaration->getID(), $3);
+	  Node* Assignment =  new NAssignment(Declaration, $3);
 	  $$ = new NStatementList(Declaration,Assignment);}
 	;
 
@@ -282,7 +282,7 @@ Conditional
 
 Maybe
 	: ELSE StatementList EndIf {$$ = $2;}
-	| EndIf {$$ = new NEndIf();}
+	| EndIf {$$ = new NEndIf(); $$->setLocation(generateLocation());}
 	| ELSE MAYBE OBRACKET Predicate CBRACKET THEN StatementList Maybe 
 	{$$ = new NConditional($4,$7,$8);}
 	;
@@ -436,12 +436,12 @@ void yyerror(char *s, ...)
   fprintf(stderr, "\n");
 }
 
-FileLocation generateLocation()
+FileLocation* generateLocation()
 {
-	FileLocation data;
-	data.startLine = yylloc.first_line;
-	data.endLine = yylloc.last_line;
-	data.startColumn = yylloc.first_column;
-	data.endColumn = yylloc.last_column;
+	FileLocation *data = new FileLocation();
+	data->startLine = yylloc.first_line;
+	data->endLine = yylloc.last_line;
+	data->startColumn = yylloc.first_column;
+	data->endColumn = yylloc.last_column;
 	return data;
 }
