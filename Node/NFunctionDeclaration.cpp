@@ -103,7 +103,6 @@ std::deque<Node *>  NFunctionDeclaration::returnNodeList(Node* statlist) {
 	
 	const std::deque<Node *>* statements = statlist->getChildrenRef();
 	unsigned int size = statements->size();
-	cerr << "Size: " << size;
 	std::deque<Node *> returnList, leftList, rightList, conditionalQ;
 	unsigned int sizeRight, sizeLeft;
 	Node *left, *right;
