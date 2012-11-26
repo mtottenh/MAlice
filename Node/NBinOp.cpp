@@ -135,6 +135,7 @@ int NBinOp::checkPred(int t1, int t2) {
 
 	else if(t2 != BOOLEAN) {
 		error_type_mismatch(op, t2, BOOLEAN);
+		return 0;
 	}
 	
 	else {
