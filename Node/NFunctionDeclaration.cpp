@@ -62,7 +62,8 @@ int NFunctionDeclaration::check() {
 	int isValid = 1;
 	Node *statlist; 
 	isValid &= Node::check();
-	if (children[0]->getChildren().size() > 0) {
+	int statNum = children[0]->getChildrenRef()->size();
+	if (statNum > 0) {
 		statlist = children[0]->getChildrenRef()->back();
 	} else {
 		if (nodeType == FUNC) {
@@ -72,38 +73,41 @@ int NFunctionDeclaration::check() {
 			return isValid;
 		}
 	}
-	std::deque<Node *> returnList = returnNodeList(statlist); 
-	unsigned int size = returnList.size();
+	if (statNum > 0) {
+		std::deque<Node *> returnList = returnNodeList(statlist); 
+		unsigned int size = returnList.size();
 
-	if (nodeType == FUNC && isValid) {
-		if (size == 0) {
-			isValid = 0;
-		}
-		/* loop through the list and ensure that getType() of nReturn node == type*/
-		for (unsigned int i = 0; i < size; i++) {
-			if( !(returnList[i]->getType() == this->type)) {
+		if (nodeType == FUNC && isValid) {
+			if (size == 0) {
 				isValid = 0;
 				printErrorHeader("function declaration");
 				error_return_type(name, this->type, returnList[i]->getType());
+			}
+		/* loop through the list and ensure that getType() of nReturn node == type*/
+			for (unsigned int i = 0; i < size; i++) {
+				if( !(returnList[i]->getType() == this->type)) {
+					isValid = 0;
+					cerr << "Type mismatch in function return statment!" << endl;
 			}
 		}
 	} else {
 		isValid &= (size == 0);
 	}
+	
 	if (!isValid) {
 		if (nodeType == FUNC) {
 			printErrorHeader("function declaration");
 			error_no_return(name); 
 		}
 
-		else if (nodeType == FUNC && size > 0) {
+		else if (nodeType == PROCEDURE && size > 0) {
 			printErrorHeader("function declaration");
 			error_proc_return(name);
 		}
 	}
 
 
-
+}
 	return isValid;
 }
 std::deque<Node *>  NFunctionDeclaration::returnNodeList(Node* statlist) {
