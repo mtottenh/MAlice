@@ -8,7 +8,7 @@
  */
 NConditional::NConditional(Node* predicate, Node* left, Node* right) {
 	this->name = "Conditional";
-i	children.push_back(predicate); /* This is an expression */
+	children.push_back(predicate); /* This is an expression */
 	children.push_back(left);
 	children.push_back(right);
 }
