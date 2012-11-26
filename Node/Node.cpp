@@ -103,7 +103,18 @@ FileLocation* Node::getLocation()
 	}
 	return loc;
 }
-
+void Node::addChild(Node* node) {
+	children.push_back(node);
+}
+string Node::getName() {
+	return name;
+}
+int Node::hasTable() {
+	return table == NULL;
+}
+void Node::printTable() {
+	table->print();
+}
 void Node::printErrorHeader(const string& context) {
 	cerr << endl << "--- Semantic error in " << context << " at line(s) " 
 		<< getLocation()->startLine << "-" << getLocation()->endLine 

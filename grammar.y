@@ -89,9 +89,9 @@ program : DeclarationList { root = $1; root->isRoot(); }
 
 DeclarationList
 	: DeclarationList Declaration 
-	{ $1->children.push_back($2); }
+	{ $1->addChild($2); }
 	| Declaration 
-	{ $$ = new NDeclarationBlock(); $$->children.push_back($1); } 
+	{ $$ = new NDeclarationBlock(); $$->addChild($1); } 
 	;
 /*
  * The value of a declaration node is just defined as the 
@@ -135,12 +135,12 @@ ProcedureDec
 	{ $$ = new NFunctionDeclaration($2,$4,$6);
 	/*$$ = new procNode( $2,$6,$4) name/body/args */ }
 	|  Procedure Identifier OBRACKET CBRACKET Codeblock 
-	{$$ = new NFunctionDeclaration($2,$5);/* $$->children.push_back($5);*/}
+	{$$ = new NFunctionDeclaration($2,$5);/* $$->addChild($5);*/}
 	;
 /* WE NEED TO EDIT THIS TO ADD TYPE INFORMATION TO THE CONSTRUCTOR!" */
 ParamListDec
 	: ParameterDec {$$ = new NParamDeclarationBlock($1); }
-	| ParamListDec COMMA ParameterDec {$1->children.push_back($3); }
+	| ParamListDec COMMA ParameterDec {$1->addChild($3); }
 	;
 ParameterDec
 	: Type Identifier {$$ = new NVariableDeclaration($2,$1); }
@@ -235,7 +235,7 @@ Call
 	| Identifier OBRACKET CBRACKET {$$ = new NMethodCall($1);}
 	;
 ParamList
-	: ParamList COMMA Predicate { $1->children.push_back($3); }
+	: ParamList COMMA Predicate { $1->addChild($3); }
 	| Predicate { $$ = new NParamBlock($1); }
 	;
 Read
@@ -297,8 +297,8 @@ Codeblock
 	; 
 
 StatementList
-	: StatementList Statement {$1->children.push_back($2);}
-	| Statement{$$ = new NStatementList(); $$->children.push_back($1);}
+	: StatementList Statement {$1->addChild($2);}
+	| Statement{$$ = new NStatementList(); $$->addChild($1);}
 	;
 
 Separator

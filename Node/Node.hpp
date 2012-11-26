@@ -26,6 +26,7 @@ class SymbolTable;
 class Node {
 private:
 	FileLocation *loc;
+protected: /* This should be changed to private at some point. */
 	SymbolTable* table;
 	int nodeType;
 	int type;
@@ -52,6 +53,7 @@ public:	Node();
 	void setLocation(FileLocation*);
 	FileLocation* getLocation();
 	virtual void printErrorHeader(const string&);
+	void addChild(Node*);
 };
 
 #endif
