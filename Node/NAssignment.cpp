@@ -39,6 +39,7 @@ NAssignment::NAssignment(Node* id, Node* exp) {
 	children.push_back(rval);
 
 }
+/* TODOO see if this case needs removing */
 NAssignment::NAssignment(Node* id, char *exp) {
 	lval = id;
 	name = "Assignment";
@@ -54,7 +55,7 @@ NAssignment::NAssignment(Node* call)
 	name = "Method assignment";
 	children.push_back(call);
 }
-
+/* TODO Refactor check() *///
 int NAssignment::check() {
 	int isValid = 1;
 

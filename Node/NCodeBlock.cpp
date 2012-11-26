@@ -1,10 +1,8 @@
 #include "NCodeBlock.hpp"
 #include "TypeDefs.hpp"
-/* BAD MITCHELL!! Please use Node *'s as the paramaters,
- * it doesn't matter that you don't know what the exact
- * type of the nodes are as you are just pushing them into
- * the children deque. If you use specific types it
- * breaks other bits of code
+
+/* Code blocks consist of a statement list and 
+ * an optional declaration list
  */
 NCodeBlock::NCodeBlock(Node *dec, Node *stat)
 {

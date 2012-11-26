@@ -12,7 +12,6 @@ NFunctionDeclaration::NFunctionDeclaration() {
 NFunctionDeclaration::NFunctionDeclaration (NIdentifier* ID, Node *block) {
         this->type = VOID;
 	children.push_back(block);
-	/* change behaviour */
 	name = ID->getID(); 
 	nodeType = PROCEDURE;
 	delete(ID);
@@ -47,7 +46,9 @@ NFunctionDeclaration::NFunctionDeclaration (NIdentifier* ID, Node *params,Node *
 	nodeType = PROCEDURE;
 }
 
-
+/* TODO remove print and gettype
+ * these should be inherited from Node anyway
+ */
 int NFunctionDeclaration::print() const {
 	cout << name ;                                                   
 	return 1;                                                        

@@ -1,6 +1,6 @@
 #include "Node.hpp"
 #include "TypeDefs.hpp"
-
+/* TODO Remove this #define*/
 #define UNDEFINED -1
 
 Node::Node() {
@@ -13,7 +13,7 @@ Node::Node(Node *child) {
 	name = "Node";
 	type = INVALIDTYPE;
 }
-
+/* TODO Implement explicit deconstructor*/
 Node::~Node() {
 	
 }
@@ -63,12 +63,14 @@ int Node::addTable(SymbolTable* table) {
 int Node::getNodeType() {
 	return nodeType;
 }
-
+/* TODO rename to setAsRoot()
+ */
 int Node::isRoot() {
 	isRootNode = 1;
 	return isRootNode;
 }
-
+/* TODO Really? do we need this as a function?
+ */
 int Node::compareTypes(int t1, int t2) const {
 	return (t1 == t2);
 }
@@ -79,7 +81,7 @@ void Node::setLocation(fileLocation location)
 }
 fileLocation Node::getLocation()
 {
-	//location.startLine == 0 iff location has not been initialised.
+	/*location.startLine == 0 iff location has not been initialised.*/
 	if (location.startLine == 0)
 	{
 		location.startLine = children.front()->getLocation().startLine;

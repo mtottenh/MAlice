@@ -4,7 +4,9 @@
 NPrint::NPrint() {
 	name = "Print";
 }
-
+/* TODO consider pushing this into an NStringLit child node?
+ * it would simplify the check function
+ */
 NPrint::NPrint(const char* msg) {
 	message = strdup(msg); 
 	name = "Print";

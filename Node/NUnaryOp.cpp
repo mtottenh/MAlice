@@ -21,7 +21,8 @@ int NUnaryOp::resolveType() {
 		return TNUMBER;
 	}
 }
-
+/* TODO refactor to make the code clearer,
+ */
 int NUnaryOp::check() {
 	this->type = resolveType();
 

@@ -1,6 +1,5 @@
 #include "NBinOp.hpp"
 #include "TypeDefs.hpp"
-#include "../Errors/TypeMap.hpp" /* debug include only! remove this! */
 
 NBinOp::NBinOp(Node* left, Node* right, int op) {
 	this->op = op;
@@ -11,6 +10,10 @@ NBinOp::NBinOp(Node* left, Node* right, int op) {
 int NBinOp::getType() {
 	return resolveType();
 }
+/*TODO As NPredicate is removed resolve types on binary ops
+ * need to be able to resolve to booleans if the operator is
+ * a boolean and the arguments are valid
+ */
 int NBinOp::resolveType()  {
 	/* Do the types of the children match? If not, invalid. */
 	int t1 = children[0]->getType();

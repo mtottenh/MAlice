@@ -8,7 +8,10 @@ NInput::NInput(Node* id)
 	nodeType = INPUTNODE;
 	children.push_back(id);
 }
-
+/* TODO Refactor this check function
+ * Its logic is a little confused and should be expressed
+ * more consise and clearly
+ */
 int NInput::check() {
 	int isValid = 1;
 
@@ -18,7 +21,7 @@ int NInput::check() {
 	 */
 	int childType = children[0]->getType();
 	
-	/* We can't accept input if the node is actually a function! */
+	/* We can't accept input if the node is a method call */
 	Node* nodePtr = table->lookup(children[0]->getID());
 	if(nodePtr != NULL) {
 		int childNodeType = nodePtr->getNodeType();

@@ -18,7 +18,9 @@ NIdentifier::NIdentifier(char *name) {
 NIdentifier::NIdentifier(string name) {
 	this->name = name;
 }
-/* Dummy check function just trying to get something working */
+/* Checking an identifier is juts checking whether it is declared in scope 
+ *  TODO Double check if this needs more too it or not
+ */
 int NIdentifier::check() {
 	if (table->lookup(name) != NULL) 
 		return 1;
@@ -26,6 +28,7 @@ int NIdentifier::check() {
 }
 
 int NIdentifier::getType() {
+/* TODOO remove table === NULL checkk */
 	if (table == NULL) 
 		return INVALIDTYPE;
 	Node* variable = table->lookup(name);
