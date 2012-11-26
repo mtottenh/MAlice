@@ -13,7 +13,7 @@ scanner: lex.yy.c y.tab.h
 
 y.tab.c: grammar.y
 	yacc $(YFLAGS) grammar.y
-parser: lex.yy.c y.tab.c TreePrinter.o SemanticErrors.o TypeMap.o SymbolTable.o TreeWalker.o NArrayAccess.o NAssignment.o NBinOp.o NCharLit.o NCodeBlock.o NConditional.o NDec.o NDeclarationBlock.o NEndIf.o NFunctionDeclaration.o NIdentifier.o NInc.o NInput.o NInteger.o NLoop.o NMethodCall.o Node.o NParamBlock.o NParamDeclarationBlock.o NPredicate.o NPrint.o NReturn.o NStatementList.o NString.o NStringLit.o NUnaryOp.o NVariableDeclaration.o
+parser: lex.yy.c y.tab.c TreePrinter.o SemanticErrors.o TypeMap.o SymbolTable.o TreeWalker.o NArrayAccess.o NAssignment.o NBinOp.o NCharLit.o NCodeBlock.o NConditional.o NDec.o NDeclarationBlock.o NEndIf.o NFunctionDeclaration.o NIdentifier.o NInc.o NInput.o NInteger.o NLoop.o NMethodCall.o Node.o NParamBlock.o NParamDeclarationBlock.o NPredicate.o NPrint.o NReturn.o NStatementList.o NStringLit.o NUnaryOp.o NVariableDeclaration.o
 
 	$(CC) $(CFLAGS) $^ -o $@ -lfl
 
@@ -98,8 +98,6 @@ NReturn.o: Node/NReturn.cpp
 NStatementList.o: Node/NStatementList.cpp 
 	$(CC) $(CFLAGS) $^ -c -o $@ -lfl
 
-NString.o: Node/NString.cpp 
-	$(CC) $(CFLAGS) $^ -c -o $@ -lfl
 
 NStringLit.o: Node/NStringLit.cpp 
 	$(CC) $(CFLAGS) $^ -c -o $@ -lfl
