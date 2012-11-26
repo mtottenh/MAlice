@@ -26,25 +26,24 @@ class SymbolTable;
 class Node {
 private:
 	FileLocation *loc;
-public: /* This should be changed to private at some point. */
 	SymbolTable* table;
 	int nodeType;
 	int type;
 	int isRootNode;
 	virtual int resolveType() ;
-public:
 	node_children_t children; /* This shouldn't be publicly exposed. Fix! */
 	string name; /* Same here... */
-	Node();
+public:	Node();
 	Node(Node*);
 	virtual ~Node();
 	virtual int print() const;
-	virtual int getType() ;
+	virtual int getType();
 	virtual string getID();
 	node_children_t getChildren() const;
  	const node_children_t* getChildrenRef() const;
 	virtual int check();
 	virtual int addTable(SymbolTable*);
+	void printTable();
 	virtual int getNodeType();
 	int isRoot();
 	virtual int compareTypes(int, int) const;
