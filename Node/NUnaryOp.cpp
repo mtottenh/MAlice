@@ -1,6 +1,3 @@
-#ifndef ___NUNARYOP__
-#define ___NUNARYOP__
-
 #include "NUnaryOp.hpp"
 #include "TypeDefs.hpp"
 
@@ -11,23 +8,47 @@ NUnaryOp::NUnaryOp(int op, Node* exp) {
 }
 
 int NUnaryOp::resolveType() {
-	/* Is the type of the expression a number? */
 	int childType = children[0]->getType();
 
-	if(childType != TNUMBER && childType != REFNUMBER) {
-		return INVALIDTYPE;
-	}
-	else {
+	/* Is the type of the expression a number? */
+	if(childType == TNUMBER || childType == REFNUMBER) {
 		return TNUMBER;
 	}
+
+	/* Or is it a boolean? */
+	else if(childType == BOOLEAN) {
+		return BOOLEAN;
+	}
+	
+	/* Otherwise, invalid. */
+	else {
+		return INVALIDTYPE;
+	}
 }
+
 /* TODO refactor to make the code clearer,
  */
 int NUnaryOp::check() {
+	int isValid = 1;
+
 	this->type = resolveType();
 
+	/* Do we have a unary boolean expression? (i.e. NOT) */
+	if(op == LNOT) {
+		return checkBoolean();
+	}
+
 	/* Valid if the type is a number and the children are valid. */
-	return (type == TNUMBER || type == REFNUMBER) && Node::check();
+	isValid &= Node::check();
+
+	return isValid && (type == TNUMBER || type == REFNUMBER);
 }
 
-#endif
+int NUnaryOp::checkBoolean() {
+	if(type != BOOLEAN) {
+		error_type_mismatch(op, type, BOOLEAN);
+		return 0;
+	}
+
+	return 1;
+}
