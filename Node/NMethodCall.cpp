@@ -84,13 +84,10 @@ int NMethodCall::checkParams(Node* funcParams) {
 		printErrorHeader("method call");
 		error_num_args(name, expectedSize, thisSize);
 		isValid = 0;
-		return isValid;
+
 	}
 
 	/* Compare the arguments and ensure they are of the same type. */
-/*	node_children_t::iterator funcIt = funcParams->getChildren().begin();
-	node_children_t::iterator givenIt = thisParams.begin();
-*/
 	int i = 0;
 	int j = 0;
 	int expectedType, givenType;
