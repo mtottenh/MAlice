@@ -11,6 +11,7 @@ NConditional::NConditional(Node* predicate, Node* left, Node* right) {
 	children.push_back(predicate); /* This is an expression */
 	children.push_back(left);
 	children.push_back(right);
+	nodeType = CONDITIONAL;
 }
 
 int NConditional::resolveType() {
@@ -26,6 +27,7 @@ int NConditional::check() {
 	int predNodeType = children[0]->getType();
 
 	if(predNodeType != BOOLEAN) {
+		printErrorHeader("conditional");
 		error_type_mismatch_cond(predNodeType);
 		isValid = 0;
 	}

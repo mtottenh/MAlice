@@ -14,6 +14,7 @@ int NLoop::check() {
 	/* Is the predicate a Boolean? */
 	int childType = children[0]->getType();
 	if(childType != BOOLEAN) {
+		printErrorHeader("loop predicate");
 		error_type_mismatch_cond(childType);
 		isValid = 0;
 	}

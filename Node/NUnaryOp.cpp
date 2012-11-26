@@ -46,6 +46,7 @@ int NUnaryOp::check() {
 
 int NUnaryOp::checkBoolean() {
 	if(type != BOOLEAN) {
+		printErrorHeader("unary operator");
 		error_type_mismatch(op, type, BOOLEAN);
 		return 0;
 	}

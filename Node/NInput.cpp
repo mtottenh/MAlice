@@ -27,6 +27,7 @@ int NInput::check() {
 		int childNodeType = nodePtr->getNodeType();
 
 		if(childNodeType == FUNC || childNodeType == PROCEDURE) {
+			printErrorHeader("input request");
 			error_input_node_type(children[0]->getID());
 			isValid = 0;
 		}
@@ -35,6 +36,7 @@ int NInput::check() {
 	/* If the child type is not a number or char, we can't accept input. */
 	if(childType != TNUMBER && childType != TCHAR 
 			&& childType != TSTRING) {
+		printErrorHeader("input request");
 		error_input_type(children[0]->getID(), childType);
 		isValid = 0;
 	}

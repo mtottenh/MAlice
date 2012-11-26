@@ -26,7 +26,9 @@ int Node::print() const {
 	cout << name << endl;
 	return 1;
 }
-
+const node_children_t* Node::getChildrenRef() const {
+	return &children;
+}
 node_children_t Node::getChildren() const {
 	return children;
 }
@@ -89,20 +91,19 @@ FileLocation Node::getLocation()
 	/*loc.startLine == 0 iff location has not been initialised.*/
 	if (loc.startLine == 0)
 	{
-		loc.startLine = children.front()->getLocation().startLine;
-		loc.startColumn = children.front()->getLocation().startColumn;
-		loc.endLine = children.back()->getLocation().endLine;
-		loc.endColumn = children.back()->getLocation().endColumn;
+		if (children.size() > 0) {
+			loc.startLine = children.front()->getLocation().startLine;
+			loc.startColumn = children.front()->getLocation().startColumn;
+			loc.endLine = children.back()->getLocation().endLine;
+			loc.endColumn = children.back()->getLocation().endColumn;
+		}
 	}
 	return loc;
 }
 
-void Node::printErrorHeader() {
-	printErrorHeader("(unknown)");
-}
-
 void Node::printErrorHeader(const string& context) {
-	cerr << "--- Semantic Error in " << context << "at line(s) " 
-		<< loc.startLine << "-" << loc.endLine << ", column(s) " 
-		<< loc.startColumn << "-" << loc.endColumn << " ---";
+	cerr << endl << "--- Semantic error in " << context << " at line(s) " 
+		<< getLocation().startLine << "-" << getLocation().endLine 
+		<< ", column(s) " << getLocation().startColumn << "-" 
+		<< getLocation().endColumn << " ---" << endl;
 }	

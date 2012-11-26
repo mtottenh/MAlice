@@ -14,6 +14,8 @@ public:
 	NFunctionDeclaration(NIdentifier*, Node*, int);
 	NFunctionDeclaration(NIdentifier*, Node*, Node*);
 	NFunctionDeclaration(NIdentifier*, Node*);
+	int check();
+	std::deque<Node *> returnNodeList(Node *); 
 	int print() const;
 	int getType() ;
 };    

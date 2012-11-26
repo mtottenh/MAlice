@@ -69,6 +69,7 @@ int NAssignment::check() {
 		//A single method call without an assignment
 		if(nodePtr->getNodeType() != PROCEDURE) {
 			//TODO Implement proper error function here
+			printErrorHeader("method call");
 			cerr << "Function return value ignored: " <<
 				nodePtr->getID() << endl;
 			isValid = 0;
@@ -86,6 +87,7 @@ int NAssignment::check() {
 	
 		/* Does the variable exist? If not, error. */
 		if(nodePtr == NULL) {
+			printErrorHeader("assignment");	
 			error_var_not_found(lvalID);
 			isValid = 0;
 		}
@@ -111,6 +113,7 @@ int NAssignment::check() {
 			 * RHS?
 			 */
 			if(!compareTypes(lhsType, rhsType)) {
+				printErrorHeader("assignment");
 				error_type_mismatch(lvalID, lhsType, rhsType);
 			}
 			
