@@ -11,7 +11,6 @@ NMethodCall::NMethodCall()
 
 NMethodCall::NMethodCall(NIdentifier* id, Node* params) {
 	name = id->getID();
-//	type = id->getType();
 	children.push_back(params);
 	delete(id);
 }
@@ -26,14 +25,14 @@ int NMethodCall::resolveType() {
 	Node* nodePtr = table->lookup(name);
 	if (nodePtr == NULL)
 		return INVALIDTYPE;
-	/*cerr << "Type: " << nodePtr->getType() << " Identifier: " 
-	     << nodePtr->getID() << " NodeType: " << nodePtr->getNodeType() << "\t";*/
 	return nodePtr->getType();
 }
 int NMethodCall::getType() {
-/*	cout << "Getting type through resolving.." << endl;*/
 	return resolveType();
 }
+
+/* TODO refactor this check function
+ */
 int NMethodCall::check() {
 	int isValid = 1;
 	

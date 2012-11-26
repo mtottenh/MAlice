@@ -9,7 +9,9 @@ NStringLit::NStringLit(char* literal)
 	this->literal = temp.substr(1, temp.size() - 1);
 	
 	this->type = resolveType();
+
 }
+/* TODO check to see if we need to remove the " " from s*/
 NStringLit::NStringLit(string s) {
 	literal = s;
 	type = resolveType();

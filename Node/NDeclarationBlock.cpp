@@ -11,7 +11,8 @@ NDeclarationBlock::NDeclarationBlock(Node* child) {
 	name = "Declaration Block";
 	nodeType = DECLARATIONBLOCK;
 }
-
+/* TODO Refactor big if satement block.
+ */
 int NDeclarationBlock::check() {
 	int isValid = 1;
 
@@ -42,3 +43,4 @@ int NDeclarationBlock::check() {
 
 	return isValid;
 }
+

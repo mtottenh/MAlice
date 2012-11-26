@@ -3,7 +3,7 @@
 
 #include "NPredicate.hpp"
 #include "TypeDefs.hpp"
-
+/* TODO REMOVE THIS CLASS AS IT IS NOW PUSHED INTO BINARY OP*/
 NPredicate::NPredicate(Node *left, int op, Node* right) {
 	name = "Predicate";
 	this->op = op;

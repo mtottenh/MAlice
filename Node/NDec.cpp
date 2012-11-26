@@ -23,7 +23,7 @@ int NDec::check() {
 	this->type = resolveType();
 
 	/* Is this the expected type (number)? */
-	if(type != TNUMBER && type != REFNUMBER) {
+	if(type == INVALIDTYPE) {
 		error_type_mismatch(DEC, children[0]->getType(), TNUMBER);
 		isValid = 0;
 	}

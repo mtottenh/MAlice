@@ -16,7 +16,9 @@ int NInc::resolveType() {
 		return INVALIDTYPE;
 	}
 }
-
+/* 
+ * TODO Refactor cerr statement into an error func
+ */
 int NInc::check() {
 	int isValid;
 	this->type = resolveType();
