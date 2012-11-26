@@ -33,7 +33,7 @@ class SymbolTable;
 /* Top level Base Class */
 class Node {
 private:
-	FileLocation location;
+	FileLocation loc;
 public: /* This should be changed to private at some point. */
 	SymbolTable* table;
 	int nodeType;
@@ -57,6 +57,8 @@ public:
 	virtual int compareTypes(int, int) const;
 	void setLocation(FileLocation);
 	FileLocation getLocation();
+	virtual void printErrorHeader();
+	void printErrorHeader(const string&);
 };
 
 #endif
