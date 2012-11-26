@@ -50,6 +50,7 @@ public:
 	virtual int getType() ;
 	virtual string getID();
 	node_children_t getChildren() const;
+ 	const node_children_t* getChildrenRef() const;
 	virtual int check();
 	virtual int addTable(SymbolTable*);
 	virtual int getNodeType();

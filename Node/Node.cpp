@@ -22,7 +22,9 @@ int Node::print() const {
 	cout << name << endl;
 	return 1;
 }
-
+const node_children_t* Node::getChildrenRef() const {
+	return &children;
+}
 node_children_t Node::getChildren() const {
 	return children;
 }
