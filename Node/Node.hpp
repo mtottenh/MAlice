@@ -44,6 +44,8 @@ public:	Node();
 	virtual int check();
 	virtual int addTable(SymbolTable*);
 	void printTable();
+	int hasTable();
+	string getName();
 	virtual int getNodeType();
 	int isRoot();
 	virtual int compareTypes(int, int) const;
