@@ -80,14 +80,14 @@ int NFunctionDeclaration::check() {
 		if (nodeType == FUNC && isValid) {
 			if (size == 0) {
 				isValid = 0;
-				printErrorHeader("function declaration");
-				error_return_type(name, this->type, returnList[i]->getType());
-			}
+						}
 		/* loop through the list and ensure that getType() of nReturn node == type*/
 			for (unsigned int i = 0; i < size; i++) {
 				if( !(returnList[i]->getType() == this->type)) {
+					printErrorHeader("function declaration");
+					error_return_type(name, this->type, returnList[i]->getType());
+
 					isValid = 0;
-					cerr << "Type mismatch in function return statment!" << endl;
 			}
 		}
 	} else {
