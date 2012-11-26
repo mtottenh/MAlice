@@ -84,16 +84,12 @@ void Node::setLocation(FileLocation *loc)
 
 FileLocation* Node::getLocation()
 {
-	/*loc.startLine == 0 iff location has not been initialised.*/
-	if (loc == NULL)
-	{
-		if (children.size() > 0) {
-			loc = new FileLocation();
-			loc->startLine = children.front()->getLocation()->startLine;
-			loc->startColumn = children.front()->getLocation()->startColumn;
-			loc->endLine = children.back()->getLocation()->endLine;
-			loc->endColumn = children.back()->getLocation()->endColumn;
-		}
+	if (children.size() > 0) {
+		loc = new FileLocation();
+		loc->startLine = children.front()->getLocation()->startLine;
+		loc->startColumn = children.front()->getLocation()->startColumn;
+		loc->endLine = children.back()->getLocation()->endLine;
+		loc->endColumn = children.back()->getLocation()->endColumn;
 	}
 	return loc;
 }

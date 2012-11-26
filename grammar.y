@@ -220,7 +220,7 @@ Statement
 	| Conditional { $$ = $1;}
 	| Loop {$$=$1;}
 	| Call Separator {$$ = new NAssignment($1);}
-	| NULLTOK {$$ = new NNullToken();}
+	| NULLTOK {$$ = new NNullToken(); $$->setLocation(generateLocation());}
 	| Increment Separator {$$ = $1;}
 	| Decrement Separator {$$ = $1;}
 	| Codeblock {$$ = $1;}
