@@ -149,6 +149,7 @@ std::deque<Node *>  NFunctionDeclaration::returnNodeList(Node* statlist) {
 				}
 				/* LOLOLOLOLOLOLOL */
 				break;
+			case LOOP:
 			case CODEBLOCK:
 				if (statements[i]->getChildren().size() > 0)
 					left = statements[i]->getChildren().back();
@@ -157,10 +158,6 @@ std::deque<Node *>  NFunctionDeclaration::returnNodeList(Node* statlist) {
 				for( unsigned int j = 0; j < sizeLeft; j++) {
 					returnList.push_back(leftList[j]);
 				}
-				break;
-			case LOOP:
-			case STATLIST:
-				
 				break;
 		}
 	
