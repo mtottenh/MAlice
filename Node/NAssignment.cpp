@@ -39,7 +39,7 @@ NAssignment::NAssignment(Node* id, Node* exp) {
 	children.push_back(rval);
 
 }
-/* TODOO see if this case needs removing */
+/* TODO see if this case needs removing */
 NAssignment::NAssignment(Node* id, char *exp) {
 	lval = id;
 	name = "Assignment";
@@ -61,17 +61,21 @@ int NAssignment::check() {
 
 	if (children.size() == 1)
 	{
-		//A single method call without an assignment
-		isValid &= 
-			(table->lookup(children[0]->getID())->getNodeType() == PROCEDURE);
-		if (!isValid) cerr << "Function return value ignored ( " <<
-			 children[0]->getID() << " )" << endl;
 		isValid &= children[0]->check();
+
+		//TODO Null check
+		Node* nodePtr = table->lookup(children[0]->getID());
+
+		//A single method call without an assignment
+		if(nodePtr->getNodeType() != PROCEDURE) {
+			//TODO Implement proper error function here
+			cerr << "Function return value ignored: " <<
+				nodePtr->getID() << endl;
+			isValid = 0;
+		}
 	}
 	else
 	{
-		cout << "Being called" << endl;
-
 		string lvalID = lval->getID();
 	
 		/* Check both sides of the assignment. */
