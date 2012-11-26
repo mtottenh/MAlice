@@ -8,7 +8,7 @@
 #include "TreeWalker/SymbolTableGenerator.hpp"
 extern int yylex();
 extern void yyerror (char *s, ...);
-fileLocation generateLocation();
+FileLocation generateLocation();
 Node *root;
 
 %}
@@ -432,9 +432,9 @@ void yyerror(char *s, ...)
   fprintf(stderr, "\n");
 }
 
-fileLocation generateLocation()
+FileLocation generateLocation()
 {
-	fileLocation data;
+	FileLocation data;
 	data.startLine = yylloc.first_line;
 	data.endLine = yylloc.last_line;
 	data.startColumn = yylloc.first_column;

@@ -25,7 +25,7 @@ int NInc::check() {
 
 	/* Is this the expected type (number)? */
 	if(type != TNUMBER && type != REFNUMBER) {
-		fileLocation location = this->getLocation();
+		FileLocation location = this->getLocation();
 		cerr << "Error between " << location.startLine << " and " <<
 			location.endLine << ", between column numbers " << 
 			location.startColumn << " and " << location.endColumn

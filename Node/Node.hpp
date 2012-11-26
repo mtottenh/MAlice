@@ -25,7 +25,7 @@ typedef struct file
     int endLine;
     int startColumn;
     int endColumn;
-} fileLocation;
+} FileLocation;
 
 
 
@@ -33,7 +33,7 @@ class SymbolTable;
 /* Top level Base Class */
 class Node {
 private:
-	fileLocation location;
+	FileLocation location;
 public: /* This should be changed to private at some point. */
 	SymbolTable* table;
 	int nodeType;
@@ -55,8 +55,8 @@ public:
 	virtual int getNodeType();
 	int isRoot();
 	virtual int compareTypes(int, int) const;
-	void setLocation(fileLocation);
-	fileLocation getLocation();
+	void setLocation(FileLocation);
+	FileLocation getLocation();
 };
 
 #endif
