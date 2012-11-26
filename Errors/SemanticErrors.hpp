@@ -78,4 +78,25 @@ void error_entry_not_proc();
  */
 void error_input_node_type(const string&);
 
+/*
+ * Prints an error that a function (param 1) has no statements (empty.)
+ */
+void error_empty_func(const string&);
+
+/*
+ * Prints that a procedure (param 1) has a return statement.
+ */
+void error_proc_return(const string&);
+
+/*
+ * Prints that a function (param 1) has no return statement.
+ */
+void error_no_return(const string&);
+
+/*
+ * Prints that a function (param 1) with return type (param 2) has an invalid
+ * return type of type param 3.
+ */
+void error_return_type(const string&, int, int);
+
 #endif

@@ -66,7 +66,8 @@ int NFunctionDeclaration::check() {
 		statlist = children[0]->getChildrenRef()->back();
 	} else {
 		if (nodeType == FUNC) {
-			cerr << "No statements in function body!" << endl;
+			printErrorHeader("function declaration");
+			error_empty_func(name);
 			isValid = 0;
 			return isValid;
 		}
@@ -82,17 +83,23 @@ int NFunctionDeclaration::check() {
 		for (unsigned int i = 0; i < size; i++) {
 			if( !(returnList[i]->getType() == this->type)) {
 				isValid = 0;
-				cerr << "Type mismatch in function return statment!" << endl;
+				printErrorHeader("function declaration");
+				error_return_type(name, this->type, returnList[i]->getType());
 			}
 		}
 	} else {
 		isValid &= (size == 0);
 	}
 	if (!isValid) {
-		if (nodeType == FUNC)
-			cerr << "Function does not contain a return statement" << endl;
-		else if (nodeType == FUNC && size > 0)
-			cerr << "Procedure contains a return statement" << endl;
+		if (nodeType == FUNC) {
+			printErrorHeader("function declaration");
+			error_no_return(name); 
+		}
+
+		else if (nodeType == FUNC && size > 0) {
+			printErrorHeader("function declaration");
+			error_proc_return(name);
+		}
 	}
 
 

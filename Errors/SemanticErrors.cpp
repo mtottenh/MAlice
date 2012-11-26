@@ -83,3 +83,24 @@ void error_input_node_type(const string& name) {
 	cerr << "ERROR: Function or prodecure '" << name << "' cannot be " 
 		<< "given user input - it's not a variable!" << endl;
 }
+
+void error_empty_func(const string& name) {
+	cerr << "ERROR: Function '" << name << "' is empty and contains no "
+		<< "statements." << endl;
+}
+
+void error_proc_return(const string& name) {
+	cerr << "ERROR: Procedure '" << name << "' attempts to return a value."
+		<< endl;
+}
+
+void error_no_return(const string& name) {
+	cerr << "ERROR: Function '" << name << "' does not contain a return " 
+		<< "statement." << endl;
+}
+
+void error_return_type(const string& name, int given, int expected) {
+	cerr << "ERROR: Function '" << name << "' is declared as type '"
+		<< typemap_get(given) << "' but attempts to return a value of "
+		<< "type '" << typemap_get(expected) << "." << endl;
+}
