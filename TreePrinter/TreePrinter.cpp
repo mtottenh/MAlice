@@ -28,22 +28,17 @@ int treePrinter::print() {
 		if (temp != NULL) {
 			cout << "~~~~~ New node! ~~~~~" << endl;	
 			cout << "Type: " << typemap_get(temp->getType()) 
-			     <<  "\tName : " << temp->name << endl;
-			if (temp->table != NULL)
-				temp->table->print();
+			     <<  "\tName : " << temp->getName() << endl;
+			if (temp->hasTable())
+				temp->printTable();
 			else
-				cout << "ERROR: this->table = 0x0 " << endl;
-		
-		node_children_t children = temp->getChildren();
-/*		cout << "\tCurrent Node has: " << children.size() << " children" ; */
+				cerr << "ERROR: this->table = 0x0 " << endl;
+			
+			node_children_t children = temp->getChildren();
 		 				
 			for (unsigned int i = 0; i< children.size(); i++){
-			//	if((children[i] != temp) && (children[i] != NULL)){
 					printList.push(children[i]);
 					level.push(current_level + 1);
-			//	} else {
-			//		cout << "\tPROBLEM NODE AT i = " << i;
-			//	}
 			}
 		}
 	}
@@ -51,11 +46,3 @@ int treePrinter::print() {
 	return 0;
 }
 
-/* used for some basic testing 
-int main () {
-	cout << "START AST PRINTER TEST" << endl;;
-	treePrinter t(new NExpression);
-	t.print();
-	cout << endl << "END AST PRINTER TEST" << endl;
-	return 0;
-} */
