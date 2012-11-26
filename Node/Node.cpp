@@ -77,21 +77,22 @@ int Node::compareTypes(int t1, int t2) const {
 	return (t1 == t2);
 }
 
-void Node::setLocation(FileLocation loc) 
+void Node::setLocation(FileLocation *loc) 
 {
-	this->loc = loc;
+	this->loc = new FileLocation(loc);
 }
 
-FileLocation Node::getLocation()
+FileLocation* Node::getLocation()
 {
 	/*loc.startLine == 0 iff location has not been initialised.*/
-	if (loc.startLine == 0)
+	if (loc == NULL)
 	{
 		if (children.size() > 0) {
-			loc.startLine = children.front()->getLocation().startLine;
-			loc.startColumn = children.front()->getLocation().startColumn;
-			loc.endLine = children.back()->getLocation().endLine;
-			loc.endColumn = children.back()->getLocation().endColumn;
+			loc = new FileLocation();
+			loc->startLine = children.front()->getLocation()->startLine;
+			loc->startColumn = children.front()->getLocation()->startColumn;
+			loc->endLine = children.back()->getLocation()->endLine;
+			loc->endColumn = children.back()->getLocation()->endColumn;
 		}
 	}
 	return loc;
@@ -99,7 +100,7 @@ FileLocation Node::getLocation()
 
 void Node::printErrorHeader(const string& context) {
 	cerr << endl << "--- Semantic error in " << context << " at line(s) " 
-		<< getLocation().startLine << "-" << getLocation().endLine 
-		<< ", column(s) " << getLocation().startColumn << "-" 
-		<< getLocation().endColumn << " ---" << endl;
+		<< getLocation()->startLine << "-" << getLocation()->endLine 
+		<< ", column(s) " << getLocation()->startColumn << "-" 
+		<< getLocation()->endColumn << " ---" << endl;
 }	

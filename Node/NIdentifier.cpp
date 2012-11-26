@@ -13,7 +13,7 @@ string NIdentifier::getID() {
 	return name;
 }
 NIdentifier::NIdentifier(char *name) { 
-	this->name = strdup(name);
+	this->name = name;
 }
 NIdentifier::NIdentifier(string name) {
 	this->name = name;

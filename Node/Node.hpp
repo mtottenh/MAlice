@@ -6,6 +6,7 @@
 #include <string>
 #include "../Errors/SemanticErrors.hpp"
 #include "../SymbolTable/SymbolTable.hpp"
+#include "FileLocation.hpp"
 
 using namespace std;
 
@@ -19,21 +20,12 @@ typedef vector<NVariableDeclaration *> ViarableList;
 
 class Node;
 typedef deque<Node *> node_children_t;
-typedef struct file
-{
-    int startLine;
-    int endLine;
-    int startColumn;
-    int endColumn;
-} FileLocation;
-
-
 
 class SymbolTable;
 /* Top level Base Class */
 class Node {
 private:
-	FileLocation loc;
+	FileLocation *loc;
 public: /* This should be changed to private at some point. */
 	SymbolTable* table;
 	int nodeType;
@@ -56,8 +48,8 @@ public:
 	virtual int getNodeType();
 	int isRoot();
 	virtual int compareTypes(int, int) const;
-	void setLocation(FileLocation);
-	FileLocation getLocation();
+	void setLocation(FileLocation*);
+	FileLocation* getLocation();
 	virtual void printErrorHeader(const string&);
 };
 
