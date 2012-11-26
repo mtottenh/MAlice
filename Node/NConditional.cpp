@@ -11,6 +11,7 @@ NConditional::NConditional(Node* predicate, Node* left, Node* right) {
 	children.push_back(predicate); /* This is an expression */
 	children.push_back(left);
 	children.push_back(right);
+	nodeType = CONDITIONAL;
 }
 
 int NConditional::resolveType() {
