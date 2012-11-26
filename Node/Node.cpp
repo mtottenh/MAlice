@@ -75,11 +75,12 @@ int Node::compareTypes(int t1, int t2) const {
 	return (t1 == t2);
 }
 
-void Node::setLocation(fileLocation location) 
+void Node::setLocation(FileLocation location) 
 {
 	this->location = location;
 }
-fileLocation Node::getLocation()
+
+FileLocation Node::getLocation()
 {
 	/*location.startLine == 0 iff location has not been initialised.*/
 	if (location.startLine == 0)
