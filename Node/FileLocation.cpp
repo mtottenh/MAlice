@@ -1,7 +1,5 @@
 #include "FileLocation.hpp"
 
-using namespace std;
-
 FileLocation::FileLocation(FileLocation* loc)
 {
 	this->startLine = loc->startLine;

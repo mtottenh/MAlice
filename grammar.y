@@ -191,9 +191,11 @@ Assignment
 	;
 VarDeclarationAssignment
 	: VarDeclaration OF Predicate 
-	{ NVariableDeclaration* Declaration = (NVariableDeclaration *)$1; 
-	  Node* Assignment =  new NAssignment(Declaration, $3);
-	  $$ = new NStatementList(Declaration,Assignment);}
+	{ NVariableDeclaration* declaration = (NVariableDeclaration *)$1;
+	  NIdentifier* identifier = new NIdentifier(declaration->getID());
+	  identifier->setLocation(declaration->getLocation()); 
+	  Node* assignment =  new NAssignment(identifier, $3);
+	  $$ = new NStatementList(declaration,assignment);}
 	;
 
 Print
