@@ -19,6 +19,7 @@ public:
 	NAssignment(Node*, Node*);
 	NAssignment(Node*, char*);
 	/* Add cases for assigning things to strings */
+	NAssignment(Node*);
 	virtual int check();	
 };   
 
