@@ -54,6 +54,8 @@ public:	Node();
 	FileLocation* getLocation();
 	virtual void printErrorHeader(const string&);
 	void addChild(Node*);
+	Node* getChild(int);
+	int getChildrenSize();
 };
 
 #endif

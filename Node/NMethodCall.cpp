@@ -61,8 +61,8 @@ int NMethodCall::check() {
 		 * Get the types of the expected paramaters. We have a list of
 		 * parameters if the size of the function node's children = 2.
 		 */
-		if(nodePtr->children.size() == 2) {
-			Node* param = nodePtr->children[1];
+		if(nodePtr->getChildrenSize() == 2) {
+			Node* param = nodePtr->getChild(1);
 			isValid &= checkParams(param);	
 		}
 			
@@ -78,33 +78,34 @@ int NMethodCall::checkParams(Node* funcParams) {
 
 	node_children_t thisParams = children[0]->getChildren();
 	int thisSize = thisParams.size();
-	int expectedSize = funcParams->children.size();
-	
+	int expectedSize = funcParams->getChildrenSize();
 	/* Do we have the same number of expected and given arguments? */
 	if(thisSize != expectedSize) {
 		printErrorHeader("method call");
 		error_num_args(name, expectedSize, thisSize);
 		isValid = 0;
+		return isValid;
 	}
 
 	/* Compare the arguments and ensure they are of the same type. */
-	node_children_t::iterator funcIt = funcParams->children.begin();
+/*	node_children_t::iterator funcIt = funcParams->getChildren().begin();
 	node_children_t::iterator givenIt = thisParams.begin();
-
+*/
+	int i = 0;
+	int j = 0;
 	int expectedType, givenType;
 	string varName;
-	while(funcIt != funcParams->children.end() 
-			&& givenIt != thisParams.end()) {
-		expectedType = (*funcIt)->getType();
-		givenType = (*givenIt)->getType();
+	while( i < expectedSize && j < thisSize) {
+		expectedType = funcParams->getChild(i)->getType();
+		givenType = thisParams[j]->getType();
 		if(!compareTypes(expectedType, givenType)) {
-			varName = (*givenIt)->getID();
+			varName = thisParams[j]->getID();
 			printErrorHeader("method call");
 			error_type_mismatch(varName, givenType, expectedType);
 			isValid = 0;
 		}
-
-		++funcIt; ++givenIt;
+		++i;
+		++j;
 	}
 
 	return isValid;

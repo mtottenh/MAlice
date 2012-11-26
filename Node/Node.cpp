@@ -115,6 +115,16 @@ int Node::hasTable() {
 void Node::printTable() {
 	table->print();
 }
+int Node::getChildrenSize() {
+	return children.size();
+}
+Node* Node::getChild(int n) {
+	if (n > children.size() ) {
+		return NULL;
+	} else {
+		return children[n];
+	}
+}
 void Node::printErrorHeader(const string& context) {
 	cerr << endl << "--- Semantic error in " << context << " at line(s) " 
 		<< getLocation()->startLine << "-" << getLocation()->endLine 
