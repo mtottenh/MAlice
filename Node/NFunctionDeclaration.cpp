@@ -60,37 +60,107 @@ int NFunctionDeclaration::getType() {
 
 int NFunctionDeclaration::check() {
 	int isValid = 1;
-	Node *statlist = children[0]->getChildren().back();
+	Node *statlist; 
+	if (children[0]->getChildren().size() > 0) {
+		statlist = children[0]->getChildren().back();
+	} else {
+		if (nodeType == FUNC) {
+			cerr << "No statements in function body!" << endl;
+			isValid = 0;
+		}
+	}
 	std::deque<Node *> returnList = returnNodeList(statlist); 
 	unsigned int size = returnList.size();
 
-	if (nodeType == FUNC) {
-		isValid &= (size > 0);
+	if (nodeType == FUNC && isValid) {
+		if (size == 0) {
+			isValid = 0;
+		}
 		/* loop through the list and ensure that getType() of nReturn node == type*/
 		for (unsigned int i = 0; i < size; i++) {
-			isValid &= returnList[i]->getType() == this->type;
+			if( !(returnList[i]->getType() == this->type)) {
+				isValid = 0;
+				cerr << "Type mismatch in function return statment!" << endl;
+			}
 		}
 	} else {
 		isValid &= (size == 0);
 	}
+	if (!isValid) {
+		if (nodeType == FUNC)
+			cerr << "Function does not contain a return statement" << endl;
+		else
+			cerr << "Procedure contains a return statement" << endl;
+	}
+	isValid &= Node::check();
+
 
 	return isValid;
 }
 std::deque<Node *>  NFunctionDeclaration::returnNodeList(Node* statlist) {
 	unsigned int size = statlist->getChildren().size();
 	std::deque<Node *> statements = statlist->getChildren();
-	std::deque<Node *> returnList;
+	std::deque<Node *> returnList, leftList, rightList, conditionalQ;
+	unsigned int sizeRight, sizeLeft;
+	Node *left, *right;
+
 	for (unsigned int i = 0; i < size; i++ ) {
 		switch(statements[i]->getNodeType()) {
 			case RETURN:
 				returnList.push_back(statements[i]);
 				break;
 			case CONDITIONAL:
+				/* Left branch always has nodetype STATMENTLIST*/
+				left = statements[i]->getChildren()[1];
+				leftList = returnNodeList(left);
+				sizeLeft  = leftList.size();
+				for( unsigned int j = 0; j < sizeLeft; j++) {
+					returnList.push_back(leftList[j]);
+				}
+
+				/* right could have nodetype CONDITIONAL!*/
+				
+				right = statements[i]->getChildren()[2];
+				if (right->getNodeType() == STATLIST) {
+
+					rightList = returnNodeList(right);
+					sizeRight = rightList.size();
+					for( unsigned int j = 0; j < sizeLeft; j++) {
+						returnList.push_back(rightList[j]);
+					}
+				} 
+				if (right->getNodeType() == CONDITIONAL) {
+					conditionalQ.push_back(right);
+					while(!conditionalQ.empty()) {
+						Node* temp = conditionalQ.front();
+						conditionalQ.pop_front();
+						if (temp->getNodeType() == CONDITIONAL) {
+							/* Left branch always has nodetype STATMENTLIST*/
+							left = temp->getChildren()[1];
+							leftList = returnNodeList(left);
+							sizeLeft  = leftList.size();
+							for( unsigned int j = 0; j < sizeLeft; j++) {
+								returnList.push_back(leftList[j]);
+							}
+							conditionalQ.push_back(temp->getChildren()[2]);
+						}
+					}
+					/* FIGURE OUT WTF TO DO*/
+				}
 				/* LOLOLOLOLOLOLOL */
 				break;
 			case CODEBLOCK:
+				if (statements[i]->getChildren().size() > 0)
+					left = statements[i]->getChildren().back();
+				leftList = returnNodeList(left);
+				sizeLeft =  leftList.size();
+				for( unsigned int j = 0; j < sizeLeft; j++) {
+					returnList.push_back(leftList[j]);
+				}
 				break;
 			case LOOP:
+			case STATLIST:
+				
 				break;
 		}
 	
