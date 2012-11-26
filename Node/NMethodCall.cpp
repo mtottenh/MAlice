@@ -61,6 +61,7 @@ int NMethodCall::check() {
 			Node* param = nodePtr->children[1];
 			isValid &= checkParams(param);	
 		}
+			
 	}
 
 

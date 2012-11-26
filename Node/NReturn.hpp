@@ -10,6 +10,7 @@ public:
 	 * expression has a type, the actual return node does not.
 	 */
 	NReturn(Node *exp);
+	int resolveType();
 };
 #endif
 

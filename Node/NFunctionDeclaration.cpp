@@ -58,4 +58,45 @@ int NFunctionDeclaration::getType() {
 }
 
 
+int NFunctionDeclaration::check() {
+	int isValid = 1;
+	Node *statlist = children[0]->getChildren().back();
+	std::deque<Node *> returnList = returnNodeList(statlist); 
+	unsigned int size = returnList.size();
+
+	if (nodeType == FUNC) {
+		isValid &= (size > 0);
+		/* loop through the list and ensure that getType() of nReturn node == type*/
+		for (unsigned int i = 0; i < size; i++) {
+			isValid &= returnList[i]->getType() == this->type;
+		}
+	} else {
+		isValid &= (size == 0);
+	}
+
+	return isValid;
+}
+std::deque<Node *>  NFunctionDeclaration::returnNodeList(Node* statlist) {
+	unsigned int size = statlist->getChildren().size();
+	std::deque<Node *> statements = statlist->getChildren();
+	std::deque<Node *> returnList;
+	for (unsigned int i = 0; i < size; i++ ) {
+		switch(statements[i]->getNodeType()) {
+			case RETURN:
+				returnList.push_back(statements[i]);
+				break;
+			case CONDITIONAL:
+				/* LOLOLOLOLOLOLOL */
+				break;
+			case CODEBLOCK:
+				break;
+			case LOOP:
+				break;
+		}
+	
+	}
+	return returnList;
+}
+/* TODO  finish check function */
+
 #endif
