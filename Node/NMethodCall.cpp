@@ -36,7 +36,7 @@ int NMethodCall::getType() {
 }
 int NMethodCall::check() {
 	int isValid = 1;
-	
+
 	Node* nodePtr = table->lookup(name);
 	
 	/* Does the method exist in scope? */
