@@ -32,6 +32,7 @@ int NPrint::check() {
 	int childType = children[0]->getType(); 
 
 	if(childType != TNUMBER && childType != TCHAR && childType != TSTRING) {
+		printErrorHeader("print");
 		error_type_mismatch(SAID, childType, "number/letter/sentence");
 		isValid = 0;
 	}

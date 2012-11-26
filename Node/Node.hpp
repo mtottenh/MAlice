@@ -57,8 +57,7 @@ public:
 	virtual int compareTypes(int, int) const;
 	void setLocation(FileLocation);
 	FileLocation getLocation();
-	virtual void printErrorHeader();
-	void printErrorHeader(const string&);
+	virtual void printErrorHeader(const string&);
 };
 
 #endif

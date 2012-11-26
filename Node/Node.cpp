@@ -93,12 +93,9 @@ FileLocation Node::getLocation()
 	return loc;
 }
 
-void Node::printErrorHeader() {
-	printErrorHeader("(unknown)");
-}
-
 void Node::printErrorHeader(const string& context) {
-	cerr << "--- Semantic Error in " << context << "at line(s) " 
-		<< loc.startLine << "-" << loc.endLine << ", column(s) " 
-		<< loc.startColumn << "-" << loc.endColumn << " ---";
+	cerr << endl << "--- Semantic error in " << context << " at line(s) " 
+		<< getLocation().startLine << "-" << getLocation().endLine 
+		<< ", column(s) " << getLocation().startColumn << "-" 
+		<< getLocation().endColumn << " ---" << endl;
 }	

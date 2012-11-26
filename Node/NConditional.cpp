@@ -26,6 +26,7 @@ int NConditional::check() {
 	int predNodeType = children[0]->getType();
 
 	if(predNodeType != BOOLEAN) {
+		printErrorHeader("conditional");
 		error_type_mismatch_cond(predNodeType);
 		isValid = 0;
 	}

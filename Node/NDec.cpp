@@ -24,6 +24,7 @@ int NDec::check() {
 
 	/* Is this the expected type (number)? */
 	if(type == INVALIDTYPE) {
+		printErrorHeader("decrement");
 		error_type_mismatch(DEC, children[0]->getType(), TNUMBER);
 		isValid = 0;
 	}

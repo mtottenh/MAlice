@@ -48,6 +48,7 @@ int NArrayAccess::check() {
 	/* Does the identifier exist in scope? */
 	Node* nodePtr = table->lookup(name);
 	if(nodePtr == NULL) {
+		printErrorHeader("array access");
 		error_var_not_found(name);
 		isValid = 0;
 	}
@@ -58,6 +59,7 @@ int NArrayAccess::check() {
  
 		if(nodeType != REFNUMBER && nodeType != REFCHAR 
 				&& nodeType != REFSTRING) {
+			printErrorHeader("array access");
 			error_not_array(nodePtr->getID(), nodeType);
 			isValid = 0;
 		}
