@@ -106,7 +106,6 @@ int NFunctionDeclaration::check() {
 		}
 	}
 
-
 }
 	return isValid;
 }
