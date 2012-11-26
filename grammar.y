@@ -104,7 +104,7 @@ Declaration
 	| VarDeclarationAssignment Separator { $$ = $1;}
 	| FunctionDec	 { $$ = $1; }
 	| ProcedureDec     { $$= $1;  }
-	| error Declaration {yyerrok; $$ = $2; }
+	| error Separator Declaration {printf("D"); yyerrok; $$ = $3; }
 	;
 /* 
  * (TODO) Look into TREF
@@ -171,6 +171,7 @@ Term
 Factor
 	: NOT Factor %prec UNARY {$$ = new NUnaryOp(NOT,$2);}
 	| DASH Factor %prec UNARY {$$ = new NUnaryOp(DASH,$2);}
+	| PLUS Factor %prec UNARY {$$ = new NUnaryOp(PLUS, $2);}
 	| LNOT Factor %prec UNARY {$$ = new NUnaryOp(LNOT, $2);}
 	| Value { $$ = $1;}
 	;
@@ -224,7 +225,7 @@ Statement
 	| Assignment Separator {$$ = $1;}
 	| PrintStatement	{$$ = $1;}
 	| Return Separator {$$ = $1;}
-	| error Statement {yyerrok; $$ = $2;}
+	| error Separator Statement {$$ = $3; yyerrok;}
 	;
 
 Call 
