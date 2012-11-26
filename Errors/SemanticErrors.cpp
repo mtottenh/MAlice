@@ -95,12 +95,12 @@ void error_proc_return(const string& name) {
 }
 
 void error_no_return(const string& name) {
-	cerr << "ERROR: Function '" << name << "' does not contain a return " 
-		<< "statement." << endl;
+	cerr << "ERROR: Function '" << name << "' does not contain a valid " 
+		<< "return statement." << endl;
 }
 
 void error_return_type(const string& name, int given, int expected) {
 	cerr << "ERROR: Function '" << name << "' is declared as type '"
 		<< typemap_get(given) << "' but attempts to return a value of "
-		<< "type '" << typemap_get(expected) << "." << endl;
+		<< "type '" << typemap_get(expected) << "'." << endl;
 }
