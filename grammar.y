@@ -65,7 +65,7 @@ DECLARATIONBLOCK STATLIST INPUTNODE
 }
 
 %type <node> Declaration program ParameterDec VarDeclarationAssignment
-%type <node> VarDeclaration Return PredPrime ParamListDec ParamList
+%type <node> VarDeclaration Return PredPrime Pred ParamListDec ParamList
 %type <node> Loop
 %type <func_dec> FunctionDec ProcedureDec
 %type <node> Conditional Predicate Maybe
@@ -120,7 +120,7 @@ Type
 	;
 VarDeclaration
 	: Identifier WAS A Type {$$ = new NVariableDeclaration($1,$4);}
-	| Identifier HAD BitExp Type {$$ = new NVariableDeclaration($1,$4,$3); }
+	| Identifier HAD Predicate Type {$$ = new NVariableDeclaration($1,$4,$3); }
 	;
 
 FunctionDec
@@ -147,9 +147,9 @@ ParameterDec
 	;
 
 BitExp
-	: BitExp AND Exp {$$ = new NBinOp($1, $3, AND);}
-	| BitExp OR Exp {$$ = new NBinOp($1, $3, OR);}
-	| BitExp XOR Exp {$$ = new NBinOp($1, $3, XOR);}
+	: Exp AND BitExp {$$ = new NBinOp($1, $3, AND);}
+	| Exp OR BitExp {$$ = new NBinOp($1, $3, OR);}
+	| Exp XOR BitExp {$$ = new NBinOp($1, $3, XOR);}
 	| Exp {$$ = $1;}
 	;
 Exp
@@ -171,6 +171,7 @@ Term
 Factor
 	: NOT Factor %prec UNARY {$$ = new NUnaryOp(NOT,$2);}
 	| DASH Factor %prec UNARY {$$ = new NUnaryOp(DASH,$2);}
+	| LNOT Factor %prec UNARY {$$ = new NUnaryOp(LNOT, $2);}
 	| Value { $$ = $1;}
 	;
 Value
@@ -178,17 +179,17 @@ Value
 	| Identifier {$$ = $1;}
 	| Call { $$ = $1;}
 	| ArrayVal {$$ = $1;}
-	| OBRACKET BitExp CBRACKET { $$ = $2;}
+	| OBRACKET Predicate CBRACKET { $$ = $2;}
 	| Char {$$ = $1;}
 	| StringLit {$$ = $1;}
 	;
 
 Assignment
-	: Identifier BECAME BitExp   { $$ = new NAssignment($1,$3);}
-	| ArrayVal BECAME BitExp {$$ = new NAssignment($1,$3);}
+	: Identifier BECAME Predicate   { $$ = new NAssignment($1,$3);}
+	| ArrayVal BECAME Predicate {$$ = new NAssignment($1,$3);}
 	;
 VarDeclarationAssignment
-	: VarDeclaration OF BitExp 
+	: VarDeclaration OF Predicate 
 	{ NVariableDeclaration* Declaration = (NVariableDeclaration *)$1; 
 	  Node* Assignment =  new NAssignment(Declaration->getID(), $3);
 	  $$ = new NStatementList(Declaration,Assignment);}
@@ -200,11 +201,11 @@ Print
 	;
 
 PrintStatement
-	: BitExp Print Separator { $$ = new NPrint($1);}
+	: Predicate Print Separator { $$ = new NPrint($1);}
 	;
 
 Return
-	: Found BitExp {$$ = new NReturn($2);}
+	: Found Predicate {$$ = new NReturn($2);}
 	;
 
 Found
@@ -230,8 +231,8 @@ Call
 	| Identifier OBRACKET CBRACKET {$$ = new NMethodCall($1);}
 	;
 ParamList
-	: ParamList COMMA BitExp { $1->children.push_back($3); }
-	| BitExp { $$ = new NParamBlock($1); }
+	: ParamList COMMA Predicate { $1->children.push_back($3); }
+	| Predicate { $$ = new NParamBlock($1); }
 	;
 Read
 	: WHAT WAS Identifier QUESTIONMARK { $$ = new NInput($3); }
@@ -243,20 +244,23 @@ Loop
 	;
 
 Predicate
-	: PredPrime LOR Predicate {$$ = new NPredicate($1,LOR,$3);}
-	| PredPrime LAND Predicate {$$ = new NPredicate($1,LAND,$3);}
+	: Pred {$$ = $1;}
+	;
+
+Pred
+	: Pred LOR PredPrime {$$ = new NBinOp($1,$3,LOR);}
+	| Pred LAND PredPrime {$$ = new NBinOp($1,$3,LAND);}
 	| PredPrime {$$ = $1;}
-	| LNOT OBRACKET Predicate CBRACKET {$$ = new NPredicate(LNOT,$3);}
-	| OBRACKET Predicate CBRACKET {$$ = $2;}
 	;
 
 PredPrime
-	: BitExp LEQU BitExp  {$$ = new NPredicate($1,LEQU,$3);}
-	| BitExp LLTHAN BitExp {$$ = new NPredicate($1,LLTHAN,$3);}
-	| BitExp LLTHANEQ BitExp  {$$ = new NPredicate($1,LLTHANEQ,$3);}
-	| BitExp LGTHAN BitExp  {$$ = new NPredicate($1,LGTHAN,$3);}
-	| BitExp LGTHANEQ BitExp  {$$ = new NPredicate($1,LGTHANEQ,$3);}
-	| BitExp LNOTEQU BitExp {$$ = new NPredicate($1,LNOTEQU,$3);}
+	: PredPrime LEQU BitExp  {$$ = new NBinOp($1,$3,LEQU);}
+	| PredPrime LLTHAN BitExp {$$ = new NBinOp($1,$3,LLTHAN);}
+	| PredPrime LLTHANEQ BitExp  {$$ = new NBinOp($1,$3,LLTHANEQ);}
+	| PredPrime LGTHAN BitExp  {$$ = new NBinOp($1,$3,LGTHAN);}
+	| PredPrime LGTHANEQ BitExp  {$$ = new NBinOp($1,$3,LGTHANEQ);}
+	| PredPrime LNOTEQU BitExp {$$ = new NBinOp($1,$3,LNOTEQU);}
+	| BitExp {$$ = $1;}
 	;
 
 Increment
@@ -301,7 +305,7 @@ Separator
 	;
 
 ArrayVal
-	: Identifier ARRINDO BitExp ARRINDC 
+	: Identifier ARRINDO Predicate ARRINDC 
 	{$$ = new NArrayAccess($1,$3); }
 	;
  
