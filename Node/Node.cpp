@@ -15,7 +15,11 @@ Node::Node(Node *child) {
 }
 /* TODO Implement explicit deconstructor*/
 Node::~Node() {
-	
+	for (unsigned int i = 0; i < children.size(); ++i)
+	{
+		delete children[i];
+		children[i] = NULL;
+	}
 }
 
 int Node::print() const {

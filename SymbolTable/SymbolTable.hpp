@@ -41,8 +41,7 @@ class SymbolTable {
 		 */
 		SymbolTable();
 		SymbolTable(SymbolTable*);
-		~SymbolTable();
-		
+		~SymbolTable();		
 		/* 
 		 * Add a new variable/identifier and node pairing to the table.
 		 * Returns 1 if successful, 0 on failure (elem already exists

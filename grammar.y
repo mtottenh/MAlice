@@ -377,7 +377,11 @@ int main(int argc, char* argv[]) {
 
 	cout << endl << "##### Semantic Analysis (check()) #####" << endl;
 	root->check();
-//	t.print();
+
+	cout << "Memory management" << endl;
+
+	delete(root);
+
 	return 0;
 }
 

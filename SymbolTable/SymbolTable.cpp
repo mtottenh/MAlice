@@ -12,12 +12,9 @@ SymbolTable::SymbolTable(SymbolTable* parentTable) : parent(parentTable) {
 	/* Do nothing! */
 }
 
-SymbolTable::~SymbolTable() {
-	table_t::iterator it;
-
-	for (it = table.begin(); it != table.end(); ++it) {
-		delete it->second;
-	}
+SymbolTable::~SymbolTable()
+{
+	cout << "deleting" << this <<  endl;
 }
 
 /* Public methods. */
