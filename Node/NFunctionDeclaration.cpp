@@ -91,7 +91,7 @@ int NFunctionDeclaration::check() {
 	if (!isValid) {
 		if (nodeType == FUNC)
 			cerr << "Function does not contain a return statement" << endl;
-		else
+		else if (nodeType == FUNC && size > 0)
 			cerr << "Procedure contains a return statement" << endl;
 	}
 
