@@ -40,6 +40,7 @@ int NMethodCall::check() {
 	
 	/* Does the method exist in scope? */
 	if(nodePtr == NULL) {
+		printErrorHeader("method call");
 		error_var_not_found(name);
 		isValid = 0;
 	}
@@ -48,6 +49,7 @@ int NMethodCall::check() {
 		/* Is the identifier a function or procedure? */
 		if(!(nodePtr->getNodeType() == FUNC 
 				|| nodePtr->getNodeType() == PROCEDURE)) {
+			printErrorHeader("method call");
 			error_not_func(name);
 			isValid = 0;
 		}
@@ -78,6 +80,7 @@ int NMethodCall::checkParams(Node* funcParams) {
 	
 	/* Do we have the same number of expected and given arguments? */
 	if(thisSize != expectedSize) {
+		printErrorHeader("method call");
 		error_num_args(name, expectedSize, thisSize);
 		isValid = 0;
 	}
@@ -94,6 +97,7 @@ int NMethodCall::checkParams(Node* funcParams) {
 		givenType = (*givenIt)->getType();
 		if(!compareTypes(expectedType, givenType)) {
 			varName = (*givenIt)->getID();
+			printErrorHeader("method call");
 			error_type_mismatch(varName, givenType, expectedType);
 			isValid = 0;
 		}

@@ -69,6 +69,7 @@ int NPredicate::check() {
 
 int NPredicate::compareArity(int expected, int given) {
 	if(expected != given) {
+		printErrorHeader("predicate");
 		error_num_args(op, given, expected);
 		return 0;
 	}
@@ -79,6 +80,7 @@ int NPredicate::compareArity(int expected, int given) {
 
 int NPredicate::checkLNOT(int type) {
 	if(type != BOOLEAN) {
+		printErrorHeader("predicate");
 		error_type_mismatch(op, type, BOOLEAN);
 		return 0;
 	}
@@ -88,6 +90,7 @@ int NPredicate::checkLNOT(int type) {
 
 int NPredicate::checkDASH(int type) {
 	if(type != TNUMBER && type != REFNUMBER) {
+		printErrorHeader("predicate");
 		error_type_mismatch(op, type, TNUMBER);
 		return 0;
 	}
@@ -97,6 +100,7 @@ int NPredicate::checkDASH(int type) {
 
 int NPredicate::checkLEQU(int t1, int t2) {
 	if(t1 != TNUMBER && t1 != REFNUMBER && t1 != TCHAR && t1 != REFCHAR) {
+		printErrorHeader("predicate");
 		error_type_mismatch(op, t1, "number/letter");
 		
 		if(t2 != TNUMBER && t2 != REFNUMBER && t2 != TCHAR
@@ -108,6 +112,7 @@ int NPredicate::checkLEQU(int t1, int t2) {
 	}
 
 	else if(!compareTypes(t1, t2)) {
+		printErrorHeader("predicate");
 		error_type_mismatch(op, t2, t1);
 		return 0;
 	}
@@ -118,12 +123,11 @@ int NPredicate::checkLEQU(int t1, int t2) {
 int NPredicate::checkPred(int t1, int t2) {
 	if(t1 != BOOLEAN && t1 != TNUMBER && t1 != REFNUMBER && t1 != TCHAR
 			&& t1 != REFCHAR) {
-		cout << "LHS BROKE";
+		printErrorHeader("predicate");
 		error_type_mismatch(op, t1, "number/letter/boolean");
 		
 		if(t2 != BOOLEAN && t2 != TNUMBER && t2 != REFNUMBER
 				&& t2 != TCHAR && t2 != REFCHAR) {
-			cout << "RHS BROKE";
 			error_type_mismatch(op, t2, "number/letter/boolean");
 		}
 
@@ -131,6 +135,7 @@ int NPredicate::checkPred(int t1, int t2) {
 	}
 	
 	else if (!compareTypes(t1, t2)) {
+		printErrorHeader("predicate");
 		error_type_mismatch(op, t2, t1);
 		return 0;
 	}

@@ -60,18 +60,21 @@ int NBinOp::check() {
 
 		/* If t1 is a num or char, we expect t2 to be of type t1. */
 		if(t1 == TNUMBER || t1 == TCHAR) {
+			printErrorHeader("binary operator");
 			error_type_mismatch(op, t2, t1);
 			isValid = 0;
 		}
 		
 		/* If t2 is a num or char, we expect t1 to be of type t2. */
 		else if(t2 == TNUMBER || t2 == TCHAR) {
+			printErrorHeader("binary operator");
 			error_type_mismatch(op, t1, t2);
 			isValid = 0;
 		}
 
 		/* Otherwise both are invalid. */
 		else {
+			printErrorHeader("binary operator");
 			error_type_mismatch(op, t1, "number/letter");
 			error_type_mismatch(op, t2, "number/letter");
 			isValid = 0;
@@ -113,6 +116,7 @@ int NBinOp::checkArithmetic(int t1, int t2) {
 		
 		if(t2 != TNUMBER && t2 != REFNUMBER && t2 != TCHAR
 				&& t2 != REFCHAR) {
+			printErrorHeader("binary operator");
 			error_type_mismatch(op, t2, "number/letter");	
 		}
 
@@ -120,6 +124,7 @@ int NBinOp::checkArithmetic(int t1, int t2) {
 	}
 
 	else if(!compareTypes(t1, t2)) {
+		printErrorHeader("binary operator");
 		error_type_mismatch(op, t2, t1);
 		return 0;
 	}
@@ -129,11 +134,13 @@ int NBinOp::checkArithmetic(int t1, int t2) {
 
 int NBinOp::checkPred(int t1, int t2) {
 	if(t1 != BOOLEAN) {
+		printErrorHeader("binary operator");
 		error_type_mismatch(op, t1, BOOLEAN);
 		return 0;
 	}
 
 	else if(t2 != BOOLEAN) {
+		printErrorHeader("binary operator");
 		error_type_mismatch(op, t2, BOOLEAN);
 		return 0;
 	}
