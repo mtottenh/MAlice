@@ -25,7 +25,7 @@ NAssignment::NAssignment(string id, char *exp) {
 NAssignment::NAssignment(string id, string exp) {
 	lval = new NIdentifier(id);
 	name = "Assignment";
-	rval = new NString(exp);
+	rval = new NStringLit(exp);
 	children.push_back(lval);
 	children.push_back(rval);
 
@@ -42,6 +42,7 @@ NAssignment::NAssignment(Node* id, Node* exp) {
 NAssignment::NAssignment(Node* id, char *exp) {
 	lval = id;
 	name = "Assignment";
+	cerr << "debuging chars vs strings: ";
 	rval = new NCharLit(exp);
 	children.push_back(lval);
 	children.push_back(rval);

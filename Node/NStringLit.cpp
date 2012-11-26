@@ -10,7 +10,10 @@ NStringLit::NStringLit(char* literal)
 	
 	this->type = resolveType();
 }
-
+NStringLit::NStringLit(string s) {
+	literal = s;
+	type = resolveType();
+}
 int NStringLit::resolveType() {
 	return TSTRING;
 }

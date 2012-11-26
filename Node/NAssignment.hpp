@@ -4,7 +4,7 @@
 
 #include "NIdentifier.hpp"
 #include "NCharLit.hpp"
-#include "NString.hpp"
+#include "NStringLit.hpp"
 class NAssignment : public Node {
 private:
 	Node* lval;

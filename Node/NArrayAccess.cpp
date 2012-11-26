@@ -1,6 +1,5 @@
 #include "NArrayAccess.hpp"
 #include "TypeDefs.hpp"
-#include "../Errors/TypeMap.hpp" /* debug include, remove this! */
 
 NArrayAccess::NArrayAccess(NIdentifier* id, Node* indexNode)
 {
@@ -44,7 +43,6 @@ int NArrayAccess::resolveType() {
 int NArrayAccess::check() {
 	int isValid = 1;
 	
-	/*cerr << "NArrayAccess::check() called!" << endl;*/
 	this->type = resolveType();
 	
 	/* Does the identifier exist in scope? */
