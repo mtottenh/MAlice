@@ -66,9 +66,12 @@ int NAssignment::check() {
 			(table->lookup(children[0]->getID())->getNodeType() == PROCEDURE);
 		if (!isValid) cerr << "Function return value ignored ( " <<
 			 children[0]->getID() << " )" << endl;
+		isValid &= children[0]->check();
 	}
 	else
 	{
+		cout << "Being called" << endl;
+
 		string lvalID = lval->getID();
 	
 		/* Check both sides of the assignment. */
@@ -96,7 +99,6 @@ int NAssignment::check() {
 			}
 			
 			int rhsType = rval->getType();
-			/*cout << "RHS TYPE : " << typemap_get(rhsType) << endl;*/
 			if (rval->getNodeType() == INPUTNODE) {
 				return isValid;
 			}
