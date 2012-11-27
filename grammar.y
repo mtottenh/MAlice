@@ -7,6 +7,7 @@
 #include "Errors/TypeMap.hpp"
 #include "TreeWalker/SymbolTableGenerator.hpp"
 extern int yylex();
+extern void yylex_destroy();
 extern void yyerror (char *s, ...);
 FileLocation generateLocation();
 Node *root;
@@ -388,6 +389,7 @@ int main(int argc, char* argv[]) {
 
 	delete root;
 	fclose(input);
+	yylex_destroy();
 	return 0;
 }
 
