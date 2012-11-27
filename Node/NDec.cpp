@@ -1,26 +1,20 @@
 #include "NDec.hpp"
 #include "TypeDefs.hpp"
 
-NDec::NDec(Node* child)
-{
-	name = "Decrement";
-	children.push_back(child);
-	nodeType = DEC;
+/* Constructors. */
+
+NDec::NDec(Node* child) {
+	this->name = "Decrement";
+	children.push_back(child); /* Push the node that is to be decremented. */
+	this->nodeType = DEC;
 }
 
-int NDec::resolveType() {
-	int childType = children[0]->getType();
-
-	if(childType == TNUMBER || childType == REFNUMBER) {
-		return childType;
-	}
-	else {
-		return INVALIDTYPE;
-	}
-}
+/* Public methods. */
 
 int NDec::check() {
 	int isValid;
+
+	/* Get the type of the node. */
 	this->type = resolveType();
 
 	/* Is this the expected type (number)? */
@@ -34,4 +28,21 @@ int NDec::check() {
 	isValid &= children[0]->check();
 
 	return isValid;
+}
+
+/* Protected methods. */
+
+int NDec::resolveType() {
+	/* Get the child's type. */
+	int childType = children[0]->getType();
+
+	/* Is it a number or a reference to a number? If so, this is good. :) */
+	if(childType == TNUMBER || childType == REFNUMBER) {
+		return childType;
+	}
+
+	/* ... or not good. Invalid type! */
+	else {
+		return INVALIDTYPE;
+	}
 }
