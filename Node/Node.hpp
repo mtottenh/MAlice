@@ -1,11 +1,12 @@
 #ifndef _NODE_HPP_
 #define _NODE_HPP_
-
+#include <boost/shared_ptr.hpp>
 #include <iostream>
 #include <deque>
 #include <string>
 #include "../Errors/SemanticErrors.hpp"
 #include "../SymbolTable/SymbolTable.hpp"
+
 #include "FileLocation.hpp"
 
 using namespace std;
@@ -26,7 +27,7 @@ class SymbolTable;
 class Node {
 protected:
 	FileLocation *loc;
-	SymbolTable* table;
+	boost::shared_ptr<SymbolTable> table;
 	int nodeType;
 	int type;
 	int isRootNode;
@@ -42,7 +43,7 @@ public:	Node();
 	node_children_t getChildren() const;
  	const node_children_t* getChildrenRef() const;
 	virtual int check();
-	virtual int addTable(SymbolTable*);
+	virtual int addTable(boost::shared_ptr<SymbolTable>);
 	void printTable();
 	int hasTable();
 	string getName();

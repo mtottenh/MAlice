@@ -43,11 +43,12 @@ NFunctionDeclaration::NFunctionDeclaration (NIdentifier* ID, Node *params,
 NFunctionDeclaration::NFunctionDeclaration (NIdentifier* ID, Node *params,Node *block) {
 	this->type = VOID;
 	name = ID->getID();
-	delete(ID);
+
 	children.push_back(block);
 	children.push_back(params);
 	loc = NULL;
 	nodeType = PROCEDURE;
+	delete ID;
 }
 
 /* TODO remove print and gettype

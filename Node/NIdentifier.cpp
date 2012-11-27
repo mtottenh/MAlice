@@ -9,6 +9,7 @@ NIdentifier::NIdentifier()
 	name = "ID";
 	nodeType = IDENTIFIER;
 	loc = NULL;
+	children.clear();
 }                                           
 NIdentifier::~NIdentifier() {
 }

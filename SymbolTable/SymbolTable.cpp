@@ -2,22 +2,18 @@
 #include <iostream>
 
 /* See SymbolTable.hpp for detailed documentation. */
-extern int markedForDeletion;
 /* Constructors and destructors. */
 SymbolTable::SymbolTable() : parent(NULL) {
 	/* Do nothing! */
-	markedForDeletion = 0;
 }
 
 SymbolTable::SymbolTable(SymbolTable* parentTable) : parent(parentTable) {
 	/* Do nothing! */
-	markedForDeletion = 0;
 }
 
 SymbolTable::~SymbolTable()
 {
 	cout << "deleting" << this <<  endl;
-	markedForDeletion = 1;
 }
 
 /* Public methods. */
