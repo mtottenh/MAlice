@@ -1,21 +1,27 @@
 #include "Node.hpp"
 #include "TypeDefs.hpp"
-/* TODO Remove this #define*/
-#define UNDEFINED -1
 
+/* Constructors/destructors. */
+
+/*
+ * Construct a node with no children; set to unknown data type and set as a 
+ * generic node.
+ */
 Node::Node() {
 	name = "Node";
 	type = INVALIDTYPE;
 	nodeType = GENERIC_NODE;
 }
 
+/* As above, but add the child parameter to the list of children. */
 Node::Node(Node *child) {
 	children.push_back(child);
 	name = "Node";
 	type = INVALIDTYPE;
 	nodeType = GENERIC_NODE;
 }
-/* TODO Implement explicit deconstructor*/
+
+/* Delete all the children and set them to null. */
 Node::~Node() {
 	for (unsigned int i = 0; i < children.size(); ++i)
 	{
@@ -24,30 +30,112 @@ Node::~Node() {
 	}
 }
 
-int Node::print() const {
-	cout << name << endl;
-	return 1;
-}
-const node_children_t* Node::getChildrenRef() const {
-	return &children;
-}
-node_children_t Node::getChildren() const {
-	return children;
-}
+/* Public methods. */
 
 int Node::getType()  {
+	/* Resolve the type before we return it. */
 	return resolveType();
 }
 
-int Node::resolveType() {
-	return type;
+int Node::getNodeType() {
+	return nodeType;
 }
 
 string Node::getID() {
 	return name;
 }
 
+node_children_t Node::getChildren() const {
+	return children;
+}
+
+const node_children_t* Node::getChildrenRef() const {
+	return &children;
+}
+
+Node* Node::getChild(unsigned int n) {
+	if (n > children.size() ) {
+		return NULL;
+	} else {
+		return children[n];
+	}
+}
+
+int Node::getChildrenSize() {
+	return children.size();
+}
+
+FileLocation* Node::getLocation() {
+	/* Get the location from the first and last child in children. */
+	if (children.size() > 0) {
+		loc = new FileLocation();
+		Node *front = children.front();
+		Node *back = children.back();	
+
+		if (front->getLocation() != NULL ) {
+			loc->startLine = front->getLocation()->startLine;
+			loc->startColumn = front->getLocation()->startColumn;
+		} 
+
+		if (back->getLocation() != NULL ) {		
+			loc->endLine = back->getLocation()->endLine;
+			loc->endColumn = back->getLocation()->endColumn;
+		}
+	}
+
+	return loc;
+}
+
+/* TODO rename to setAsRoot()
+ */
+int Node::isRoot() {
+	isRootNode = 1;
+	return isRootNode;
+}
+
+int Node::hasTable() {
+	return table == NULL;
+}
+
+void Node::setLocation(FileLocation *loc) {
+	/* Create a new FileLocation given an existing location. */
+	this->loc = new FileLocation(loc);
+}
+
+int Node::print() const {
+	/* Print the node name to stdout. */
+	cout << name << endl;
+	return SUCCESS;
+}
+
+void Node::printTable() {
+	table->print();
+}
+
+void Node::printErrorHeader(const string& context) {
+	/* Print an error header containing the context and line/col numbers. */
+	cerr << endl << "--- Semantic error in " << context << " at line(s) " 
+		<< getLocation()->startLine << "-" << getLocation()->endLine 
+		<< ", column(s) " << getLocation()->startColumn << "-" 
+		<< getLocation()->endColumn << " ---" << endl;
+}
+
+int Node::addTable(SymbolTable* table) {
+	if(table == NULL) {
+		return FAILURE;
+	}
+	else {
+		this->table = table;
+		return SUCCESS;
+	}
+}
+
+void Node::addChild(Node* node) {
+	children.push_back(node);
+}
+
 int Node::check() {
+	/* Generic check function - loop through the children and check them. */
 	int isValid = 1;
 	node_children_t::iterator it;
 
@@ -58,76 +146,13 @@ int Node::check() {
 	return isValid;
 }
 
-int Node::addTable(SymbolTable* table) {
-	if(table == NULL) {
-		return 0;
-	}
-	else {
-		this->table = table;
-		return 1;
-	}
-}
-
-int Node::getNodeType() {
-	return nodeType;
-}
-/* TODO rename to setAsRoot()
- */
-int Node::isRoot() {
-	isRootNode = 1;
-	return isRootNode;
-}
-/* TODO Really? do we need this as a function?
- */
+/* TODO Remove this, and replace all occurances in derived classes. */
 int Node::compareTypes(int t1, int t2) const {
 	return (t1 == t2);
 }
 
-void Node::setLocation(FileLocation *loc) 
-{
-	this->loc = new FileLocation(loc);
-}
+/* Protected methods. */
 
-FileLocation* Node::getLocation()
-{
-	if (children.size() > 0) {
-		loc = new FileLocation();
-		Node *front = children.front();
-		Node *back = children.back();	
-		if (front->getLocation() != NULL ) {
-			loc->startLine = front->getLocation()->startLine;
-			loc->startColumn = front->getLocation()->startColumn;
-		} 
-		if (back->getLocation() != NULL ) {		
-			loc->endLine = back->getLocation()->endLine;
-			loc->endColumn = back->getLocation()->endColumn;
-		}
-	}
-	return loc;
-}
-void Node::addChild(Node* node) {
-	children.push_back(node);
-}
-
-int Node::hasTable() {
-	return table == NULL;
-}
-void Node::printTable() {
-	table->print();
-}
-int Node::getChildrenSize() {
-	return children.size();
-}
-Node* Node::getChild(unsigned int n) {
-	if (n > children.size() ) {
-		return NULL;
-	} else {
-		return children[n];
-	}
-}
-void Node::printErrorHeader(const string& context) {
-	cerr << endl << "--- Semantic error in " << context << " at line(s) " 
-		<< getLocation()->startLine << "-" << getLocation()->endLine 
-		<< ", column(s) " << getLocation()->startColumn << "-" 
-		<< getLocation()->endColumn << " ---" << endl;
+int Node::resolveType() {
+	return type;
 }	

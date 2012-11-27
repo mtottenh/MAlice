@@ -91,6 +91,7 @@ public:
 
 	/*
 	 * Returns a pointer to the node at a given index in the children list.
+	 * Returns NULL if the given index is out of bounds.
 	 */
 	Node* getChild(unsigned int);
 
