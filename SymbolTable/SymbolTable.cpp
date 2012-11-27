@@ -11,11 +11,6 @@ SymbolTable::SymbolTable(SymbolTable* parentTable) : parent(parentTable) {
 	/* Do nothing! */
 }
 
-SymbolTable::~SymbolTable()
-{
-	cout << "deleting" << this <<  endl;
-}
-
 /* Public methods. */
 /*
 int SymbolTable::markedForDeletion() {
