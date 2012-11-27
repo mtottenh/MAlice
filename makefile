@@ -3,7 +3,7 @@ CFLAGS = -Wall -pedantic -g -O0
 YFLAGS = --verbose --debug --defines
 LFLAGS = --yylineno
 
-all: lex.yy.c y.tab.c parser
+all: lex.yy.c y.tab.c compile
 
 lex.yy.c: lexer.l
 	flex $(LFLAGS) lexer.l
@@ -13,7 +13,7 @@ scanner: lex.yy.c y.tab.h
 
 y.tab.c: grammar.y
 	yacc $(YFLAGS) grammar.y
-parser: lex.yy.c y.tab.c TreePrinter.o SemanticErrors.o TypeMap.o SymbolTable.o TreeWalker.o NArrayAccess.o NAssignment.o NBinOp.o NCharLit.o NCodeBlock.o NConditional.o NDec.o NDeclarationBlock.o NEndIf.o NFunctionDeclaration.o NIdentifier.o NInc.o NInput.o NInteger.o NLoop.o NMethodCall.o Node.o NParamBlock.o NParamDeclarationBlock.o NPredicate.o NPrint.o NReturn.o NStatementList.o NStringLit.o NUnaryOp.o NVariableDeclaration.o FileLocation.o
+compile: lex.yy.c y.tab.c TreePrinter.o SemanticErrors.o TypeMap.o SymbolTable.o TreeWalker.o NArrayAccess.o NAssignment.o NBinOp.o NCharLit.o NCodeBlock.o NConditional.o NDec.o NDeclarationBlock.o NEndIf.o NFunctionDeclaration.o NIdentifier.o NInc.o NInput.o NInteger.o NLoop.o NMethodCall.o Node.o NParamBlock.o NParamDeclarationBlock.o NPredicate.o NPrint.o NReturn.o NStatementList.o NStringLit.o NUnaryOp.o NVariableDeclaration.o FileLocation.o
 
 	$(CC) $(CFLAGS) $^ -o $@ -lfl
 
@@ -115,7 +115,7 @@ clean:
 	rm -f *.o
 	rm -f lex.yy.c 
 	rm -f scanner
-	rm -f parser
+	rm -f compile
 	rm -f y.tab.c
 	rm -f y.output
 	rm -f y.tab.h
