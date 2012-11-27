@@ -1,27 +1,23 @@
-#ifndef ___NCONDITIONAL__
-#define ___NCONDITIONAL__
-
 #include "NConditional.hpp"
 #include "TypeDefs.hpp"
 /* 
  * Conditionals consist of a predicate a left branch and a right branch
  */
+
+/* Constructors. */
+
 NConditional::NConditional(Node* predicate, Node* left, Node* right) {
 	this->name = "Conditional";
-	children.push_back(predicate); /* This is an expression */
-	children.push_back(left);
-	children.push_back(right);
-	nodeType = CONDITIONAL;
+	this->nodeType = CONDITIONAL;
+	children.push_back(predicate); /* Expression representing condition. */
+	children.push_back(left); /* Push the LHS (then) case. */
+	children.push_back(right); /* Push the RHS (else/elseif/endif) case. */
 }
 
-int NConditional::resolveType() {
-	return INVALIDTYPE;
-}
+/* Public methods. */
 
 int NConditional::check() {
 	int isValid = 1;
-
-	this->type = resolveType(); /* TODO Why is this even needed? */
 
 	/* Is the predicate node actually a predicate (of type boolean?) */
 	int predNodeType = children[0]->getType();
@@ -38,4 +34,9 @@ int NConditional::check() {
 	return isValid;
 }
 
-#endif
+/* Protected methods. */
+
+int NConditional::resolveType() {
+	/* A conditional doesn't have a type! */
+	return INVALIDTYPE;
+}
