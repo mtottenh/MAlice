@@ -1,17 +1,17 @@
 #include "NInput.hpp"
 #include "TypeDefs.hpp"
-#include "../Errors/TypeMap.hpp" /* debug include - remove this! */
+
+/* Constructors. */
 
 NInput::NInput(Node* id)
 {
-	name = "NInput";
-	nodeType = INPUTNODE;
+	this->name = "NInput";
+	this->nodeType = INPUTNODE;
 	children.push_back(id);
 }
-/* TODO Refactor this check function
- * Its logic is a little confused and should be expressed
- * more consise and clearly
- */
+
+/* Public methods. */
+
 int NInput::check() {
 	int isValid = 1;
 
@@ -20,15 +20,18 @@ int NInput::check() {
 	 * input.
 	 */
 	int childType = children[0]->getType();
+	string childName = children[0]->getID();
 	
 	/* We can't accept input if the node is a method call */
-	Node* nodePtr = table->lookup(children[0]->getID());
+	Node* nodePtr = table->lookup(childName);
+
 	if(nodePtr != NULL) {
 		int childNodeType = nodePtr->getNodeType();
 
+		/* The node exists in the symbol table, is it a method? */
 		if(childNodeType == FUNC || childNodeType == PROCEDURE) {
 			printErrorHeader("input request");
-			error_input_node_type(children[0]->getID());
+			error_input_node_type(childName);
 			isValid = 0;
 		}
 	}
@@ -37,7 +40,7 @@ int NInput::check() {
 	if(childType != TNUMBER && childType != TCHAR 
 			&& childType != TSTRING) {
 		printErrorHeader("input request");
-		error_input_type(children[0]->getID(), childType);
+		error_input_type(childName, childType);
 		isValid = 0;
 	}
 
