@@ -8,8 +8,10 @@ NIdentifier::NIdentifier()
 { 
 	name = "ID";
 	nodeType = IDENTIFIER;
+	loc = NULL;
 }                                           
-
+NIdentifier::~NIdentifier() {
+}
 string NIdentifier::getID() {
 	return name;
 }

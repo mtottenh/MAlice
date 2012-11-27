@@ -7,6 +7,7 @@ Node::Node() {
 	name = "Node";
 	type = INVALIDTYPE;
 	nodeType = GENERIC_NODE;
+	loc = NULL;
 }
 
 Node::Node(Node *child) {
@@ -23,8 +24,10 @@ Node::~Node() {
 		delete children[i];
 		children[i] = NULL;
 	}
-
-	
+	if (loc != NULL) {
+		delete loc;
+		loc = NULL;
+	}
 }
 
 int Node::print() const {
@@ -89,7 +92,7 @@ int Node::compareTypes(int t1, int t2) const {
 void Node::setLocation(FileLocation *location) 
 {
 	this->loc = new FileLocation(location);
-	delete(location);
+	//delete(location);
 }
 
 FileLocation* Node::getLocation()

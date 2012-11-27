@@ -5,7 +5,7 @@ NVariableDeclaration::NVariableDeclaration(NIdentifier* id, int type) {
 	this->type = type;
 	name = id->getID();
 	this->setLocation(id->getLocation());
-	delete(id);
+//	delete(id);
 	nodeType = VARDEC;
 }
 /* Arrays*/
@@ -14,7 +14,7 @@ NVariableDeclaration::NVariableDeclaration(NIdentifier* id, int type, Node *bloc
 	children.push_back(block);
 	name = id->getID();
 	this->setLocation(id->getLocation());
-	delete(id);
+//	delete(id);
 	nodeType = VARDEC;
 }
 
