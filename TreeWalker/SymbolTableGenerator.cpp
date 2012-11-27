@@ -1,3 +1,4 @@
+#include <boost/shared_ptr.hpp>
 #include "SymbolTableGenerator.hpp"
 #include "../Errors/SemanticErrors.hpp"
 #include "../Errors/TypeMap.hpp"
@@ -9,7 +10,7 @@ SymbolTableGenerator::SymbolTableGenerator(Node* tree) {
 
 
 void SymbolTableGenerator::generateTable() {
-	SymbolTable *table = new SymbolTable();
+	sym_table_ptr table (new SymbolTable());
 	root->addTable(table);
 	std::deque<Node*> children = root->getChildren();
 	Node* node;
@@ -20,7 +21,7 @@ void SymbolTableGenerator::generateTable() {
 	}
 }
 
-void SymbolTableGenerator::nodeTableGen(Node *node, SymbolTable* table) {
+void SymbolTableGenerator::nodeTableGen(Node *node, sym_table_ptr table) {
 	int nodeType = node->getNodeType();
 	Node* nodePtr = NULL;
 	std::deque<Node *> children = node->getChildren();
@@ -62,19 +63,18 @@ void SymbolTableGenerator::nodeTableGen(Node *node, SymbolTable* table) {
 			/* Codeblocks have their own scope so we need to 
 			 * create a new scope and do the children
 			 */
-			table = new SymbolTable(table);
+			table = boost::shared_ptr<SymbolTable> (new SymbolTable(table.get()));
 		default:
 			for (unsigned int i = 0; i < size; i++) {
 				nodeTableGen(children[i],table);		
 			}
 			break;
 	}
-	table = NULL;
 	return ;
 }
 
 
-void SymbolTableGenerator::funcGen(Node* func, SymbolTable* table) {
+void SymbolTableGenerator::funcGen(Node* func, sym_table_ptr table) {
 	std::deque<Node *> children = func->getChildren();
 	unsigned int size = children.size();
 	/*Functions with no paramaters*/
@@ -84,7 +84,7 @@ void SymbolTableGenerator::funcGen(Node* func, SymbolTable* table) {
 		/*Deal with paramaters */
 		Node* codeBlock = children[0];
 		Node* paramBlock = children[1];
-		SymbolTable* localScope = new SymbolTable(table);
+		sym_table_ptr localScope (new SymbolTable(table.get()));
 		nodeTableGen(paramBlock,localScope);
 		
 		/*Deal with the function body*/
@@ -103,7 +103,6 @@ void SymbolTableGenerator::funcGen(Node* func, SymbolTable* table) {
 		}
 			
 		nodeTableGen(statList,localScope);
-		localScope = NULL;
 	}
 
 	return  ;	

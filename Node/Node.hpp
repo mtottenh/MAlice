@@ -5,12 +5,13 @@
 
 #ifndef _NODE_HPP_
 #define _NODE_HPP_
-
+#include <boost/shared_ptr.hpp>
 #include <iostream>
 #include <deque>
 #include <string>
 #include "../Errors/SemanticErrors.hpp"
 #include "../SymbolTable/SymbolTable.hpp"
+
 #include "FileLocation.hpp"
 
 /*
@@ -41,7 +42,7 @@ private:
 	FileLocation *loc;
 protected:
 	/* Symbol table maps identifiers to Nodes that this Node references. */
-	SymbolTable* table;
+	boost::shared_ptr<SymbolTable> table;
 
 	/* Node type states the type of the node, e.g. function node. */
 	int nodeType;
@@ -130,7 +131,7 @@ public:
 	 * Adds a pointer to a symbol table to the node. Returns SUCCESS if the
 	 * operation completed successfully, FAILURE otherwise.
 	 */
-	virtual int addTable(SymbolTable*);
+	virtual int addTable(boost::shared_ptr<SymbolTable>);
 
 	/*
 	 * Adds a node given by the Node* parameter to the list of this node's

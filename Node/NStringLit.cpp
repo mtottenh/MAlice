@@ -1,6 +1,7 @@
 #include <cstring>
-#include "TypeDefs.hpp"
 #include "NStringLit.hpp"
+#include "TypeDefs.hpp"
+
 
 NStringLit::NStringLit(char* literal)
 {

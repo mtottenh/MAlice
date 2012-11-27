@@ -11,11 +11,13 @@ Node::Node() {
 	name = "Node";
 	type = INVALIDTYPE;
 	nodeType = GENERIC_NODE;
+	children.clear();
 	loc = NULL;
 }
 
 /* As above, but add the child parameter to the list of children. */
 Node::Node(Node *child) {
+	children.clear();
 	children.push_back(child);
 	name = "Node";
 	type = INVALIDTYPE;
@@ -34,15 +36,9 @@ Node::~Node() {
 		delete loc;
 		loc = NULL;
 	}
-	if (table != NULL) {
-		if (markedForDeletion) {
-			markedForDeletion = 0;
-		} else {
-			delete table;
-			table = NULL;
-			markedForDeletion = 1;
-		}
-	}
+	if (table.get() != NULL) {
+		table.reset();		
+	}	
 }
 
 /* Public methods. */
@@ -87,7 +83,7 @@ void Node::setLocation(FileLocation *location) {
 
 FileLocation* Node::getLocation() {
 	/* Get the location from the first and last child in children. */
-	if (children.size() > 0) {
+	if (children.size() > 0 && children[0] != NULL) {
 		loc = new FileLocation();
 		Node *front = children.front();
 		Node *back = children.back();	
@@ -140,12 +136,12 @@ void Node::printErrorHeader(const string& context) {
 		<< getLocation()->endColumn << " ---" << endl;
 }
 
-int Node::addTable(SymbolTable* table) {
-	if(table == NULL) {
+int Node::addTable(boost::shared_ptr<SymbolTable> t) {
+	if(t == NULL) {
 		return FAILURE;
 	}
 	else {
-		this->table = table;
+		this->table = t;
 		return SUCCESS;
 	}
 }
