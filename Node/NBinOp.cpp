@@ -1,41 +1,19 @@
 #include "NBinOp.hpp"
 #include "TypeDefs.hpp"
 
+/* Constructors */
 NBinOp::NBinOp(Node* left, Node* right, int op) {
 	this->op = op;
 	this->name = "Binary Operator";
+	this->nodeType = BINOP;
 	children.push_back(left);
 	children.push_back(right);
-	nodeType = BINOP;
 }
+
+/* Public methods */
 
 int NBinOp::getType() {
 	return resolveType();
-}
-
-int NBinOp::resolveType()  {
-	/* Is the operator a boolean binary operator? */
-	if(isBoolean()) {
-		return BOOLEAN;
-	} 
-	
-	/* Do the types of the children match? If not, invalid. */
-	int t1 = children[0]->getType();
-	int t2 = children[1]->getType();
-
-	if(!Node::compareTypes(t1, t2)) {
-		return INVALIDTYPE;
-	}
-
-	/* Are they numbers or letters? If not, invalid. */
-	else if(t1 != TNUMBER && t1 != TCHAR) {
-		return INVALIDTYPE;
-	}
-
-	/* Yay, everything is fine :D */
-	else {
-		return t1;
-	}
 }
 
 int NBinOp::check() {
@@ -85,6 +63,35 @@ int NBinOp::check() {
 	return isValid;
 }
 
+/* Protected methods. */
+
+int NBinOp::resolveType()  {
+	/* Is the operator a boolean binary operator? */
+	if(isBoolean()) {
+		return BOOLEAN;
+	} 
+	
+	/* Do the types of the children match? If not, invalid. */
+	int t1 = children[0]->getType();
+	int t2 = children[1]->getType();
+
+	if(!Node::compareTypes(t1, t2)) {
+		return INVALIDTYPE;
+	}
+
+	/* Are they numbers or letters? If not, invalid. */
+	else if(t1 != TNUMBER && t1 != TCHAR) {
+		return INVALIDTYPE;
+	}
+
+	/* Yay, everything is fine :D */
+	else {
+		return t1;
+	}
+}
+
+/* Private methods. */
+
 int NBinOp::checkBoolean() {
 	int isValid = 1;
 
@@ -112,46 +119,56 @@ int NBinOp::checkBoolean() {
 }
 
 int NBinOp::checkArithmetic(int t1, int t2) {
+	/* Is t1 a number or character? (or a reference to one?) */
 	if(t1 != TNUMBER && t1 != REFNUMBER && t1 != TCHAR && t1 != REFCHAR) {
 		error_type_mismatch(op, t1, "number/letter");
 		
+		/* Okay, what about t2? */
 		if(t2 != TNUMBER && t2 != REFNUMBER && t2 != TCHAR
 				&& t2 != REFCHAR) {
 			printErrorHeader("binary operator");
 			error_type_mismatch(op, t2, "number/letter");	
 		}
 
-		return 0;
+		return FAILURE;
 	}
 
+	/* 
+	 * We now know that t1 and t2 are of the correct type, but are they of
+	 * the same type?
+	 */
 	else if(!compareTypes(t1, t2)) {
 		printErrorHeader("binary operator");
 		error_type_mismatch(op, t2, t1);
-		return 0;
+		return FAILURE;
 	}
 
-	return 1;
+	return SUCCESS;
 }
 
 int NBinOp::checkPred(int t1, int t2) {
+	/* Is t1 a boolean? */
 	if(t1 != BOOLEAN) {
 		printErrorHeader("binary operator");
 		error_type_mismatch(op, t1, BOOLEAN);
-		return 0;
+		return FAILURE;
 	}
 
+	/* Is t2 a boolean? */
 	else if(t2 != BOOLEAN) {
 		printErrorHeader("binary operator");
 		error_type_mismatch(op, t2, BOOLEAN);
-		return 0;
+		return FAILURE;
 	}
 	
+	/* Both are booleans, great success! */
 	else {
-		return 1;
+		return SUCCESS;
 	}
 }
 
 int NBinOp::isBoolean() {
+	/* Is the operator one that accepts booleans? */
 	return (op == LEQU || op == LAND || op == LOR || op == LNOTEQU 
 			|| op == LGTHAN || op == LGTHANEQ || op == LLTHAN 
 			|| op == LLTHANEQ);

@@ -99,4 +99,10 @@ void error_no_return(const string&);
  */
 void error_return_type(const string&, int, int);
 
+/*
+ * Prints that in an assignment, a function (param 1) had its return type 
+ * ignored.
+ */
+void error_return_ignored(const string&);
+
 #endif
