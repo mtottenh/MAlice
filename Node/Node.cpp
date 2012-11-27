@@ -90,10 +90,16 @@ FileLocation* Node::getLocation()
 {
 	if (children.size() > 0) {
 		loc = new FileLocation();
-		loc->startLine = children.front()->getLocation()->startLine;
-		loc->startColumn = children.front()->getLocation()->startColumn;
-		loc->endLine = children.back()->getLocation()->endLine;
-		loc->endColumn = children.back()->getLocation()->endColumn;
+		Node *front = children.front();
+		Node *back = children.back();	
+		if (front->getLocation() != NULL ) {
+			loc->startLine = front->getLocation()->startLine;
+			loc->startColumn = front->getLocation()->startColumn;
+		} 
+		if (back->getLocation() != NULL ) {		
+			loc->endLine = back->getLocation()->endLine;
+			loc->endColumn = back->getLocation()->endColumn;
+		}
 	}
 	return loc;
 }

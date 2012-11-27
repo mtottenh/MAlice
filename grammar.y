@@ -293,7 +293,7 @@ Codeblock
 	: OBRACE DeclarationList StatementList CBRACE 
 	{ $$ = new NCodeBlock($2, $3);}
 	| OBRACE StatementList CBRACE { $$ = new NCodeBlock($2);}
-	| OBRACE CBRACE {$$ = new NCodeBlock(); }
+	| OBRACE CBRACE {$$ = new NCodeBlock();$$->setLocation(generateLocation()); }
 	; 
 
 StatementList
