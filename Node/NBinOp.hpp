@@ -1,3 +1,5 @@
+/* Node containing a binary operation expression. */
+
 #ifndef _NBINOP_HPP_
 #define _NBINOP_HPP_
 

@@ -1,3 +1,5 @@
+/* Node containing a character literal. */
+
 #ifndef _NCHAR_HPP
 #define _NCHAR_HPP
 
