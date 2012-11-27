@@ -313,10 +313,10 @@ ArrayVal
 	: Identifier ARRINDO Predicate ARRINDC 
 	{$$ = new NArrayAccess($1,$3); }
 	;
- 
+ /* This is giving us huge memleaks*/
 Identifier
 	: STRING {$$ = new NIdentifier($1);
-				FileLocation *loc = generateLocation(); $$->setLocation(loc); delete loc;}
+		FileLocation *loc = generateLocation(); $$->setLocation(loc); delete loc;}
 	;
 StringLit
 	: STRINGLIT {$$ = new NStringLit($1);

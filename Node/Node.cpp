@@ -19,6 +19,7 @@ Node::Node(Node *child) {
 	loc = NULL;
 }
 /* TODO Implement explicit deconstructor*/
+/* CONVERT LOC TO SHARED PTR*/
 Node::~Node() {
 	for (unsigned int i = 0; i < children.size(); ++i)
 	{
