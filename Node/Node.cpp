@@ -108,9 +108,7 @@ FileLocation* Node::getLocation()
 void Node::addChild(Node* node) {
 	children.push_back(node);
 }
-string Node::getName() {
-	return name;
-}
+
 int Node::hasTable() {
 	return table == NULL;
 }

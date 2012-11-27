@@ -101,7 +101,7 @@ int NFunctionDeclaration::check() {
 		}
 
 		else if (nodeType == PROCEDURE && size > 0) {
-			printErrorHeader("function declaration");
+			printErrorHeader("procedure declaration");
 			error_proc_return(name);
 		}
 	}

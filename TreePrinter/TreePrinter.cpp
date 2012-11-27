@@ -28,7 +28,7 @@ int treePrinter::print() {
 		if (temp != NULL) {
 			cout << "~~~~~ New node! ~~~~~" << endl;	
 			cout << "Type: " << typemap_get(temp->getType()) 
-			     <<  "\tName : " << temp->getName() << endl;
+			     <<  "\tName : " << temp->getID() << endl;
 			if (temp->hasTable())
 				temp->printTable();
 			else
