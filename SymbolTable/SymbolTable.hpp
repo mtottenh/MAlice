@@ -33,7 +33,7 @@ class SymbolTable {
 		 */
 		table_t table;
 		SymbolTable* parent;
-			
+				
 	public:
 		/* 
 		 * Constructors for creating a global variable table
@@ -63,7 +63,7 @@ class SymbolTable {
 		 * 0 otherwise.
 		 */
 		int parentExists();
-
+		/*nt markedForDeletion();*/
 		void print();
 };
 

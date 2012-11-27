@@ -8,7 +8,7 @@ SymbolTableGenerator::SymbolTableGenerator(Node* tree) {
 }
 
 
-SymbolTable* SymbolTableGenerator::generateTable() {
+void SymbolTableGenerator::generateTable() {
 	SymbolTable *table = new SymbolTable();
 	root->addTable(table);
 	std::deque<Node*> children = root->getChildren();
@@ -18,10 +18,9 @@ SymbolTable* SymbolTableGenerator::generateTable() {
 		children.pop_front();
 		nodeTableGen(node,table);
 	}
-	return table;
 }
 
-SymbolTable* SymbolTableGenerator::nodeTableGen(Node *node, SymbolTable* table) {
+void SymbolTableGenerator::nodeTableGen(Node *node, SymbolTable* table) {
 	int nodeType = node->getNodeType();
 	Node* nodePtr = NULL;
 	std::deque<Node *> children = node->getChildren();
@@ -30,7 +29,7 @@ SymbolTable* SymbolTableGenerator::nodeTableGen(Node *node, SymbolTable* table) 
 	if(!node->addTable(table)) {
 		cerr << "ERROR: Unable to  update node with symbol table pointer" 
 		     << endl;
-		return table;
+		return ;
 	}
 	
 	switch(nodeType) {
@@ -41,7 +40,7 @@ SymbolTable* SymbolTableGenerator::nodeTableGen(Node *node, SymbolTable* table) 
 				table->add(node->getID(), node);
 			} else {
 				error_var_exists(node->getID());
-				return table;
+				return ;
 			}	
 			funcGen(node,table);
 			break;
@@ -70,11 +69,12 @@ SymbolTable* SymbolTableGenerator::nodeTableGen(Node *node, SymbolTable* table) 
 			}
 			break;
 	}
-	return table;
+	table = NULL;
+	return ;
 }
 
 
-SymbolTable* SymbolTableGenerator::funcGen(Node* func, SymbolTable* table) {
+void SymbolTableGenerator::funcGen(Node* func, SymbolTable* table) {
 	std::deque<Node *> children = func->getChildren();
 	unsigned int size = children.size();
 	/*Functions with no paramaters*/
@@ -103,8 +103,10 @@ SymbolTable* SymbolTableGenerator::funcGen(Node* func, SymbolTable* table) {
 		}
 			
 		nodeTableGen(statList,localScope);
-	}	
-	return  table;	
+		localScope = NULL;
+	}
+
+	return  ;	
 }
 
 

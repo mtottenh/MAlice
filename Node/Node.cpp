@@ -2,7 +2,7 @@
 #include "TypeDefs.hpp"
 /* TODO Remove this #define*/
 #define UNDEFINED -1
-
+extern int markedForDeletion = 1;
 Node::Node() {
 	name = "Node";
 	type = INVALIDTYPE;
@@ -27,6 +27,15 @@ Node::~Node() {
 	if (loc != NULL) {
 		delete loc;
 		loc = NULL;
+	}
+	if (table != NULL) {
+		if (markedForDeletion) {
+			markedForDeletion = 0;
+		} else {
+			delete table;
+			table = NULL;
+			markedForDeletion = 1;
+		}
 	}
 }
 
