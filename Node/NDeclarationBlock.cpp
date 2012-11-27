@@ -19,16 +19,20 @@ NDeclarationBlock::NDeclarationBlock(Node* child) {
 /* Public methods. */
 
 int NDeclarationBlock::check() {
+	int isValid = 1;
+
 	/* 
 	 * Check for 'hatta' entry point, if this is the topmost root node.
 	 * Delegate to checkRoot().
 	 */
 	if(isRootNode) {
-		return checkRoot();
+		isValid &= checkRoot();
 	}
 
-	/* Otherwise, check the children via generic check function. */
-	return Node::check();
+	/* Check the children via generic check function. */
+	isValid &= Node::check();
+
+	return isValid;
 }
 
 /* Private methods. */
