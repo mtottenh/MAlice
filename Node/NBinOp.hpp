@@ -9,7 +9,7 @@ private:
 	int checkArithmetic(int, int);
 	int checkPred(int, int);
 	int isBoolean();
-public:
+protected:
 	int op;
 	virtual int resolveType() ;
 public:
