@@ -6,6 +6,7 @@ NLoop::NLoop(Node* predicate, Node* statementList)
 	name = "Loop";
 	children.push_back(predicate);
 	children.push_back(statementList);
+	nodeType = LOOP;
 }
 
 int NLoop::check() {

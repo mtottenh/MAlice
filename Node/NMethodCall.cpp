@@ -6,13 +6,15 @@
 
 NMethodCall::NMethodCall() 
 { 
-	name = "function/procedure call"; 
+	name = "function/procedure call";
+	nodeType = CALL;
 }
 
 NMethodCall::NMethodCall(NIdentifier* id, Node* params) {
 	name = id->getID();
 	children.push_back(params);
 	this->setLocation(id->getLocation());
+	nodeType = CALL;
 	delete(id);
 }
 
@@ -20,6 +22,7 @@ NMethodCall::NMethodCall(NIdentifier* id) {
 	name = id->getID();
 	type = VOID;
 	this->setLocation(id->getLocation());
+	nodeType = CALL;
 	delete(id);
 }
 

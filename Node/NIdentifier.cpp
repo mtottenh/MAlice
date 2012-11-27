@@ -6,7 +6,8 @@
 #include "TypeDefs.hpp"
 NIdentifier::NIdentifier() 
 { 
-	name = "ID"; 
+	name = "ID";
+	nodeType = IDENTIFIER;
 }                                           
 
 string NIdentifier::getID() {
@@ -14,9 +15,11 @@ string NIdentifier::getID() {
 }
 NIdentifier::NIdentifier(char *name) { 
 	this->name = name;
+	nodeType = IDENTIFIER;
 }
 NIdentifier::NIdentifier(string name) {
 	this->name = name;
+	nodeType = IDENTIFIER;
 }
 /* Checking an identifier is juts checking whether it is declared in scope 
  *  TODO Double check if this needs more too it or not

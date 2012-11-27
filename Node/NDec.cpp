@@ -5,6 +5,7 @@ NDec::NDec(Node* child)
 {
 	name = "Decrement";
 	children.push_back(child);
+	nodeType = DEC;
 }
 
 int NDec::resolveType() {

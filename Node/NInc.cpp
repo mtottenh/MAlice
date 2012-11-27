@@ -4,6 +4,7 @@
 NInc::NInc(Node* child) {
 	name = "Increment"; 
 	children.push_back(child);
+	nodeType = INC;
 }
 
 int NInc::resolveType() {

@@ -6,12 +6,14 @@
 Node::Node() {
 	name = "Node";
 	type = INVALIDTYPE;
+	nodeType = GENERIC_NODE;
 }
 
 Node::Node(Node *child) {
 	children.push_back(child);
 	name = "Node";
 	type = INVALIDTYPE;
+	nodeType = GENERIC_NODE;
 }
 /* TODO Implement explicit deconstructor*/
 Node::~Node() {
@@ -118,7 +120,7 @@ void Node::printTable() {
 int Node::getChildrenSize() {
 	return children.size();
 }
-Node* Node::getChild(int n) {
+Node* Node::getChild(unsigned int n) {
 	if (n > children.size() ) {
 		return NULL;
 	} else {

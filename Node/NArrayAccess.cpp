@@ -8,6 +8,7 @@ NArrayAccess::NArrayAccess(NIdentifier* id, Node* indexNode)
 	this->indexNode = indexNode;
 	children.push_back(id);
 	children.push_back(indexNode);
+	nodeType = ARRAYACCESS;
 }
 
 int NArrayAccess::getType() {

@@ -3,6 +3,7 @@
 
 NPrint::NPrint() {
 	name = "Print";
+	nodeType = PRINT;
 }
 /* TODO consider pushing this into an NStringLit child node?
  * it would simplify the check function
@@ -10,11 +11,13 @@ NPrint::NPrint() {
 NPrint::NPrint(const char* msg) {
 	message = strdup(msg); 
 	name = "Print";
+	nodeType = PRINT;
 }
 
 NPrint::NPrint(Node* child) { 
 	name = "print";
 	children.push_back(child); 
+	nodeType = PRINT;
 }
 
 int NPrint::check() {

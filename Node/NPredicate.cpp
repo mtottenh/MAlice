@@ -10,6 +10,7 @@ NPredicate::NPredicate(Node *left, int op, Node* right) {
 	this->type = BOOLEAN;
 	children.push_back(left);
 	children.push_back(right);
+	nodeType = PRED;
 }
 
 NPredicate::NPredicate(int op, Node* predicate) {
@@ -17,6 +18,7 @@ NPredicate::NPredicate(int op, Node* predicate) {
 	this->type = BOOLEAN;
 	name = "Predicate";
 	children.push_back(predicate);
+	nodeType = PRED;
 }
 
 int NPredicate::resolveType() {

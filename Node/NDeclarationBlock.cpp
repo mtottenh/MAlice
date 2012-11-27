@@ -4,12 +4,14 @@
 NDeclarationBlock::NDeclarationBlock() {
 	name = "Declaration Block";
 	nodeType = DECLARATIONBLOCK;
+	isRootNode = false;
 }
 
 NDeclarationBlock::NDeclarationBlock(Node* child) {
 	children.push_back(child);
 	name = "Declaration Block";
 	nodeType = DECLARATIONBLOCK;
+	isRootNode = false;
 }
 /* TODO Refactor big if satement block.
  */

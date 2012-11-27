@@ -13,6 +13,7 @@ NAssignment::NAssignment(string id, Node* exp) {
 	rval = exp;
 	children.push_back(lval);
 	children.push_back(rval);
+	nodeType = ASSIGNMENT;
 }
 NAssignment::NAssignment(string id, char *exp) {
 	lval = new NIdentifier(id);
@@ -20,6 +21,7 @@ NAssignment::NAssignment(string id, char *exp) {
 	name = "Assignment";
 	children.push_back(lval);
 	children.push_back(rval);
+	nodeType = ASSIGNMENT;
 
 }
 NAssignment::NAssignment(string id, string exp) {
@@ -28,6 +30,7 @@ NAssignment::NAssignment(string id, string exp) {
 	rval = new NStringLit(exp);
 	children.push_back(lval);
 	children.push_back(rval);
+	nodeType = ASSIGNMENT;
 
 }
 /* General cases for Identifier */
@@ -37,7 +40,7 @@ NAssignment::NAssignment(Node* id, Node* exp) {
 	rval = exp;
 	children.push_back(lval);
 	children.push_back(rval);
-
+	nodeType = ASSIGNMENT;
 }
 /* TODO see if this case needs removing */
 NAssignment::NAssignment(Node* id, char *exp) {
@@ -47,13 +50,14 @@ NAssignment::NAssignment(Node* id, char *exp) {
 	rval = new NCharLit(exp);
 	children.push_back(lval);
 	children.push_back(rval);
-
+	nodeType = ASSIGNMENT;
 }
 /* Add cases for assigning things to strings */
 NAssignment::NAssignment(Node* call)
 {
 	name = "Method assignment";
 	children.push_back(call);
+	nodeType = ASSIGNMENT;
 }
 /* TODO Refactor check() *///
 int NAssignment::check() {

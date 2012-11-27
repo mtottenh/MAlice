@@ -6,6 +6,7 @@ NBinOp::NBinOp(Node* left, Node* right, int op) {
 	this->name = "Binary Operator";
 	children.push_back(left);
 	children.push_back(right);
+	nodeType = BINOP;
 }
 
 int NBinOp::getType() {

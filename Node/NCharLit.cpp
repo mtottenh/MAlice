@@ -4,12 +4,14 @@
 NCharLit::NCharLit() {
 	name = "Char";
 	type = resolveType();
+	nodeType = CHARLIT;
 }
 
 NCharLit::NCharLit(char *c) {
 	name = "Char";
 	this->character = *++c;
 	type = resolveType();
+	nodeType = CHARLIT;
 }
 
 int NCharLit::resolveType() {

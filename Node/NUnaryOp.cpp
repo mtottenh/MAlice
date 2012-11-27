@@ -5,6 +5,7 @@ NUnaryOp::NUnaryOp(int op, Node* exp) {
 	name = "UnaryOp"; 
 	this->op = op;
 	children.push_back(exp);
+	nodeType = UNARYOP;
 }
 
 int NUnaryOp::resolveType() {
