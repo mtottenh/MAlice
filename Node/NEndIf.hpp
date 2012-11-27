@@ -1,3 +1,5 @@
+/* Node representing a MAlice 'end if' statement. */
+
 #ifndef _NENDIF_H_
 #define _NENDIF_H_
 
