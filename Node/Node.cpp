@@ -11,6 +11,7 @@ Node::Node() {
 	name = "Node";
 	type = INVALIDTYPE;
 	nodeType = GENERIC_NODE;
+	loc = NULL;
 }
 
 /* As above, but add the child parameter to the list of children. */
@@ -29,8 +30,10 @@ Node::~Node() {
 		delete children[i];
 		children[i] = NULL;
 	}
-
-	
+	if (loc != NULL) {
+		delete loc;
+		loc = NULL;
+	}
 }
 
 /* Public methods. */
@@ -70,7 +73,7 @@ int Node::getChildrenSize() {
 
 void Node::setLocation(FileLocation *location) {
 	this->loc = new FileLocation(location);
-	delete(location);
+	//delete(location);
 }
 
 FileLocation* Node::getLocation() {

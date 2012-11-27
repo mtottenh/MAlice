@@ -7,6 +7,7 @@
 class NIdentifier : public Node {
         public:
         	NIdentifier();
+		~NIdentifier();
 		string getID();
 		NIdentifier(string);
 	      	NIdentifier(char*);                                

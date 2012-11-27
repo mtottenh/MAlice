@@ -23,7 +23,7 @@ NMethodCall::NMethodCall(NIdentifier* id) {
 	type = VOID;
 	this->setLocation(id->getLocation());
 	nodeType = CALL;
-	delete(id);
+//	delete(id);
 }
 
 int NMethodCall::resolveType() {

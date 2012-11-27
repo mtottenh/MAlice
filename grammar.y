@@ -178,7 +178,7 @@ Factor
 	| Value { $$ = $1;}
 	;
 Value
-	: INTEGER {$$ = new NInteger($1); $$->setLocation(generateLocation());}
+	: INTEGER {$$ = new NInteger($1); FileLocation *loc = generateLocation(); $$->setLocation(loc); delete loc;}
 	| Identifier {$$ = $1;}
 	| Call { $$ = $1;}
 	| ArrayVal {$$ = $1;}
@@ -222,7 +222,7 @@ Statement
 	| Conditional { $$ = $1;}
 	| Loop {$$=$1;}
 	| Call Separator {$$ = new NAssignment($1);}
-	| NULLTOK {$$ = new NNullToken(); $$->setLocation(generateLocation());}
+	| NULLTOK {$$ = new NNullToken(); FileLocation *loc = generateLocation(); $$->setLocation(loc); delete loc;}
 	| Increment Separator {$$ = $1;}
 	| Decrement Separator {$$ = $1;}
 	| Codeblock {$$ = $1;}
@@ -286,7 +286,7 @@ Conditional
 
 Maybe
 	: ELSE StatementList EndIf {$$ = $2;}
-	| EndIf {$$ = new NEndIf(); $$->setLocation(generateLocation());}
+	| EndIf {$$ = new NEndIf(); FileLocation *loc = generateLocation(); $$->setLocation(loc); delete loc;}
 	| ELSE MAYBE OBRACKET Predicate CBRACKET THEN StatementList Maybe 
 	{$$ = new NConditional($4,$7,$8);}
 	;
@@ -295,7 +295,7 @@ Codeblock
 	: OBRACE DeclarationList StatementList CBRACE 
 	{ $$ = new NCodeBlock($2, $3);}
 	| OBRACE StatementList CBRACE { $$ = new NCodeBlock($2);}
-	| OBRACE CBRACE {$$ = new NCodeBlock();$$->setLocation(generateLocation()); }
+	| OBRACE CBRACE {$$ = new NCodeBlock();FileLocation *loc = generateLocation(); $$->setLocation(loc); delete loc; }
 	; 
 
 StatementList
@@ -316,14 +316,15 @@ ArrayVal
  
 Identifier
 	: STRING {$$ = new NIdentifier($1);
-				$$->setLocation(generateLocation());}
+				FileLocation *loc = generateLocation(); $$->setLocation(loc); delete loc;}
 	;
 StringLit
 	: STRINGLIT {$$ = new NStringLit($1);
-				$$->setLocation(generateLocation());}
+				FileLocation *loc = generateLocation(); $$->setLocation(loc); delete loc;}
 Char
 	: CHARLIT { $$ = new NCharLit($1); 
-				$$->setLocation(generateLocation()); }
+		    FileLocation *loc = generateLocation();
+				$$->setLocation(loc); delete loc; }
 	;
 EndIf
 	: BECAUSE ALICE WAS UNSURE WHICH {}
@@ -363,11 +364,12 @@ int main(int argc, char* argv[]) {
 	}	
 	/* Create symbol table generator.*/
 	cout << "##### Creating symbol table generator #####" << endl;
-	SymbolTableGenerator* s = new SymbolTableGenerator(root);
+	SymbolTableGenerator s(root);
 
 	/* Generate symbol table. */
 	cout << endl << "##### Generating symbol table #####" << endl;
-	SymbolTable* sym = s->generateTable();
+	s.generateTable();
+
 
 	/* Print the AST if debug flag enabled*/
 	if(argc >= 3 && strcmp(argv[2], "-d") == 0) {
