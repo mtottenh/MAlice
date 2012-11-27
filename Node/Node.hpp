@@ -50,7 +50,7 @@ public:	Node();
 	virtual int getNodeType();
 	int isRoot();
 	virtual int compareTypes(int, int) const;
-	void setLocation(FileLocation*);
+	void setLocation(FileLocation);
 	FileLocation* getLocation();
 	virtual void printErrorHeader(const string&);
 	void addChild(Node*);

@@ -6,6 +6,7 @@ class FileLocation
 public:
 	FileLocation() {}
 	FileLocation(FileLocation*);
+	FileLocation(const FileLocation&);
 	int startLine;
 	int endLine;
 	int startColumn;

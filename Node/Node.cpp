@@ -2,12 +2,11 @@
 #include "TypeDefs.hpp"
 /* TODO Remove this #define*/
 #define UNDEFINED -1
-Node::Node() {
+Node::Node() : loc() {
 	name = "Node";
 	type = INVALIDTYPE;
 	nodeType = GENERIC_NODE;
 	children.clear();
-	loc = NULL;
 }
 
 Node::Node(Node *child) {
@@ -26,10 +25,8 @@ Node::~Node() {
 		delete children[i];
 		children[i] = NULL;
 	}
-	if (loc != NULL) {
-		delete loc;
-		loc = NULL;
-	}
+	delete loc;
+	loc = NULL;
 	if (table.get() != NULL) {
 		table.reset();		
 	}	
@@ -95,15 +92,14 @@ int Node::compareTypes(int t1, int t2) const {
 	return (t1 == t2);
 }
 
-void Node::setLocation(FileLocation *location) 
+void Node::setLocation(FileLocation location) 
 {
 	this->loc = new FileLocation(location);
-	//delete(location);
 }
 
 FileLocation* Node::getLocation()
 {
-	if (children.size() > 0 && children[0] != NULL) {
+	if (children.size() > 0 && children[0] != NULL && loc == NULL) {
 		loc = new FileLocation();
 		Node *front = children.front();
 		Node *back = children.back();	
