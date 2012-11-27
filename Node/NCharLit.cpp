@@ -2,14 +2,14 @@
 #include "TypeDefs.hpp"
 
 NCharLit::NCharLit() {
-	name = "Char";
+	name = "<Character Literal>";
 	type = resolveType();
 	nodeType = CHARLIT;
 }
 
 NCharLit::NCharLit(char *c) {
-	name = "Char";
 	this->character = *++c;
+	name = character;
 	type = resolveType();
 	nodeType = CHARLIT;
 }

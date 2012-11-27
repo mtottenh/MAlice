@@ -42,7 +42,14 @@ int NUnaryOp::check() {
 	/* Valid if the type is a number and the children are valid. */
 	isValid &= Node::check();
 
-	return isValid && (type == TNUMBER || type == REFNUMBER);
+	/* Is the type invalid? */
+	if(type == INVALIDTYPE) {
+		printErrorHeader("unary operator");
+		error_type_mismatch(op, children[0]->getType(), TNUMBER);
+		isValid = 0;
+	}
+
+	return isValid;
 }
 
 int NUnaryOp::checkBoolean() {
