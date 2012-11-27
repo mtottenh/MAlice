@@ -387,7 +387,7 @@ int main(int argc, char* argv[]) {
 	cout << "Memory management" << endl;
 
 	delete root;
-
+	fclose(input);
 	return 0;
 }
 

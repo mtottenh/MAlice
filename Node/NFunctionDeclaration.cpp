@@ -14,7 +14,6 @@ NFunctionDeclaration::NFunctionDeclaration (NIdentifier* ID, Node *block) {
 	children.push_back(block);
 	name = ID->getID(); 
 	nodeType = PROCEDURE;
-	loc = NULL;
 	delete(ID);
 }                                                                        
 /* Delcaring Function with no arguments */
@@ -23,7 +22,6 @@ NFunctionDeclaration::NFunctionDeclaration (NIdentifier* ID, Node *block, int ty
 	name = ID->getID();
 	children.push_back(block);
 	nodeType = FUNC;
-	loc = NULL;
 	delete(ID);
 }
 
@@ -35,7 +33,6 @@ NFunctionDeclaration::NFunctionDeclaration (NIdentifier* ID, Node *params,
 	delete(ID);
 	children.push_back(block);
 	children.push_back(params);
-	loc = NULL;
 	nodeType = FUNC;
 }
 
@@ -43,10 +40,8 @@ NFunctionDeclaration::NFunctionDeclaration (NIdentifier* ID, Node *params,
 NFunctionDeclaration::NFunctionDeclaration (NIdentifier* ID, Node *params,Node *block) {
 	this->type = VOID;
 	name = ID->getID();
-
 	children.push_back(block);
 	children.push_back(params);
-	loc = NULL;
 	nodeType = PROCEDURE;
 	delete ID;
 }
