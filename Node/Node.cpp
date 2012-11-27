@@ -73,10 +73,6 @@ int Node::getChildrenSize() {
 	return children.size();
 }
 
-void Node::setLocation(FileLocation location) 
-{
-	this->loc = new FileLocation(location);
-}
 
 FileLocation* Node::getLocation() {
 	/* Get the location from the first and last child in children. */
@@ -110,11 +106,13 @@ int Node::hasTable() {
 	return table == NULL;
 }
 
-void Node::setLocation(FileLocation *loc) {
+void Node::setLocation(FileLocation loc) {
 	/* Create a new FileLocation given an existing location. */
 	this->loc = new FileLocation(loc);
 }
-
+void Node::setLocation(FileLocation* loc) {
+	this->loc = new FileLocation(loc);
+}
 int Node::print() const {
 	/* Print the node name to stdout. */
 	cout << name << endl;

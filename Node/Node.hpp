@@ -34,13 +34,13 @@ typedef deque<Node *> node_children_t;
 
 
 class Node {
-private:
+protected:
 	/*
 	 * FileLocation class contains details about line number, column number
 	 * etc
 	 */
 	FileLocation *loc;
-protected:
+
 	/* Symbol table maps identifiers to Nodes that this Node references. */
 	boost::shared_ptr<SymbolTable> table;
 
@@ -112,8 +112,8 @@ public:
 	int hasTable();
 
 	/* Sets the location class of the node to a given FileLocation. */
-	void setLocation(FileLocation*);
-
+	void setLocation(FileLocation);
+	void setLocation(FileLocation *);
 	/* Prints the contents of the node. Returns SUCCESS or FAILURE. */
 	virtual int print() const;
 
