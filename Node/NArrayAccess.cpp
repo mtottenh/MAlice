@@ -1,6 +1,8 @@
 #include "NArrayAccess.hpp"
 #include "TypeDefs.hpp"
 
+/* Constructor. */
+
 NArrayAccess::NArrayAccess(NIdentifier* id, Node* indexNode)
 {
 	this->name = id->getID();
@@ -8,37 +10,13 @@ NArrayAccess::NArrayAccess(NIdentifier* id, Node* indexNode)
 	this->indexNode = indexNode;
 	children.push_back(id);
 	children.push_back(indexNode);
-	nodeType = ARRAYACCESS;
 }
+
+/* Public methods. */
 
 int NArrayAccess::getType() {
 	type = resolveType();
 	return type;
-}
-
-int NArrayAccess::resolveType() {
-	/* Return type of the identifier, excluding the 'array' bit. */
-	Node* nodePtr = table->lookup(name);
-	if(nodePtr == NULL) {
-		return INVALIDTYPE;
-	}
-
-	int idType = nodePtr->getType();
-
-	switch(idType) {
-	case REFCHAR:
-		return TCHAR;
-		break;
-	case REFNUMBER:
-		return TNUMBER;
-		break;
-	case REFSTRING:
-		return TSTRING;
-		break;
-	default:
-		return INVALIDTYPE;
-		break;
-	}
 }
 
 int NArrayAccess::check() {
@@ -70,4 +48,31 @@ int NArrayAccess::check() {
 	isValid &= Node::check();
 
 	return isValid;
+}
+
+/* Protected methods. */
+
+int NArrayAccess::resolveType() {
+	/* Return type of the identifier, excluding the 'array' bit. */
+	Node* nodePtr = table->lookup(name);
+	if(nodePtr == NULL) {
+		return INVALIDTYPE;
+	}
+
+	int idType = nodePtr->getType();
+
+	switch(idType) {
+	case REFCHAR:
+		return TCHAR;
+		break;
+	case REFNUMBER:
+		return TNUMBER;
+		break;
+	case REFSTRING:
+		return TSTRING;
+		break;
+	default:
+		return INVALIDTYPE;
+		break;
+	}
 }
