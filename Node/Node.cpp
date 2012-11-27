@@ -34,6 +34,15 @@ Node::~Node() {
 		delete loc;
 		loc = NULL;
 	}
+	if (table != NULL) {
+		if (markedForDeletion) {
+			markedForDeletion = 0;
+		} else {
+			delete table;
+			table = NULL;
+			markedForDeletion = 1;
+		}
+	}
 }
 
 /* Public methods. */

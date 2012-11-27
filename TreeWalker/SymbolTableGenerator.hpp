@@ -6,13 +6,13 @@
 class SymbolTableGenerator {
 private:
 	Node *root;
-	SymbolTable* funcGen(Node*, SymbolTable*);
+	void funcGen(Node*, SymbolTable*);
 	std::deque<Node *> processQueue;
 	Node* pop_front_q();
 public:
 	SymbolTableGenerator(Node*);
-	SymbolTable* nodeTableGen(Node*,SymbolTable*);
-	SymbolTable* generateTable();
+	void nodeTableGen(Node*,SymbolTable*);
+	void generateTable();
 	
 };
 #endif
