@@ -17,12 +17,16 @@ NInteger::NInteger(int value) {
 	this->nodeType = INTEGER;
 }
 
-int NInteger::resolveType() {
-	/* An integer is always a number! */
-	return TNUMBER;
-}
+/* Public methods. */
 
 int NInteger::check() {
 	/* As a primitive base type, an integer node is always valid. */
 	return 1;
+}
+
+/* Protected methods. */
+
+int NInteger::resolveType() {
+	/* An integer is always a number! */
+	return TNUMBER;
 }
