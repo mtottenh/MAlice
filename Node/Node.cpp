@@ -7,12 +7,11 @@
  * Construct a node with no children; set to unknown data type and set as a 
  * generic node.
  */
-Node::Node() {
+Node::Node() : loc() {
 	name = "Node";
 	type = INVALIDTYPE;
 	nodeType = GENERIC_NODE;
 	children.clear();
-	loc = NULL;
 }
 
 /* As above, but add the child parameter to the list of children. */
@@ -32,10 +31,8 @@ Node::~Node() {
 		delete children[i];
 		children[i] = NULL;
 	}
-	if (loc != NULL) {
-		delete loc;
-		loc = NULL;
-	}
+	delete loc;
+	loc = NULL;
 	if (table.get() != NULL) {
 		table.reset();		
 	}	
@@ -76,14 +73,14 @@ int Node::getChildrenSize() {
 	return children.size();
 }
 
-void Node::setLocation(FileLocation *location) {
+void Node::setLocation(FileLocation location) 
+{
 	this->loc = new FileLocation(location);
-	//delete(location);
 }
 
 FileLocation* Node::getLocation() {
 	/* Get the location from the first and last child in children. */
-	if (children.size() > 0 && children[0] != NULL) {
+	if (children.size() > 0 && children[0] != NULL && loc == NULL) {
 		loc = new FileLocation();
 		Node *front = children.front();
 		Node *back = children.back();	
