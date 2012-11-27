@@ -24,9 +24,8 @@ typedef deque<Node *> node_children_t;
 class SymbolTable;
 /* Top level Base Class */
 class Node {
-private:
+protected:
 	FileLocation *loc;
-protected: /* This should be changed to private at some point. */
 	SymbolTable* table;
 	int nodeType;
 	int type;

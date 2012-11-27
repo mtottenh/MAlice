@@ -14,6 +14,7 @@ Node::Node(Node *child) {
 	name = "Node";
 	type = INVALIDTYPE;
 	nodeType = GENERIC_NODE;
+	loc = NULL;
 }
 /* TODO Implement explicit deconstructor*/
 Node::~Node() {
@@ -22,6 +23,8 @@ Node::~Node() {
 		delete children[i];
 		children[i] = NULL;
 	}
+
+	
 }
 
 int Node::print() const {
@@ -83,9 +86,10 @@ int Node::compareTypes(int t1, int t2) const {
 	return (t1 == t2);
 }
 
-void Node::setLocation(FileLocation *loc) 
+void Node::setLocation(FileLocation *location) 
 {
-	this->loc = new FileLocation(loc);
+	this->loc = new FileLocation(location);
+	delete(location);
 }
 
 FileLocation* Node::getLocation()
