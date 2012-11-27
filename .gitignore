@@ -2,7 +2,7 @@
 malice_examples
 #ignore temp files
 *~
-
+output
 #ignore pdf files (just keep source files)
 *.pdf
 
@@ -25,3 +25,17 @@ malice_examples
 #yacc output files
 *.tab.c
 *.output
+.nfs*
+
+#ignore yacc/lex stuff
+*.output
+*.tab.c
+*.yy.c
+*.tab.h
+
+#ignore binaries
+parser
+scanner
+
+#ignore MAlice reference compiler junk
+*.py
