@@ -12,23 +12,14 @@ SymbolTable::SymbolTable(SymbolTable* parentTable) : parent(parentTable) {
 }
 
 /* Public methods. */
-/*
-int SymbolTable::markedForDeletion() {
-	return isMarkedForDeletion;
-}*/
 int SymbolTable::add(string name, Node* node) {
 	Node* currentNodePtr = lookupCurrentScope(name);
 	
 	if (currentNodePtr == NULL) {
 		table[name] = node;
-		/* debug code */
-		string tname = table.find(name)->first;
-		cout << "SYMTABLE: Adding " << tname << endl;
-		/* end debug code */
 		return 1;
 	}
 	else {
-		cout << "SYMTABLE: Did NOT add " << name << endl;
 		return 0;
 	}
 }
@@ -50,7 +41,6 @@ Node* SymbolTable::lookup(const string& name) {
 void SymbolTable::print() {
 	cout << endl << "----- Printing Symbol Table -----" << endl;
  	table_t::iterator it;
-//	it = table.begin();
 	for(it = table.begin(); it != table.end(); ++it) {
 		cout << "Identifier: " << it->first;
 		cout << "\t\t\tNode name: " << it->second->getID() << endl;
