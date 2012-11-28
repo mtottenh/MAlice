@@ -446,16 +446,16 @@ extern FILE * yyin;
 bool error_flag;
 int main(int argc, char* argv[]) {
 	if (argc < 2) {
-		cout << "ERROR: Usage is: " << argv[0] << " FILENAME "
+		cerr << "ERROR: Usage is: " << argv[0] << " FILENAME "
 			<< "[-d]" << endl;
-		return 0;
+		return EXIT_FAILURE;
 	}
 	error_flag = false;
 	/* Open file from argv[1]. Quit if null. */
 	FILE *input = fopen(argv[1],"r");
 	if (input == NULL) {
- 		cout << "ERROR: Could not open file " << argv[1] << endl;
- 		return 0;
+ 		cerr << "ERROR: Could not open file " << argv[1] << endl;
+ 		return EXIT_FAILURE;
 	}
 
 	//Parse the input!
@@ -465,12 +465,12 @@ int main(int argc, char* argv[]) {
 
 	if (root == NULL || node == 1 || error_flag) {
 		cerr << "ERROR: Parse tree broke, stopping compiler" << endl;
-		return -1;
+		return EXIT_FAILURE;
 	}	
 
-	//Walk the AST, creating a symbol table as you go.	
 	SymbolTableGenerator s(root);
-	s.generateTable();
+	/* Generate symbol table. */
+	int isValid = s.generateTable();
 
 	// Print the AST if debug flag enabled
 	if(argc >= 3 && strcmp(argv[2], "-d") == 0) {
@@ -483,13 +483,13 @@ int main(int argc, char* argv[]) {
 	}
 
 	//Check that the AST is semantically valid.
-	root->check();
+	isValid &= root->check();
 
 	//Finish up with a bit of memory management.
 	delete root;
 	fclose(input);
 	yylex_destroy();
-	return 0;
+	return isValid ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 //A map of enumerated values to their relevant types.

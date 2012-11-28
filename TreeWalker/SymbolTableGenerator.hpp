@@ -6,13 +6,13 @@ typedef boost::shared_ptr<SymbolTable> sym_table_ptr;
 class SymbolTableGenerator {
 private:
 	Node *root;
-	void funcGen(Node*, sym_table_ptr);
+	int funcGen(Node*, sym_table_ptr);
 	std::deque<Node *> processQueue;
 	Node* pop_front_q();
 public:
 	SymbolTableGenerator(Node*);
-	void nodeTableGen(Node*,sym_table_ptr);
-	void generateTable();
+	int nodeTableGen(Node*,sym_table_ptr);
+	int generateTable();
 	
 };
 #endif
