@@ -151,7 +151,7 @@ int Node::check() {
 	node_children_t::iterator it;
 
 	for(it = children.begin(); it != children.end(); ++it) {
-		isValid = (*it)->check();
+		isValid &= (*it)->check();
 	}
 
 	return isValid;

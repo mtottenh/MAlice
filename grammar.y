@@ -368,7 +368,7 @@ int main(int argc, char* argv[]) {
 
 	/* Generate symbol table. */
 	cout << endl << "##### Generating symbol table #####" << endl;
-	s.generateTable();
+	int isValid = s.generateTable();
 
 
 	/* Print the AST if debug flag enabled*/
@@ -382,13 +382,11 @@ int main(int argc, char* argv[]) {
 	}
 
 	cout << endl << "##### Semantic Analysis (check()) #####" << endl;
-	root->check();
-
-	cout << "Memory management" << endl;
+	isValid &= root->check();
 
 	delete root;
 	fclose(input);
-	return 0;
+	return isValid ? EXIT_SUCCESS : EXIT_FAILURE;
 }
 
 int initTypeMap() { 

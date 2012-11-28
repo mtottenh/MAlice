@@ -63,40 +63,47 @@ int NFunctionDeclaration::getType() {
 int NFunctionDeclaration::check() {
     int isValid = 1;
     Node *statlist; 
-    
+    unsigned int numNReturn;
+    /*initialize a list of pointers to NReturn nodes, we will use this later*/
+    std::deque<Node *> returnList;
+    returnList.clear();
 
     /* The codeblock is always the 1st child */
     Node* codeBlock = children[0];
-    int numStatements = codeBlock->getChildrenSize();
+    int numChildren = codeBlock->getChildrenSize();
 
     /* Empty functions are invalid*/
-    if (numStatements == 0 && nodeType == FUNC) {
+    if (numChildren == 0 && nodeType == FUNC) {
         isValid = 0;
-    } else {
-        /* The statement list is always the last child of an NCodeBlock */   
-        statlist = codeBlock->getChild(numStatements - 1);
+    } 
+    /* The statement list is always the last child of an NCodeBlock */   
+    statlist = codeBlock->getChild(numChildren - 1);
 
-        /* Generate a list of NReturn Nodes */
-        std::deque<Node *> returnList = returnNodeList(statlist); 
-        unsigned int size = returnList.size();
-
-        /* Loop through the NReturns and check that the types match*/
-        if (nodeType == FUNC) {
-            for (unsigned int i = 0; i < size; i++) {
-                if( !(returnList[i]->getType() == type)) {
-                    printErrorHeader("function declaration");
-                    error_return_type(name, type, returnList[i]->getType());
-                    isValid = 0;
-                }
-            }
-            /* Also check that there are some NReturn nodes*/
-            isValid &= !(size == 0);
-        } else {
-            /* Procedures are only valid if they contian no NReturn nodes*/
-            isValid &= (size == 0);
-        }
+    /* Generate a list of NReturn Nodes */
+    if (statlist != NULL ) {
+        returnList = returnNodeList(statlist); 
     }
 
+    numNReturn = returnList.size();
+
+    /* Loop through the NReturns and check that the types match*/
+    if (nodeType == FUNC) {
+        for (unsigned int i = 0; i < numNReturn; i++) {
+    
+            if( !(returnList[i]->getType() == type)) {
+                printErrorHeader("function declaration");
+                error_return_type(name, type, returnList[i]->getType());
+                isValid = 0;
+            }
+    
+       }
+            /* Also check that there are some NReturn nodes*/
+            isValid &= !(numNReturn == 0);
+    } else {
+            /* Procedures are only valid if they contian no NReturn nodes*/
+             isValid &= (numNReturn == 0);
+    }
+    
     /* Print Errors if we encountered any */
     if (!isValid) {
         if (nodeType == FUNC) {
@@ -114,74 +121,46 @@ int NFunctionDeclaration::check() {
 }
 
 std::deque<Node *>  NFunctionDeclaration::returnNodeList(Node* statlist) {
-    std::deque<Node *> returnList, leftList, rightList, conditionalQ;
-    if (statlist == NULL) {
-        returnList.clear();
-        return returnList;
-
-    }
+    std::deque<Node *> returnList, childList, conditionalQ;
     unsigned int size = statlist->getChildrenSize();
-
-    unsigned int sizeRight, sizeLeft;
-    Node *left, *right;
-
-    if ( size == 0) {
-        returnList.clear();
-        return returnList;
-    }
+    unsigned int numChild;
+    Node *child, *nodePtr;
+    returnList.clear();
 
     for (unsigned int i = 0; i < size; i++ ) {
-        switch(statlist->getChild(i)->getNodeType()) {
+        child = statlist->getChild(i);
+        switch(child->getNodeType()) {
             case RETURN:
-                returnList.push_back(statlist->getChild(i));
+                returnList.push_back(child);
                 break;
+
             case CONDITIONAL:
-                /* Left branch always has nodetype STATMENTLIST*/
-                left = statlist->getChild(i)->getChild(1);
-                leftList = returnNodeList(left);
-                sizeLeft  = leftList.size();
-                for( unsigned int j = 0; j < sizeLeft; j++) {
-                    returnList.push_back(leftList[j]);
-                }
-
-                /* right could have nodetype CONDITIONAL!*/
-                
-                right = statlist->getChild(i)->getChild(2);
-                if (right->getNodeType() == STATLIST) {
-
-                    rightList = returnNodeList(right);
-                    sizeRight = rightList.size();
-                    for( unsigned int j = 0; j < sizeLeft; j++) {
-                        returnList.push_back(rightList[j]);
-                    }
-                } 
-                if (right->getNodeType() == CONDITIONAL) {
-                    conditionalQ.push_back(right);
+                    conditionalQ.push_back(child);
                     while(!conditionalQ.empty()) {
-                        Node* temp = conditionalQ.front();
+                        nodePtr = conditionalQ.front();
                         conditionalQ.pop_front();
-                        if (temp->getNodeType() == CONDITIONAL) {
+                        if (nodePtr->getNodeType() == CONDITIONAL) {
                             /* Left branch always has nodetype STATMENTLIST*/
-                            left = temp->getChild(1);
-                            leftList = returnNodeList(left);
-                            sizeLeft  = leftList.size();
-                            for( unsigned int j = 0; j < sizeLeft; j++) {
-                                returnList.push_back(leftList[j]);
-                            }
-                            conditionalQ.push_back(temp->getChild(2));
+                            childList = returnNodeList(nodePtr->getChild(1));
+                            conditionalQ.push_back(nodePtr->getChild(2));
+                        } else {
+                            childList = returnNodeList(nodePtr);
                         }
+                         numChild  = childList.size();
+                         for( unsigned int j = 0; j < numChild; j++) 
+                                returnList.push_back(childList[j]);
                     }
-                }
                 break;
+
             case LOOP:
             case CODEBLOCK:
-                if (statlist->getChild(i)->getChildren().size() > 0) {
-                    left = statlist->getChild(i)->getChildren().back();
+                if (child->getChildrenSize() > 0) {
+                    nodePtr = child->getChildren().back();
                 }
-                leftList = returnNodeList(left);
-                sizeLeft =  leftList.size();
-                for( unsigned int j = 0; j < sizeLeft; j++) {
-                    returnList.push_back(leftList[j]);
+                childList = returnNodeList(nodePtr);
+                numChild =  childList.size();
+                for( unsigned int j = 0; j < numChild; j++) {
+                    returnList.push_back(childList[j]);
                 }
                 break;
         }

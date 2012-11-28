@@ -9,7 +9,8 @@ SymbolTableGenerator::SymbolTableGenerator(Node* tree) {
 }
 
 
-void SymbolTableGenerator::generateTable() {
+int SymbolTableGenerator::generateTable() {
+    int isValid = 1;
 	sym_table_ptr table (new SymbolTable());
 	root->addTable(table);
 	std::deque<Node*> children = root->getChildren();
@@ -17,11 +18,13 @@ void SymbolTableGenerator::generateTable() {
 	while(!children.empty()) {
 		node = children.front();
 		children.pop_front();
-		nodeTableGen(node,table);
+		isValid &= nodeTableGen(node,table);
 	}
+    return isValid;
 }
 
-void SymbolTableGenerator::nodeTableGen(Node *node, sym_table_ptr table) {
+int SymbolTableGenerator::nodeTableGen(Node *node, sym_table_ptr table) {
+    int isValid = 1;
 	int nodeType = node->getNodeType();
 	Node* nodePtr = NULL;
 	std::deque<Node *> children = node->getChildren();
@@ -30,7 +33,8 @@ void SymbolTableGenerator::nodeTableGen(Node *node, sym_table_ptr table) {
 	if(!node->addTable(table)) {
 		cerr << "ERROR: Unable to  update node with symbol table pointer" 
 		     << endl;
-		return ;
+        isValid = 0;
+		return isValid;
 	}
 	
 	switch(nodeType) {
@@ -41,9 +45,10 @@ void SymbolTableGenerator::nodeTableGen(Node *node, sym_table_ptr table) {
 				table->add(node->getID(), node);
 			} else {
 				error_var_exists(node->getID());
-				return ;
+                isValid = 0;
+				return isValid;
 			}	
-			funcGen(node,table);
+			isValid &=funcGen(node,table);
 			break;
 
 		case VARDEC:
@@ -52,9 +57,10 @@ void SymbolTableGenerator::nodeTableGen(Node *node, sym_table_ptr table) {
 				table->add(node->getID(), node);
 			} else {
 				error_var_exists(node->getID());
+                isValid = 0;
 			}	
 			for (unsigned int i = 0; i < size; i++) {
-				nodeTableGen(children[i],table);		
+				isValid &= nodeTableGen(children[i],table);		
 			}
 
 			break;
@@ -66,26 +72,27 @@ void SymbolTableGenerator::nodeTableGen(Node *node, sym_table_ptr table) {
 			table = boost::shared_ptr<SymbolTable> (new SymbolTable(table.get()));
 		default:
 			for (unsigned int i = 0; i < size; i++) {
-				nodeTableGen(children[i],table);		
+				isValid &= nodeTableGen(children[i],table);		
 			}
 			break;
 	}
-	return ;
+	return isValid;
 }
 
 
-void SymbolTableGenerator::funcGen(Node* func, sym_table_ptr table) {
+int SymbolTableGenerator::funcGen(Node* func, sym_table_ptr table) {
+    int isValid = 1;
 	std::deque<Node *> children = func->getChildren();
 	unsigned int size = children.size();
 	/*Functions with no paramaters*/
 	if (size == 1) {
-		nodeTableGen(children[0],table);
+		isValid &= nodeTableGen(children[0],table);
 	} else {
 		/*Deal with paramaters */
 		Node* codeBlock = children[0];
 		Node* paramBlock = children[1];
 		sym_table_ptr localScope (new SymbolTable(table.get()));
-		nodeTableGen(paramBlock,localScope);
+		isValid &= nodeTableGen(paramBlock,localScope);
 		
 		/*Deal with the function body*/
 		children = codeBlock->getChildren();
@@ -97,15 +104,15 @@ void SymbolTableGenerator::funcGen(Node* func, sym_table_ptr table) {
 		if (size > 1) {
 			decList = children[0];
 			statList = children[1];
-			nodeTableGen(decList,localScope);
+			isValid &= nodeTableGen(decList,localScope);
 		} else {
 			statList = children[0];
 		}
 			
-		nodeTableGen(statList,localScope);
+		isValid &= nodeTableGen(statList,localScope);
 	}
 
-	return  ;	
+	return  isValid;	
 }
 
 
