@@ -10,7 +10,7 @@ void error_keyword(const string& keyword) {
 }
 
 void error_var_not_found(const string& varName) {
-	cerr << "ERROR: Identifier, variable, literal or method '" << varName << 
+	cerr << "ERROR: Identifier, variable or method '" << varName << 
 		"' not found in scope." << endl;
 }
 
@@ -104,4 +104,9 @@ void error_return_type(const string& name, int given, int expected) {
 	cerr << "ERROR: Function '" << name << "' is declared as type '"
 		<< typemap_get(given) << "' but attempts to return a value of "
 		<< "type '" << typemap_get(expected) << "'." << endl;
+}
+
+void error_return_ignored(const string& name) {
+	cerr << "ERROR: Assignment ignores return value from '" << name
+		<< "' function." << endl;
 }

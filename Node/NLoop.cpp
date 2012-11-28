@@ -1,13 +1,15 @@
 #include "NLoop.hpp"
 #include "TypeDefs.hpp"
 
-NLoop::NLoop(Node* predicate, Node* statementList) 
-{
-	name = "Loop";
+/* Constructors. */
+NLoop::NLoop(Node* predicate, Node* statementList) {
+	this->name = "Loop";
+	this->nodeType = LOOP;
 	children.push_back(predicate);
 	children.push_back(statementList);
-	nodeType = LOOP;
 }
+
+/* Public methods. */
 
 int NLoop::check() {
 	int isValid = 1;

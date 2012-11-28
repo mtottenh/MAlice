@@ -1,3 +1,5 @@
+/* Node class for a MAlice array access. */
+
 #ifndef _NARRAYACCESS_H_
 #define _NARRAYACCESS_H_
 

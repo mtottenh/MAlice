@@ -1,48 +1,59 @@
 #include "NDeclarationBlock.hpp"
 #include "TypeDefs.hpp"
 
+/* Constructors. */
+
 NDeclarationBlock::NDeclarationBlock() {
-	name = "Declaration Block";
-	nodeType = DECLARATIONBLOCK;
-	isRootNode = false;
+	this->name = "Declaration Block";
+	this->nodeType = DECLARATIONBLOCK;
+	this->isRootNode = false;
 }
 
 NDeclarationBlock::NDeclarationBlock(Node* child) {
 	children.push_back(child);
-	name = "Declaration Block";
-	nodeType = DECLARATIONBLOCK;
-	isRootNode = false;
+	this->name = "Declaration Block";
+	this->nodeType = DECLARATIONBLOCK;
+	this->isRootNode = false;
 }
-/* TODO Refactor big if satement block.
- */
+
+/* Public methods. */
+
 int NDeclarationBlock::check() {
 	int isValid = 1;
 
-	/* Check for 'hatta' entry point, if this is the topmost root node. */
+	/* 
+	 * Check for 'hatta' entry point, if this is the topmost root node.
+	 * Delegate to checkRoot().
+	 */
 	if(isRootNode) {
-		Node* nodePtr = table->lookup("hatta");
-
-		if(nodePtr == NULL) {
-			error_no_entry();
-			isValid = 0;
-		}
-
-		/* We have a 'hatta', but is it a procedure? */
-		else if(nodePtr->getNodeType() == FUNC) {
-			error_entry_not_proc();
-			isValid = 0;
-		}
-
-		/* No hatta. Sad face :( */
-		else if (nodePtr->getNodeType() != PROCEDURE) {
-			error_no_entry();
-			isValid = 0;
-		}
+		isValid &= checkRoot();
 	}
 
-	/* Now proceed as a generic node. */
+	/* Check the children via generic check function. */
 	isValid &= Node::check();
 
 	return isValid;
 }
 
+/* Private methods. */
+
+int NDeclarationBlock::checkRoot() {
+	int isValid = 1;
+
+	/* Look for hatta in the symbol table. */
+	Node* nodePtr = table->lookup("hatta");
+
+	/* Hatta, are you thereeee? */
+	if(nodePtr == NULL) {
+		error_no_entry();
+		isValid = 0;
+	}
+
+	/* Hatta is there! But it's not a procedure. Sad face :( */
+	else if (nodePtr->getNodeType() != PROCEDURE) {
+		error_no_entry();
+		isValid = 0;
+	}
+
+	return isValid;
+}

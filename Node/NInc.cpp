@@ -1,25 +1,20 @@
 #include "NInc.hpp"
 #include "TypeDefs.hpp"
 
+/* Constructors. */
+
 NInc::NInc(Node* child) {
-	name = "Increment"; 
-	children.push_back(child);
-	nodeType = INC;
+	this->name = "Increment"; 
+	children.push_back(child); /* Push the node that is to be incremented. */
+	this->nodeType = INC;
 }
 
-int NInc::resolveType() {
-	int childType = children[0]->getType();
-
-	if(childType == TNUMBER || childType == REFNUMBER) {
-		return childType;
-	}
-	else {
-		return INVALIDTYPE;
-	}
-}
+/* Public methods. */
 
 int NInc::check() {
 	int isValid;
+
+	/* Get the type of the node. */
 	this->type = resolveType();
 
 	/* Is this the expected type (number)? */
@@ -33,4 +28,21 @@ int NInc::check() {
 	isValid &= children[0]->check();
 
 	return isValid;
+}
+
+/* Protected methods. */
+
+int NInc::resolveType() {
+	/* Get the child's type. */
+	int childType = children[0]->getType();
+
+	/* Is it a number or a reference to a number? If so, this is very good. */
+	if(childType == TNUMBER || childType == REFNUMBER) {
+		return childType;
+	}
+
+	/* ... this isn't really good. Invalid type. */
+	else {
+		return INVALIDTYPE;
+	}
 }

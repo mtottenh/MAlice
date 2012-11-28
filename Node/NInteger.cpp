@@ -1,22 +1,32 @@
 #include "NInteger.hpp"
 #include "TypeDefs.hpp"
 
+/* Constructors. */
 NInteger::NInteger() {
-	name = "Integer";
-	nodeType = INTEGER;
+	this->name = "Integer";
+	this->nodeType = INTEGER;
 }
 
 NInteger::NInteger(int value) {
 	this->value = value;
 	this->type = resolveType();
-	name = boost::lexical_cast<string>(value);
-	nodeType = INTEGER;
+
+	/* Cast the int to a string to get a representation of its value. */
+	this->name = boost::lexical_cast<string>(value);
+
+	this->nodeType = INTEGER;
 }
 
-int NInteger::resolveType() {
-	return TNUMBER;
-}
+/* Public methods. */
 
 int NInteger::check() {
+	/* As a primitive base type, an integer node is always valid. */
 	return 1;
+}
+
+/* Protected methods. */
+
+int NInteger::resolveType() {
+	/* An integer is always a number! */
+	return TNUMBER;
 }

@@ -1,44 +1,57 @@
-#ifndef ___NIDENTIFIER__
-#define ___NIDENTIFIER__
-
 #include "NIdentifier.hpp"
 #include <string.h>
 #include "TypeDefs.hpp"
-NIdentifier::NIdentifier() 
-{ 
+
+/* Constructors. */
+
+NIdentifier::NIdentifier() { 
 	name = "ID";
 	nodeType = IDENTIFIER;
 	children.clear();
-}                                           
-string NIdentifier::getID() {
-	return name;
 }
+                                          
 NIdentifier::NIdentifier(char *name) { 
 	this->name = name;
 	nodeType = IDENTIFIER;
 }
+
 NIdentifier::NIdentifier(string name) {
 	this->name = name;
 	nodeType = IDENTIFIER;
 }
-/* Checking an identifier is juts checking whether it is declared in scope 
- *  TODO Double check if this needs more too it or not
- */
+
+/* Public methods. */
+
+string NIdentifier::getID() {
+	return name;
+}
+
+/*  TODO Double check if this needs more too it or not */
 int NIdentifier::check() {
-	if (table->lookup(name) != NULL) 
+	/* Does the identifier exist in the table? Valid if this is the case. */
+	if (table->lookup(name) != NULL) {
 		return 1;
+	}
+
 	return 0;
 }
 
 int NIdentifier::getType() {
-/* TODOO remove table === NULL checkk */
-	if (table == NULL) 
+	/* Invalid if we have an empty/null table. */
+	if (table == NULL) {
 		return INVALIDTYPE;
+	}
+
 	Node* variable = table->lookup(name);
-	if ( variable != NULL)
+
+	/* Does an entry exist in the symbol table? Return that type if so. */
+	if ( variable != NULL) {
 		return variable->getType();
-	else
+	}
+
+	/* Invalid type if no such entry exists. */
+	else {
 		return INVALIDTYPE;
+	}
 }
-#endif
 

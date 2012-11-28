@@ -2,12 +2,15 @@
 #include "TypeDefs.hpp"
 #include "../Errors/TypeMap.hpp"
 
+/* Constructors */
+
 NAssignment::NAssignment() {
 	name = "Assignment";
 }
 
-/* special cases for VarDeclarationAssign */
+/* Special cases for VarDeclarationAssign. */
 NAssignment::NAssignment(string id, Node* exp) {
+	/* id = expression. */
 	name = "Assignment";
 	lval = new NIdentifier(id);
 	rval = exp;
@@ -15,7 +18,9 @@ NAssignment::NAssignment(string id, Node* exp) {
 	children.push_back(rval);
 	nodeType = ASSIGNMENT;
 }
+
 NAssignment::NAssignment(string id, char *exp) {
+	/* id = STRING */
 	lval = new NIdentifier(id);
 	rval = new NCharLit(exp);
 	name = "Assignment";
@@ -25,6 +30,7 @@ NAssignment::NAssignment(string id, char *exp) {
 
 }
 NAssignment::NAssignment(string id, string exp) {
+	/* id = STRING */
 	lval = new NIdentifier(id);
 	name = "Assignment";
 	rval = new NStringLit(exp);
@@ -33,8 +39,10 @@ NAssignment::NAssignment(string id, string exp) {
 	nodeType = ASSIGNMENT;
 
 }
-/* General cases for Identifier */
+
+/* General case for identifier. */
 NAssignment::NAssignment(Node* id, Node* exp) {
+	/* id = EXPRESSION */
 	lval = id;
 	name = "Assignment";
 	rval = exp;
@@ -42,45 +50,29 @@ NAssignment::NAssignment(Node* id, Node* exp) {
 	children.push_back(rval);
 	nodeType = ASSIGNMENT;
 }
-/* TODO see if this case needs removing */
-NAssignment::NAssignment(Node* id, char *exp) {
-	lval = id;
-	name = "Assignment";
-	cerr << "debuging chars vs strings: ";
-	rval = new NCharLit(exp);
-	children.push_back(lval);
-	children.push_back(rval);
-	nodeType = ASSIGNMENT;
-}
-/* Add cases for assigning things to strings */
-NAssignment::NAssignment(Node* call)
-{
+
+/* Method call. */
+NAssignment::NAssignment(Node* call) {
 	name = "Method assignment";
 	children.push_back(call);
 	nodeType = ASSIGNMENT;
 }
-/* TODO Refactor check() *///
+
+/* Public methods. */
+
 int NAssignment::check() {
 	int isValid = 1;
 
-	if (children.size() == 1)
-	{
-		isValid &= children[0]->check();
-
-		//TODO Null check
-		Node* nodePtr = table->lookup(children[0]->getID());
-
-		//A single method call without an assignment
-		if(nodePtr->getNodeType() != PROCEDURE) {
-			//TODO Implement proper error function here
-			printErrorHeader("method call");
-			cerr << "Function return value ignored: " <<
-				nodePtr->getID() << endl;
-			isValid = 0;
-		}
+	/*
+	 * If children.size() == 1, we have a methdod call.
+	 * Delegate checking to auxiliary checkMethod() procedure. 
+	 */
+	if (children.size() == 1) {
+		return checkMethod();	
 	}
-	else
-	{
+
+	/* Otherwise, we have a standard assignment... */
+	else {
 		string lvalID = lval->getID();
 	
 		/* Check both sides of the assignment. */
@@ -100,8 +92,8 @@ int NAssignment::check() {
 			int lhsType = nodePtr->getType();
 	
 			/*
-			 * If we have an array, we need the type of the array access
-			 * node as opposed to the array declaration node.
+			 * If we have an array, we need the type of the array 
+			 * access node as opposed to the array declaration node.
 			 */
 			if(lhsType == REFNUMBER || lhsType == REFCHAR
 					|| lhsType == REFSTRING) {
@@ -112,16 +104,47 @@ int NAssignment::check() {
 			if (rval->getNodeType() == INPUTNODE) {
 				return isValid;
 			}
+
 			/*
-			 * Does the type of the var match the type of the expression's
-			 * RHS?
+			 * Does the type of the var match the type of the 
+			 * expression's RHS?
 			 */
 			if(!compareTypes(lhsType, rhsType)) {
 				printErrorHeader("assignment");
 				error_type_mismatch(lvalID, lhsType, rhsType);
 			}
 			
+		}
 	}
+
+	return isValid;
+}
+
+/* Private methods. */
+
+int NAssignment::checkMethod() {
+	int isValid = 1;
+
+	/* Check the child. */
+	isValid &= children[0]->check();
+
+	/* Lookup the method in the symbol table. */
+	string methodName = children[0]->getID();
+	Node* nodePtr = table->lookup(methodName);
+
+	/* If we can't find the method, error. */
+	if(nodePtr == NULL) {
+		printErrorHeader("method call");
+		error_var_not_found(methodName);
+		isValid = 0;
 	}
+	
+	/* Otherwise, check that we have a function (not a procedure) */
+	else if(nodePtr->getNodeType() != PROCEDURE) {
+		printErrorHeader("assignment");
+		error_return_ignored(methodName);
+		isValid = 0;
+	}
+
 	return isValid;
 }
