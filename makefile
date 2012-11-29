@@ -108,8 +108,19 @@ NUnaryOp.o: Node/NUnaryOp.cpp
 NVariableDeclaration.o: Node/NVariableDeclaration.cpp 
 	$(CC) $(CFLAGS) $^ -c -o $@ -lfl
 
-FileLocation.o: Node/FileLocation.cpp
+FileLocation.o: FileLocation/FileLocation.cpp
 	$(CC) $(CFLAGS) $^ -c -o $@ -lfl
+
+x86Visitor.o : CodeGeneration/x86Visitor.cpp
+	$(CC) $(CFLAGS) $^ -c -o $@ -lfl
+
+
+
+
+
+
+
+
 
 clean: 
 	rm -f *.o
