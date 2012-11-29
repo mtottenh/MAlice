@@ -3,9 +3,9 @@
 #include <iostream>
 #include <cstdarg>
 #include "Node/NodeIncludes.hpp"
-#include "TreePrinter/TreePrinter.hpp"
+#include "TreeUtils/TreePrinter.hpp"
 #include "Errors/TypeMap.hpp"
-#include "TreeWalker/SymbolTableGenerator.hpp"
+#include "TreeUtils/SymbolTableGenerator.hpp"
 extern int yylex();
 extern void yylex_destroy();
 extern void yyerror (char *s, ...);

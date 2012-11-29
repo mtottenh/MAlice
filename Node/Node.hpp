@@ -12,7 +12,7 @@
 #include "../Errors/SemanticErrors.hpp"
 #include "../SymbolTable/SymbolTable.hpp"
 
-#include "FileLocation.hpp"
+#include "../FileLocation/FileLocation.hpp"
 
 /*
  * Defines for method returns - it is (apparently) bad practice to use
