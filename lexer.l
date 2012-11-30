@@ -5,6 +5,7 @@
 #include <string>
 #include <stdlib.h>
 #include "Node/NodeIncludes.hpp"
+#include "y.tab.h"
 #define YY_NO_INPUT
 
 extern void yyerror(char *s, ...);

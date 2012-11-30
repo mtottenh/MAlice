@@ -1,6 +1,6 @@
 #include "Node.hpp"
 #include "TypeDefs.hpp"
-
+#include "../CodeGeneration/ASTVisitor.hpp"
 /* Constructors/destructors. */
 
 /*
@@ -132,7 +132,7 @@ void Node::printErrorHeader(const string& context) {
 }
 
 int Node::addTable(boost::shared_ptr<SymbolTable> t) {
-	if(t == NULL) {
+	if(t.get() == NULL) {
 		return FAILURE;
 	}
 	else {
@@ -162,8 +162,20 @@ int Node::compareTypes(int t1, int t2) const {
 	return (t1 == t2);
 }
 
+void Node::accept(ASTVisitor* v) {
+    v->visit(this);
+    unsigned int numChildren = this->getChildrenSize();
+    for (unsigned int i = 0; i < numChildren; i++) {
+        this->getChild(i)->accept(v);
+    }
+}
+
+
 /* Protected methods. */
 
 int Node::resolveType() {
 	return type;
 }	
+
+
+

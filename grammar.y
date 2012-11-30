@@ -6,6 +6,8 @@
 #include "TreeUtils/TreePrinter.hpp"
 #include "Errors/TypeMap.hpp"
 #include "TreeUtils/SymbolTableGenerator.hpp"
+#include "CodeGeneration/ASTVisitor.hpp"
+#include "CodeGeneration/x86Visitor.hpp"
 extern int yylex();
 extern void yylex_destroy();
 extern void yyerror (char *s, ...);
@@ -484,9 +486,11 @@ int main(int argc, char* argv[]) {
 
 	//Check that the AST is semantically valid.
 	isValid &= root->check();
-
+    ASTVisitor *v = new x86Visitor();
+    root->accept(v);
 	//Finish up with a bit of memory management.
 	delete root;
+    delete v;
 	fclose(input);
 	yylex_destroy();
 	return isValid ? EXIT_SUCCESS : EXIT_FAILURE;

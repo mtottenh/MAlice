@@ -13,7 +13,6 @@
 #include "../SymbolTable/SymbolTable.hpp"
 
 #include "../FileLocation/FileLocation.hpp"
-
 /*
  * Defines for method returns - it is (apparently) bad practice to use
  * EXIT_SUCCESS and EXIT_FAILURE from stdlib.
@@ -29,7 +28,7 @@ using namespace std;
  */
 class Node;
 class SymbolTable;
-
+class ASTVisitor;
 typedef deque<Node *> node_children_t;
 
 
@@ -150,6 +149,10 @@ public:
 
 	/* TODO Remove this function. */
 	virtual int compareTypes(int, int) const;
+
+    /* Accept function used for code generation*/
+    virtual void accept(ASTVisitor*);
+
 };
 
 #endif
