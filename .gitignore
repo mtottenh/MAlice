@@ -34,8 +34,7 @@ output
 *.tab.h
 
 #ignore binaries
-parser
-scanner
+compile
 
 #ignore MAlice reference compiler junk
 *.py
