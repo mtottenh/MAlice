@@ -1,0 +1,7 @@
+
+
+1. Create accept methods for every single node.
+    - the most basic of these methods should just call v->visit(this)
+    - however we need to work out the logic for calling children on certain
+      nodes. vs just using local paramaters.
+

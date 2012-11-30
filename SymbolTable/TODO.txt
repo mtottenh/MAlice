@@ -1,0 +1,5 @@
+1. Introduce a name field -> EASIEST AS AN INTEGER!
+2. make the constructor check the paramaters name field
+   and make it set its name feild = paramater.name + 1;
+3. this way if you have nested functions the label in code generation can just
+be,     identifier << table.name << ":"

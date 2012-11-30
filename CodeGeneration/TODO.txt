@@ -1,0 +1,17 @@
+1. Decide on how the visitor will pass-back / create the machine code.
+        - perhaps we just have a string/stringstream in each concrete visitor
+          which we just concat too with <<  and create a public getprogram()
+          which just returns that string?
+2. Implement visit() for all node types.
+3. implement some basic peephole optimisation.
+4. Implement fileio for the finished program string
+
+5 test with as and ld
+
+
+6. EXTENSION:
+        - we need to decide what we are going to do!!!
+        - Creatinga cross compiler:
+                    - MIPS
+                    - ARMv5/6 
+        - Optimisations

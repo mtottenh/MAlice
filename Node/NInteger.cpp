@@ -1,4 +1,5 @@
 #include "NInteger.hpp"
+#include <boost/lexical_cast.hpp>
 #include "TypeDefs.hpp"
 
 /* Constructors. */
