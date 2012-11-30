@@ -30,7 +30,7 @@ int SymbolTableGenerator::nodeTableGen(Node *node, sym_table_ptr table) {
 	std::deque<Node *> children = node->getChildren();
 	unsigned int size = children.size();
 
-	if(node->addTable(table)) {
+	if(!node->addTable(table)) {
 		cerr << "ERROR: Unable to  update node with symbol table pointer" 
 		     << endl;
         isValid = 0;

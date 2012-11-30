@@ -1,5 +1,6 @@
 #include "NVariableDeclaration.hpp"
 #include "TypeDefs.hpp"
+#include "../CodeGeneration/ASTVisitor.hpp"
 
 NVariableDeclaration::NVariableDeclaration(NIdentifier* id, int type) {
 	this->type = type;
@@ -33,4 +34,8 @@ int NVariableDeclaration::getArrayType(int type) {
 		return INVALIDTYPE;
 		break;
 	}
+}
+
+void NVariableDeclaration::accept(ASTVisitor* v) {
+    v->visit(this);
 }

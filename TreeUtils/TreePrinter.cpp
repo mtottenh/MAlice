@@ -29,7 +29,7 @@ int treePrinter::print() {
 			cout << "~~~~~ New node! ~~~~~" << endl;	
 			cout << "Type: " << typemap_get(temp->getType()) 
 			     <<  "\tName : " << temp->getID() << endl;
-			if (temp->hasTable())
+			if (!temp->hasTable())
 				temp->printTable();
 			else
 				cerr << "ERROR: this->table = 0x0 " << endl;

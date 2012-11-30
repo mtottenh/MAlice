@@ -486,7 +486,7 @@ int main(int argc, char* argv[]) {
 
 	//Check that the AST is semantically valid.
 	isValid &= root->check();
-    ASTVisitor *v = new x86Visitor();
+    x86Visitor *v = new x86Visitor();
     root->accept(v);
 	//Finish up with a bit of memory management.
 	delete root;
