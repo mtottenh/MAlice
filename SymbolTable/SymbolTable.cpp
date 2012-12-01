@@ -5,10 +5,11 @@
 /* Constructors and destructors. */
 SymbolTable::SymbolTable() : parent(NULL) {
 	/* Do nothing! */
+    table_id = 1;
 }
 
 SymbolTable::SymbolTable(SymbolTable* parentTable) : parent(parentTable) {
-	/* Do nothing! */
+    this->table_id = parentTable->getTableID() + 1;
 }
 
 /* Public methods. */
@@ -39,7 +40,7 @@ Node* SymbolTable::lookup(const string& name) {
 }
 
 void SymbolTable::print() {
-	cout << endl << "----- Printing Symbol Table -----" << endl;
+	cout << endl << "----- TABLE ID " << table_id << " -----" << endl;
  	table_t::iterator it;
 	for(it = table.begin(); it != table.end(); ++it) {
 		cout << "Identifier: " << it->first;
@@ -64,4 +65,13 @@ Node* SymbolTable::lookupCurrentScope(const string& name) {
 
 int SymbolTable::parentExists() {
 	return !(parent == NULL);
+}
+
+
+void SymbolTable::setTableID(int id) {
+    this->table_id = id;
+}
+
+int SymbolTable::getTableID() {
+    return table_id;
 }
