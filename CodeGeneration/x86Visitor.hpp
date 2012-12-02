@@ -42,7 +42,7 @@ public:
     void deallocVar();
     void ret();
     
-    string assembledProgram();
+    string getAssembly();
 };
 
 #endif

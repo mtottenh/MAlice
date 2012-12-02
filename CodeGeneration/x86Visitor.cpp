@@ -33,7 +33,7 @@ void x86Visitor::visit(NConditional *node) {
 void x86Visitor::visit(NDec *node) {
 
 }
-
+/* NDeclarationBlock is our 'entry' point */
 void x86Visitor::visit(NDeclarationBlock *node) {
     cerr << "Declaration Block" << endl;
 }
@@ -92,13 +92,13 @@ void x86Visitor::visit(NPredicate *node) {
 
 void x86Visitor::visit(NPrint *node) {
     /* save any reigsters we are going to use */
-    program << "push rax"; 
-    program << "push rcx";    
-    program << "push rbx";    
+    program << "push rax\n"; 
+    program << "push rcx\n";    
+    program << "push rbx\n";    
     /* evaluate what we want to print */
     node->getChild(1)->accept(this);
-    /* */
-    program << "int 80h\n";
+    /* We can link with the c stdlib to use */
+    program << "call printf\n";
     cerr << "Print Node" << endl;
 }
 
@@ -119,13 +119,16 @@ void x86Visitor::visit(NUnaryOp *node) {
 }
 
 void x86Visitor::visit(NVariableDeclaration *node) {
-    cerr << "VarDec" << endl;
+    cerr << "Variable Declaration" << endl;
+    /* if we are in the global scope*/
+    node->getType()
+    program << 
 }
 
 void x86Visitor::createSubroutine(string name) {
-    program << name << ":";    
-    program << "push ebp";
-    program << "mov ebp, esp";
+    program << name << ":\n";    
+    program << "push ebp\n";
+    program << "mov ebp, esp\n";
 }
     /* Create label and save ebp/esp */
     /* Allocate space on stack for local variables */
@@ -138,26 +141,34 @@ void x86Visitor::createSubroutine(string name) {
     /* Restore EBP  and return */
 
 void x86Visitor::saveCalleeReg() {
-    program << "push rbx";
-    program << "push rdi";
-    program << "push rsi";
+    program << "push rbx\n";
+    program << "push rdi\n";
+    program << "push rsi\n";
 }    
 
 void x86Visitor::restoreCalleeReg() {
     /** Return from subroutine**/
-    program << "pop rsi";
-    program << "pop rdi";
-    program << "pop rbx";
+    program << "pop rsi\n";
+    program << "pop rdi\n";
+    program << "pop rbx\n";
 }
 void x86Visitor::deallocVar() {
 
 }
 void x86Visitor::ret() {
-    program << "mov esp,ebp";
-    program << "pop ebp";   
-    program << "ret";
+    program << "mov esp,ebp\n";
+    program << "pop ebp\n";   
+    program << "ret\n";
 }
 
-string x86Visitor::assembledProgram() {
+string x86Visitor::getAssembly() {
     return this->program.str();
+}
+
+void x86Visitor::init(node* root) {
+    /* initial call to set up our .data section*/
+    program << "\%include\t\'system.inc\'\n\n";
+    program << "section .data\n"
+    /* get all global variables and string literals used in program...*/
+    program << "section .text"
 }

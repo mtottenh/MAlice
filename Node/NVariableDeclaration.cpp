@@ -37,5 +37,6 @@ int NVariableDeclaration::getArrayType(int type) {
 }
 
 void NVariableDeclaration::accept(ASTVisitor* v) {
+    cout << "Node: ";
     v->visit(this);
 }

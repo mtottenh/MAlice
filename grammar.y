@@ -486,12 +486,26 @@ int main(int argc, char* argv[]) {
 
 	//Check that the AST is semantically valid.
 	isValid &= root->check();
+    /* generate code using x86Visitor*/
     x86Visitor *v = new x86Visitor();
     root->accept(v);
+
+    /*create the output file*/
+    string outputFname(argv[1]);
+    size_t pos = outputFname.find(".alice");
+    outputFname = outputFname.substr(0,pos);
+    outputFname = outputFname + ".asm";
+    FILE *output = fopen(outputFname.c_str(),"w");
+    if (output != NULL) {
+        fputs(v->getAssembly().c_str(),output);
+    } else {
+        cerr << "error opening output file for writing: " << outputFname << endl;
+    }
 	//Finish up with a bit of memory management.
 	delete root;
     delete v;
 	fclose(input);
+    fclose(output);
 	yylex_destroy();
 	return isValid ? EXIT_SUCCESS : EXIT_FAILURE;
 }

@@ -47,6 +47,8 @@ $(ODIR)/%.o : Node/%.cpp
 $(ODIR)/%.o : CodeGeneration/%.cpp
 	$(CC) $(CFLAGS) -c -o $@ $< 
 
+hello: hello.asm
+	nasm -f elf64 hello.asm 
 
 
 
