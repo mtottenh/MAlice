@@ -3,8 +3,10 @@
 
 
 #include "ASTVisitor.hpp"
-
+#include <sstream>
 class x86Visitor : public ASTVisitor {
+protected:
+    stringstream program;
 public:
     x86Visitor();
     virtual void visit(NArrayAccess*);
@@ -34,7 +36,13 @@ public:
     virtual void visit(NStringLit*);
     virtual void visit(NUnaryOp*);
     virtual void visit(NVariableDeclaration*);
-
+    void createSubroutine(string);
+    void saveCalleeReg();
+    void restoreCalleeReg();
+    void deallocVar();
+    void ret();
+    
+    string assembledProgram();
 };
 
 #endif

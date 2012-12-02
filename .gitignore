@@ -38,3 +38,6 @@ compile
 
 #ignore MAlice reference compiler junk
 *.py
+
+#test stuff
+test*
