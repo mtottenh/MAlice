@@ -3,7 +3,7 @@
 
 #include "NFunctionDeclaration.hpp"
 #include "TypeDefs.hpp"
-
+#include "../CodeGeneration/ASTVisitor.hpp"
 NFunctionDeclaration::NFunctionDeclaration() { 
     name = "FuncDec"; 
 }                            
@@ -168,6 +168,11 @@ std::deque<Node *>  NFunctionDeclaration::returnNodeList(Node* statlist) {
     }
     return returnList;
 }
+
+void NFunctionDeclaration::accept(ASTVisitor* v) {
+    v->visit(this);
+}
+
 /* TODO  finish check function */
 
 #endif

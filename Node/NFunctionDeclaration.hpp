@@ -18,6 +18,7 @@ public:
 	std::deque<Node *> returnNodeList(Node *); 
 	int print() const;
 	int getType() ;
+    void accept(ASTVisitor*);
 };    
 
 #endif

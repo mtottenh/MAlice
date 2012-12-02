@@ -75,3 +75,11 @@ void SymbolTable::setTableID(int id) {
 int SymbolTable::getTableID() {
     return table_id;
 }
+
+table_t::iterator SymbolTable::start() {
+    return table.begin();
+}
+
+table_t::iterator SymbolTable::end() {
+    return table.end();
+}

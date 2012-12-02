@@ -154,6 +154,7 @@ public:
     virtual void accept(ASTVisitor*);
     /* get symbol table function*/
     boost::shared_ptr<SymbolTable> getTable();
+    int getSize();
 };
 
 #endif

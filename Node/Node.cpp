@@ -182,3 +182,14 @@ int Node::resolveType() {
 boost::shared_ptr<SymbolTable> Node::getTable() {
     return table;
 }
+
+
+int Node::getSize() {
+    switch(this->getType()) {
+        case TNUMBER:
+            return 4;
+        case PROCEDURE:
+        case  FUNC:
+            return 90001;
+    } 
+}

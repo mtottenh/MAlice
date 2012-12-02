@@ -44,6 +44,28 @@ void x86Visitor::visit(NEndIf *node) {
 }
 
 void x86Visitor::visit(NFunctionDeclaration *node) {
+    /* Sets up our function label and base pointer*/
+    createSubroutine(node->getID());
+    int numChildren = node->getChildrenSize();
+    
+    if (numChildren == 2) {
+        /* we have paramaters */
+        /* TODO get dat stuff from the stack and put into regs son*/
+       NParamDeclarationBlock* params = (NParamDeclarationBlock*) node->getChild(numChildren - 1);
+      
+    }
+    NCodeBlock* codeblock = (NCodeBlock*)node->getChild(0);
+    NStatementList* statlist = (NStatementList*)codeblock->getChild(0);
+    if (codeblock->getChildrenSize() == 2) {
+        /* we have local variables*/
+        NDeclarationBlock* decblock = (NDeclarationBlock*)node->getChild(0);
+        statlist = (NStatementList*)codeblock->getChild(1);
+        /* reserve space on stack from them */
+        /*TODO should probably get some way of total size of local vars*/
+        /* rather than just assuming they are all 32bits */
+        program << "\tsub esp," << decblock->getChildrenSize() * 4 <<"\n";
+    } 
+    
 
 }
 
@@ -127,9 +149,9 @@ void x86Visitor::visit(NVariableDeclaration *node) {
 }
 
 void x86Visitor::createSubroutine(string name) {
-    program << name << ":\n";    
-    program << "push ebp\n";
-    program << "mov ebp, esp\n";
+    program << "_" << name << ":\n";    
+    program << "\tpush ebp\n";
+    program << "\tmov ebp, esp\n";
 }
     /* Create label and save ebp/esp */
     /* Allocate space on stack for local variables */
@@ -172,6 +194,12 @@ void x86Visitor::init(Node* root) {
     program << "section .data\n";
     /* get all global variables and string literals used in program...*/
     boost::shared_ptr<SymbolTable> t = root->getTable();
-    
+    table_t::iterator it;
+    /* global vars, reserve space for em init" */
+    for(it = t->start(); it != t->end(); it++) {
+        program << "common\t" << it->first << "  " 
+                << it->second->getSize() << endl;
+    }
+ 
     program << "section .text\n";
 }

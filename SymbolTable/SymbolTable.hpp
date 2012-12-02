@@ -70,6 +70,9 @@ class SymbolTable {
          */
          int getTableID();
          void setTableID(int);
+        /* getter for map iterator I NEED DEES */
+        table_t::iterator start();
+        table_t::iterator end();
 };
 
 #endif
