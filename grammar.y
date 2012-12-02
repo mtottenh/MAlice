@@ -488,6 +488,7 @@ int main(int argc, char* argv[]) {
 	isValid &= root->check();
     /* generate code using x86Visitor*/
     x86Visitor *v = new x86Visitor();
+    v->init(root);
     root->accept(v);
 
     /*create the output file*/

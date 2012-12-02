@@ -152,7 +152,8 @@ public:
 
     /* Accept function used for code generation*/
     virtual void accept(ASTVisitor*);
-
+    /* get symbol table function*/
+    boost::shared_ptr<SymbolTable> getTable();
 };
 
 #endif

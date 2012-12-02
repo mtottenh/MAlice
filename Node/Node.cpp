@@ -179,4 +179,6 @@ int Node::resolveType() {
 }	
 
 
-
+boost::shared_ptr<SymbolTable> Node::getTable() {
+    return table;
+}

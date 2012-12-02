@@ -41,7 +41,7 @@ public:
     void restoreCalleeReg();
     void deallocVar();
     void ret();
-    
+    void init(Node*); 
     string getAssembly();
 };
 

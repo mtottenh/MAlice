@@ -1,4 +1,5 @@
 #include "x86Visitor.hpp"
+#include <boost/shared_ptr.hpp>
 #include "../Node/NodeIncludes.hpp"
 
 x86Visitor::x86Visitor() {
@@ -97,8 +98,8 @@ void x86Visitor::visit(NPrint *node) {
     program << "push rbx\n";    
     /* evaluate what we want to print */
     node->getChild(1)->accept(this);
-    /* We can link with the c stdlib to use */
-    program << "call printf\n";
+    /* We can use the macro defed in system.inc */
+    program << "sys.write\n";
     cerr << "Print Node" << endl;
 }
 
@@ -120,9 +121,9 @@ void x86Visitor::visit(NUnaryOp *node) {
 
 void x86Visitor::visit(NVariableDeclaration *node) {
     cerr << "Variable Declaration" << endl;
-    /* if we are in the global scope*/
-    node->getType()
-    program << 
+    ///* if we are in the global scope*/
+  //  node->getType();
+//    program << 
 }
 
 void x86Visitor::createSubroutine(string name) {
@@ -165,10 +166,12 @@ string x86Visitor::getAssembly() {
     return this->program.str();
 }
 
-void x86Visitor::init(node* root) {
+void x86Visitor::init(Node* root) {
     /* initial call to set up our .data section*/
-    program << "\%include\t\'system.inc\'\n\n";
-    program << "section .data\n"
+    program << "%include\t\'system.inc\'\n\n";
+    program << "section .data\n";
     /* get all global variables and string literals used in program...*/
-    program << "section .text"
+    boost::shared_ptr<SymbolTable> t = root->getTable();
+    
+    program << "section .text\n";
 }
