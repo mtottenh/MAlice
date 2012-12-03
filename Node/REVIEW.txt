@@ -8,3 +8,71 @@ NStatementList.cpp:void NStatementList::accept(ASTVisitor *v) {
 NStatementList.cpp:        this->getChild(i)->accept(v);
 NStringLit.cpp:void NStringLit::accept(ASTVisitor *v) {
 NVariableDeclaration.cpp:void NVariableDeclaration::accept(ASTVisitor* v) {
+
+/* Functions to review in x86Visitor */
+void x86Visitor::visit(NAssignment *node) {
+
+}
+/* TODO: still need to implement a register saving mechanism 
+ * maybe paramerterise visit with a list of reg's it can use
+ * like the tutorial.
+ */
+void x86Visitor::visit(NBinOp *node) {
+    switch(node->getType()) {
+        case PLUS:
+            node->getChild(0)->accept(this);
+            node->getChild(1)->accept(this);
+            
+    }
+
+}
+
+void x86Visitor::visit(NCharLit *node) {
+
+}
+
+void x86Visitor::visit(NCodeBlock *node) {
+--
+    NStatementList* statlist = (NStatementList*)codeblock->getChild(0);
+    if (codeblock->getChildrenSize() == 2) {
+        /* we have local variables*/
+        NDeclarationBlock* decblock = (NDeclarationBlock*)node->getChild(0);
+        statlist = (NStatementList*)codeblock->getChild(1);
+        /* reserve space on stack from them */
+        /*TODO should probably get some way of total size of local vars*/
+        /* rather than just assuming they are all 32bits */
+        program << "\tsub rsp," << decblock->getChildrenSize() * 4 <<"\n";
+    } 
+    statlist->accept(this);    
+
+}
+
+void x86Visitor::visit(NIdentifier *node) {
+
+}
+
+void x86Visitor::visit(NInc *node) {
+
+}
+--
+
+void x86Visitor::visit(NPrint *node) {
+    /* save any reigsters we are going to use 
+    program << "push rax\n"; 
+    program << "push rcx\n";    
+    program << "push rbx\n";    */
+    /* evaluate what we want to print */
+    /* the contract for this is that it has to leave
+     * the thing to print in rax??
+     */   
+    node->getChild(0)->accept(this);
+    /* We can use the macro defed in system.inc */
+    program << "\tsys.write\n";
+}
+
+void x86Visitor::visit(NReturn *node) {
+    cerr << "Return Node" << endl;
+}
+
+void x86Visitor::visit(NStatementList *node) {
+    cerr << "Statement List" << endl;
