@@ -11,9 +11,9 @@ output
 *.log
 *.aux
 
-#ignore junk files from compiling C code
+#ignore junk files from compiling C code and asembly files
 *.o
-
+*.asm
 #ignore junk files from compiling Haskell code
 *.hi
 
