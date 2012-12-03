@@ -1,0 +1,10 @@
+NDeclarationBlock.cpp:void NDeclarationBlock::accept(ASTVisitor* v) {
+NDeclarationBlock.cpp:        this->getChild(i)->accept(v);
+NFunctionDeclaration.cpp:void NFunctionDeclaration::accept(ASTVisitor* v) {
+Node.cpp:void Node::accept(ASTVisitor* v) {
+Node.cpp:        this->getChild(i)->accept(v);
+NPrint.cpp:void NPrint::accept(ASTVisitor *v) {
+NStatementList.cpp:void NStatementList::accept(ASTVisitor *v) {
+NStatementList.cpp:        this->getChild(i)->accept(v);
+NStringLit.cpp:void NStringLit::accept(ASTVisitor *v) {
+NVariableDeclaration.cpp:void NVariableDeclaration::accept(ASTVisitor* v) {
