@@ -499,6 +499,21 @@ int main(int argc, char* argv[]) {
     FILE *output = fopen(outputFname.c_str(),"w");
     if (output != NULL) {
         fputs(v->getAssembly().c_str(),output);
+        fputs("\n\n\tpop rbp\n\tsys.exit\n",output);
+        fclose(output);
+        /* assemble with nasm */
+        /* TODO - Ask mark whether it would be easier
+         * to just create a shell script, ie not relying
+         * on nasm/ld to be under /usr/bin
+         */
+        execl("/usr/bin/nasm","/usr/bin/nasm", "-f elf64",
+                outputFname.c_str(),(char *) 0);
+        /* link with ld */
+        pos = outputFname.find(".asm");
+        string objFname = outputFname.substr(0,pos) + ".o";
+        outputFname = "-o " + outputFname.substr(0,pos);
+        execl("/usr/bin/ld","/usr/bin/ld",objFname.c_str(),
+                    outputFname.c_str(),(char*)0);
     } else {
         cerr << "error opening output file for writing: " << outputFname << endl;
     }

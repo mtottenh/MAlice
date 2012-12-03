@@ -1,5 +1,6 @@
 #include "NPrint.hpp"
 #include "TypeDefs.hpp"
+#include "../CodeGeneration/ASTVisitor.hpp"
 
 NPrint::NPrint() {
 	name = "Print";
@@ -41,4 +42,10 @@ int NPrint::check() {
 	}
 
 	return isValid;
+}
+
+
+
+void NPrint::accept(ASTVisitor *v) {
+    v->visit(this);
 }

@@ -14,8 +14,17 @@ void x86Visitor::visit(NArrayAccess *node) {
 void x86Visitor::visit(NAssignment *node) {
 
 }
-
+/* TODO: still need to implement a register saving mechanism 
+ * maybe paramerterise visit with a list of reg's it can use
+ * like the tutorial.
+ */
 void x86Visitor::visit(NBinOp *node) {
+    switch(node->getType()) {
+        case PLUS:
+            node->getChild(0)->accept(this);
+            node->getChild(1)->accept(this);
+            
+    }
 
 }
 
@@ -63,9 +72,9 @@ void x86Visitor::visit(NFunctionDeclaration *node) {
         /* reserve space on stack from them */
         /*TODO should probably get some way of total size of local vars*/
         /* rather than just assuming they are all 32bits */
-        program << "\tsub esp," << decblock->getChildrenSize() * 4 <<"\n";
+        program << "\tsub rsp," << decblock->getChildrenSize() * 4 <<"\n";
     } 
-    
+    statlist->accept(this);    
 
 }
 
@@ -114,15 +123,17 @@ void x86Visitor::visit(NPredicate *node) {
 }
 
 void x86Visitor::visit(NPrint *node) {
-    /* save any reigsters we are going to use */
+    /* save any reigsters we are going to use 
     program << "push rax\n"; 
     program << "push rcx\n";    
-    program << "push rbx\n";    
+    program << "push rbx\n";    */
     /* evaluate what we want to print */
-    node->getChild(1)->accept(this);
+    /* the contract for this is that it has to leave
+     * the thing to print in rax??
+     */   
+    node->getChild(0)->accept(this);
     /* We can use the macro defed in system.inc */
-    program << "sys.write\n";
-    cerr << "Print Node" << endl;
+    program << "\tsys.write\n";
 }
 
 void x86Visitor::visit(NReturn *node) {
@@ -134,6 +145,15 @@ void x86Visitor::visit(NStatementList *node) {
 }
 
 void x86Visitor::visit(NStringLit *node) {
+    /* Add strings to the .data section 
+     * TODO: We still need to find a way
+     * of labeling stringlits and their sizes
+     *
+     */
+    program << "\n\t[section .data]\n";
+    program << "TODOSOMEGENERATEDNAMEHERE:"<< "\tdb\t" << node->getID() <<"\n";
+    program << "TODOSOMEGENNAMESIZEHERE:" << "\tequ $-TODOSOMEGENERATEDNAMEHERE:\n";
+    program << "\t__SECT__\n\n"; 
 
 }
 
@@ -150,8 +170,8 @@ void x86Visitor::visit(NVariableDeclaration *node) {
 
 void x86Visitor::createSubroutine(string name) {
     program << "_" << name << ":\n";    
-    program << "\tpush ebp\n";
-    program << "\tmov ebp, esp\n";
+    program << "\tpush rbp\n";
+    program << "\tmov rbp, rsp\n";
 }
     /* Create label and save ebp/esp */
     /* Allocate space on stack for local variables */
@@ -202,4 +222,6 @@ void x86Visitor::init(Node* root) {
     }
  
     program << "section .text\n";
+    program << "global _start\n";
+    program << "_start:\n";
 }

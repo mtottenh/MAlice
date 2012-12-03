@@ -1,8 +1,6 @@
-#ifndef ___NSTATEMENTLIST__
-#define ___NSTATEMENTLIST__
-
 #include "NStatementList.hpp"
 #include "TypeDefs.hpp"
+#include "../CodeGeneration/ASTVisitor.hpp"
 /* TODO Check grammar.y and see if this is needed */
 NStatementList::NStatementList() 
 { 
@@ -30,5 +28,9 @@ int NStatementList::check() {
 
 	return isValid;
 }
-
-#endif
+void NStatementList::accept(ASTVisitor *v) {
+    unsigned int numChildren = this->getChildrenSize();
+    for(unsigned int i =0; i < numChildren; i++) {
+        this->getChild(i)->accept(v);
+    }
+}

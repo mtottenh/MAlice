@@ -1,7 +1,7 @@
 #include <cstring>
 #include "NStringLit.hpp"
 #include "TypeDefs.hpp"
-
+#include "../CodeGeneration/ASTVisitor.hpp"
 
 NStringLit::NStringLit(char* literal)
 {
@@ -23,4 +23,9 @@ NStringLit::NStringLit(string s) {
 }
 int NStringLit::resolveType() {
 	return TSTRING;
+}
+
+void NStringLit::accept(ASTVisitor *v) {
+
+    v->visit(this);
 }
