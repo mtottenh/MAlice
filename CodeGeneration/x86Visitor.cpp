@@ -150,10 +150,22 @@ void x86Visitor::visit(NStringLit *node) {
      * of labeling stringlits and their sizes
      *
      */
-    program << "\n\t[section .data]\n";
-    program << "TODOSOMEGENERATEDNAMEHERE:"<< "\tdb\t" << node->getID() <<"\n";
-    program << "TODOSOMEGENNAMESIZEHERE:" << "\tequ $-TODOSOMEGENERATEDNAMEHERE:\n";
-    program << "\t__SECT__\n\n"; 
+    /* Really bad complexity, basically create a copy,find the data section
+     * and insert our new string into the data section TROLOLOL
+     */
+    string temp = program.str();
+    size_t pos = temp.find("section .data");
+    pos+=strlen("section .data\n");
+    string DATSTR = "\nAUTOGEN:\tdb\t" + node->getID() + "\nAUTOGENS:\tequ $-AUTOGEN:\n";
+    temp.insert(pos,DATSTR);
+    program.str(temp);
+
+    program.clear();
+    program.seekp(0,ios::end);
+    program.clear();
+    program.seekg(0,ios::end);
+    /*
+    */
 
 }
 
