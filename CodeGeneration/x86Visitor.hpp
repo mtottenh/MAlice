@@ -29,7 +29,6 @@ public:
     virtual void visit(Node*);
     virtual void visit(NParamBlock*);
     virtual void visit(NParamDeclarationBlock*);
-    virtual void visit(NPredicate*);
     virtual void visit(NPrint*);
     virtual void visit(NReturn*);
     virtual void visit(NStatementList*);

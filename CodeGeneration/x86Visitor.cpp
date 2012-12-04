@@ -118,10 +118,6 @@ void x86Visitor::visit(NParamDeclarationBlock *node) {
 
 }
 
-void x86Visitor::visit(NPredicate *node) {
-
-}
-
 void x86Visitor::visit(NPrint *node) {
     /* save any reigsters we are going to use 
     program << "push rax\n"; 

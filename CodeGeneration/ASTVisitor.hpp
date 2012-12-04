@@ -20,7 +20,6 @@
 #include "../Node/Node.hpp" 
 #include "../Node/NParamBlock.hpp" 
 #include "../Node/NParamDeclarationBlock.hpp" 
-#include "../Node/NPredicate.hpp" 
 #include "../Node/NPrint.hpp" 
 #include "../Node/NReturn.hpp" 
 #include "../Node/NStatementList.hpp" 
@@ -50,7 +49,6 @@ public:
     virtual void visit(Node*) = 0;
     virtual void visit(NParamBlock*) = 0;
     virtual void visit(NParamDeclarationBlock*) = 0;
-    virtual void visit(NPredicate*) = 0;
     virtual void visit(NPrint*) = 0;
     virtual void visit(NReturn*) = 0;
     virtual void visit(NStatementList*) = 0;
