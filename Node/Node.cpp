@@ -163,12 +163,8 @@ int Node::compareTypes(int t1, int t2) const {
 }
 
 void Node::accept(ASTVisitor* v) {
-    cerr << "Node: " << name << endl;
+    cerr << "Generic Node" << endl;
     v->visit(this);
-    unsigned int numChildren = this->getChildrenSize();
-    for (unsigned int i = 0; i < numChildren; i++) {
-        this->getChild(i)->accept(v);
-    }
 }
 
 

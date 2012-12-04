@@ -170,6 +170,7 @@ std::deque<Node *>  NFunctionDeclaration::returnNodeList(Node* statlist) {
 }
 
 void NFunctionDeclaration::accept(ASTVisitor* v) {
+	cerr << "Name: Functoin Declaration Node" << endl;
     v->visit(this);
 }
 
