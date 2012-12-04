@@ -32,16 +32,32 @@ void x86Visitor::visit(NCodeBlock *node) {
 }
 
 void x86Visitor::visit(NConditional *node) {
+	string endLabel = this->labelMaker.getEndCondLabel();
+	// Visit the predicate to print out condition
+	node->getChild(0)->accept(this);
+	// If condition is false, jump to next condition
+	data << "jz " << this->labelMaker.getNewLabel() << endl;
+	// Otherwise, execute the statement list, first pushing
+	// the end condition label onto the stack
+	this->labelMaker.pushEndCondLabel();
+	node->getChild(1)->accept(this);
+	this->labelMaker.popEndCondLabel();
+	// Return to end of conditional
+	data << "jz " << endLabel << endl;
+	// Print out code for rest of cases
+	node->getChild(2)->accept(this);
+	//
+	// SHOULD ONLY BE DOING THIS THE FIRST TIME!
+	data << endLabel << ":" << endl;
+}
 
+void x86Visitor::visit(NEndIf *node) {
+	this->labelMaker.resetEndCondLabel();
 }
 
 /* NDeclarationBlock is our 'entry' point */
 void x86Visitor::visit(NDeclarationBlock *node) {
     cerr << "Declaration Block" << endl;
-}
-
-void x86Visitor::visit(NEndIf *node) {
-
 }
 
 void x86Visitor::visit(NFunctionDeclaration *node) {
