@@ -112,11 +112,16 @@ void x86Visitor::visit(Node *node) {
 }
 
 void x86Visitor::visit(NParamBlock *node) {
-
+	/* Here we will need to push the children onto the stack
+	   in the reverse order */
 }
 
 void x86Visitor::visit(NParamDeclarationBlock *node) {
-
+	/* I think this is only used in the semantic analysis,
+	   past that assembly code doesn't know about the params
+	   passed to a function. We might need to create symbolic
+	   references between their position on the stack in order
+	   to utilise the stack values */
 }
 
 void x86Visitor::visit(NPrint *node) {
