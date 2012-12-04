@@ -31,3 +31,8 @@ int NInteger::resolveType() {
 	/* An integer is always a number! */
 	return TNUMBER;
 }
+
+int NInteger::calculateWeight() {
+	/* Integer is a constant - 1 register to store. */
+	return 1;
+}

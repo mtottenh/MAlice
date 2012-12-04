@@ -197,6 +197,10 @@ boost::shared_ptr<SymbolTable> Node::getTable() {
 }
 
 int Node::calculateWeight() {
+	/* 
+	 * Base implementation - the weight of the node is the sum of the weights of
+	 * its children.
+	 */
 	for(int i = 0; i < this->getChildrenSize(); ++i) {
 		weight += this->getChild(i)->getWeight();
 	}
