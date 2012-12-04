@@ -9,6 +9,7 @@
 #include <iostream>
 #include <deque>
 #include <string>
+#include <algorithm>
 #include "../Errors/SemanticErrors.hpp"
 #include "../SymbolTable/SymbolTable.hpp"
 
