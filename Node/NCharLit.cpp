@@ -1,11 +1,12 @@
 #include "NCharLit.hpp"
 #include "TypeDefs.hpp"
-
+#include "../CodeGeneration/ASTVisitor.hpp"
 /* Constructors. */
 NCharLit::NCharLit() {
 	this->name = "<Character Literal>";
 	this->type = resolveType();
 	this->nodeType = CHARLIT;
+	this->weight = -1;
 }
 
 NCharLit::NCharLit(char *c) {
@@ -14,6 +15,7 @@ NCharLit::NCharLit(char *c) {
 	this->name = character;
 	this->type = resolveType();
 	this->nodeType = CHARLIT;
+	this->weight = -1;
 }
 
 /* Public methods. */
@@ -26,11 +28,20 @@ int NCharLit::check() {
 	return 1;
 }
 
+/* Protected methods. */
+int NCharLit::calculateWeight() {
+	/* A char literal is a constant; weight 1. */
+	return 1;
+}
+
+void NCharLit::accept(ASTVisitor *v) {
+	cerr << "Node: Character Literal" << endl;
+	v->visit(this);
+}
+
 /* Private methods. */
 
 int NCharLit::resolveType() {
 	/* A character literal is always of type character! (letter in MAlice). */
 	return TCHAR;
 }
-
-

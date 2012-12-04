@@ -11,7 +11,10 @@ private:
 	char character;
 
 	/* Resolves the type of the node and returns it. */
-	virtual int resolveType();                                           
+	virtual int resolveType();
+protected:
+	/* Calculate the weight of the node. */
+	virtual int calculateWeight();                                      
 public:
 	/* Constructor passed no character literal value. */
 	NCharLit();
@@ -24,6 +27,7 @@ public:
 	 * 0 otherwise.
 	 */
 	virtual int check();
+	void accept(ASTVisitor*);
 };  
 
 #endif

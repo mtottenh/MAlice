@@ -8,6 +8,7 @@ NArrayAccess::NArrayAccess(NIdentifier* id, Node* indexNode)
 	this->name = id->getID();
 	this->id = id;
 	this->indexNode = indexNode;
+	this->weight = -1;
 	children.push_back(id);
 	children.push_back(indexNode);
 }
@@ -75,4 +76,9 @@ int NArrayAccess::resolveType() {
 		return INVALIDTYPE;
 		break;
 	}
+}
+
+int NArrayAccess::calculateWeight() {
+	/* Weight of the index expression, plus a register to store it in. */
+	return children[1]->getWeight() + 1;
 }

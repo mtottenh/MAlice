@@ -37,7 +37,10 @@ protected:
 	 * Resolves the type of the node, returning an integer representation of
 	 * the type.
 	 */
-	virtual int resolveType() ;
+	virtual int resolveType();
+
+	/* Returns the weight of the node. */
+	virtual int calculateWeight();
 public:
 	/* Constructor taking a left node, right node and operator. */
 	NBinOp(Node*, Node*, int);

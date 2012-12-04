@@ -1,5 +1,6 @@
 #include "NConditional.hpp"
 #include "TypeDefs.hpp"
+#include "../CodeGeneration/ASTVisitor.hpp"
 /* 
  * Conditionals consist of a predicate a left branch and a right branch
  */
@@ -39,4 +40,8 @@ int NConditional::check() {
 int NConditional::resolveType() {
 	/* A conditional doesn't have a type! */
 	return INVALIDTYPE;
+}
+
+void NConditional::accept(ASTVisitor* v) {
+	v->visit(this);
 }

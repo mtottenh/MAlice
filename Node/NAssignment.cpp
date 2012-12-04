@@ -12,6 +12,7 @@ NAssignment::NAssignment() {
 NAssignment::NAssignment(string id, Node* exp) {
 	/* id = expression. */
 	name = "Assignment";
+	this->weight = -1;
 	lval = new NIdentifier(id);
 	rval = exp;
 	children.push_back(lval);
@@ -23,6 +24,7 @@ NAssignment::NAssignment(string id, char *exp) {
 	/* id = STRING */
 	lval = new NIdentifier(id);
 	rval = new NCharLit(exp);
+	this->weight = 1;
 	name = "Assignment";
 	children.push_back(lval);
 	children.push_back(rval);
@@ -33,6 +35,7 @@ NAssignment::NAssignment(string id, string exp) {
 	/* id = STRING */
 	lval = new NIdentifier(id);
 	name = "Assignment";
+	this->weight = -1;
 	rval = new NStringLit(exp);
 	children.push_back(lval);
 	children.push_back(rval);
@@ -46,6 +49,7 @@ NAssignment::NAssignment(Node* id, Node* exp) {
 	lval = id;
 	name = "Assignment";
 	rval = exp;
+	this->weight = -1;
 	children.push_back(lval);
 	children.push_back(rval);
 	nodeType = ASSIGNMENT;
@@ -55,6 +59,7 @@ NAssignment::NAssignment(Node* id, Node* exp) {
 NAssignment::NAssignment(Node* call) {
 	name = "Method assignment";
 	children.push_back(call);
+	this->weight = -1;
 	nodeType = ASSIGNMENT;
 }
 

@@ -3,8 +3,10 @@
 
 #include "Node.hpp"
 
-class NStringLit : public Node
-{
+class NStringLit : public Node {
+protected:
+	/* Calculate the weight of the node. */
+	virtual int calculateWeight();
 public:
 	NStringLit(char*);
 	NStringLit(string);

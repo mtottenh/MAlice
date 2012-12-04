@@ -6,6 +6,7 @@ NBinOp::NBinOp(Node* left, Node* right, int op) {
 	this->op = op;
 	this->name = "Binary Operator";
 	this->nodeType = BINOP;
+	this->weight = -1;
 	children.push_back(left);
 	children.push_back(right);
 }
@@ -88,6 +89,23 @@ int NBinOp::resolveType()  {
 	else {
 		return t1;
 	}
+}
+
+int NBinOp::calculateWeight() {
+	/* 
+	 * The weight of the binary operator is the minimum weight of evaluating
+	 * the LHS or RHS.
+	 */
+	int lhsWeight = children[0]->getWeight();
+	int rhsWeight = children[1]->getWeight();
+
+	/* Cost of evaluating rhs first, plus 1 to store the value of rhs. */
+	int cost1 = max(lhsWeight, rhsWeight + 1);
+
+	/* Cost of evaluating rhs lirst, plus 1 to store the value of lhs. */
+	int cost2 = max(lhsWeight + 1, rhsWeight);
+
+	return min(cost1, cost2);
 }
 
 /* Private methods. */

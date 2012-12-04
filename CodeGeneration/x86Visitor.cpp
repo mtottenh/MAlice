@@ -2,9 +2,7 @@
 #include <boost/shared_ptr.hpp>
 #include "../Node/NodeIncludes.hpp"
 
-x86Visitor::x86Visitor() {
-
-}
+x86Visitor::x86Visitor() : labelMaker() {}
 
 
 void x86Visitor::visit(NArrayAccess *node) {
@@ -19,34 +17,61 @@ void x86Visitor::visit(NAssignment *node) {
  * like the tutorial.
  */
 void x86Visitor::visit(NBinOp *node) {
-    switch(node->getType()) {
-        case PLUS:
-            node->getChild(0)->accept(this);
-            node->getChild(1)->accept(this);
-            
-    }
-
+	node->getChild(0)->accept(this);
+    node->getChild(1)->accept(this);
 }
 
 void x86Visitor::visit(NCharLit *node) {
+    data << "\nAUTOGEN:\tdb\t";
+    data << "'" << node->getID() << "'"; 
+    data << "\nAUTOGENS:\tequ $-AUTOGEN:\n";
 
 }
 
 void x86Visitor::visit(NCodeBlock *node) {
-
+	/* Visit the statement list, and declaration list if it exists. */
+	for(int i = 0; i < node->getChildrenSize(); ++i) {
+		node->getChild(i)->accept(this);
+	}
 }
 
 void x86Visitor::visit(NConditional *node) {
-
-}
-
-/* NDeclarationBlock is our 'entry' point */
-void x86Visitor::visit(NDeclarationBlock *node) {
-    cerr << "Declaration Block" << endl;
+	bool startConditional = this->labelMaker.needsNewEndCondLabel();
+	string endLabel = this->labelMaker.getEndCondLabel();
+	// Visit the predicate to print out condition
+	node->getChild(0)->accept(this);
+	// If condition is false, jump to next condition
+	string elseLabel = this->labelMaker.getNewLabel();
+	text << "\tjz " << elseLabel << endl;
+	// Otherwise, execute the statement list, first pushing
+	// the end condition label onto the stack
+	this->labelMaker.pushEndCondLabel();
+	node->getChild(1)->accept(this);
+	this->labelMaker.popEndCondLabel();
+	// Return to end of conditional
+	text << "\tjz " << endLabel << endl;
+	// Print out code for rest of cases
+	text << elseLabel << ":" << endl;
+	node->getChild(2)->accept(this);
+	//
+	if (startConditional)
+	{
+		text << endLabel << ":" << endl;
+		this->labelMaker.resetEndCondLabel();
+	}
 }
 
 void x86Visitor::visit(NEndIf *node) {
+}
 
+/* NDeclarationBlock is our 'entry' point - its not exclusve though, ie every 
+ * function has one
+ */
+void x86Visitor::visit(NDeclarationBlock *node) {
+	/* if we have a delcaration block just visit every child*/
+    for (int i = 0; i < node->getChildrenSize(); i++) {
+		node->getChild(i)->accept(this);
+	}
 }
 
 void x86Visitor::visit(NFunctionDeclaration *node) {
@@ -69,7 +94,7 @@ void x86Visitor::visit(NFunctionDeclaration *node) {
         /* reserve space on stack from them */
         /*TODO should probably get some way of total size of local vars*/
         /* rather than just assuming they are all 32bits */
-        program << "\tsub rsp," << decblock->getChildrenSize() * 4 <<"\n";
+        text << "\tsub rsp," << decblock->getChildrenSize() * 4 <<"\n";
     } 
     statlist->accept(this);    
 
@@ -80,11 +105,21 @@ void x86Visitor::visit(NIdentifier *node) {
 }
 
 void x86Visitor::visit(NInc *node) {
+	/* Visit the node containing the expression to be incremented. */
+	node->getChild(0)->accept(this);
 
+	/* Increment the register containing the result of the expression */
+	/* Where will this be stored?? */
+	/* text << "\tinc rxx\n"; */
 }
 
 void x86Visitor::visit(NDec *node) {
+	/* Visit the node containing the expression to be decremented. */
+	node->getChild(0)->accept(this);
 
+	/* Increment the register containing the result of the expression */
+	/* Where will this be stored?? */
+	/* text << "\tdec rxx\n"; */
 }
 
 void x86Visitor::visit(NInput *node) {
@@ -96,6 +131,24 @@ void x86Visitor::visit(NInteger *node) {
 }
 
 void x86Visitor::visit(NLoop *node) {
+	/* Get a label for the start and end of the while loop. Print start label.*/
+	string startLabel = labelMaker.getNewLabel();
+	string endLabel = labelMaker.getNewLabel();
+	text << startLabel << ":" << endl;
+
+	/* 
+	 * Visit condition. Assuming that 0 is stored in flags register if false,
+	 * jump to endLabel if the condition does not hold.
+	 */
+	node->getChild(0)->accept(this);
+	text << "jz " << endLabel << "\n";
+	
+	/* Visit the statement list of the loop node, then recheck condition. */
+	node->getChild(1)->accept(this);
+	text << "jmp " << startLabel << "\n";
+
+	/* Print end label finish. */
+	text << endLabel << ":\n";
 
 }
 
@@ -113,7 +166,8 @@ void x86Visitor::visit(Node *node) {
 
 void x86Visitor::visit(NParamBlock *node) {
 	/* Here we will need to push the children onto the stack
-	   in the reverse order */
+	 * in the reverse order 
+	 */
 }
 
 void x86Visitor::visit(NParamDeclarationBlock *node) {
@@ -126,16 +180,16 @@ void x86Visitor::visit(NParamDeclarationBlock *node) {
 
 void x86Visitor::visit(NPrint *node) {
     /* save any reigsters we are going to use 
-    program << "push rax\n"; 
-    program << "push rcx\n";    
-    program << "push rbx\n";    */
+    text << "push rax\n"; 
+    text << "push rcx\n";    
+    text << "push rbx\n";    */
     /* evaluate what we want to print */
     /* the contract for this is that it has to leave
      * the thing to print in rax??
      */   
     node->getChild(0)->accept(this);
     /* We can use the macro defed in system.inc */
-    program << "\tsys.write\n";
+    text << "\tsys.write\n";
 }
 
 void x86Visitor::visit(NReturn *node) {
@@ -147,7 +201,6 @@ void x86Visitor::visit(NStatementList *node) {
 	{
 		node->getChild(i)->accept(this);
 	}
-	cerr << "Statement List" << endl;
 }
 
 void x86Visitor::visit(NStringLit *node) {
@@ -156,22 +209,10 @@ void x86Visitor::visit(NStringLit *node) {
      * of labeling stringlits and their sizes
      *
      */
-    /* Really bad complexity, basically create a copy,find the data section
-     * and insert our new string into the data section TROLOLOL
-     */
-    string temp = program.str();
-    size_t pos = temp.find("section .data");
-    pos+=strlen("section .data\n");
-    string DATSTR = "\nAUTOGEN:\tdb\t" + node->getID() + "\nAUTOGENS:\tequ $-AUTOGEN:\n";
-    temp.insert(pos,DATSTR);
-    program.str(temp);
+    data << "\nAUTOGEN:\tdb\t";
+    data << node->getID(); 
+    data << "\nAUTOGENS:\tequ $-AUTOGEN:\n";
 
-    program.clear();
-    program.seekp(0,ios::end);
-    program.clear();
-    program.seekg(0,ios::end);
-    /*
-    */
 
 }
 
@@ -181,15 +222,14 @@ void x86Visitor::visit(NUnaryOp *node) {
 
 void x86Visitor::visit(NVariableDeclaration *node) {
     cerr << "Variable Declaration" << endl;
-    ///* if we are in the global scope*/
-  //  node->getType();
-//    program << 
+	/* figure out what do..*/
+	//node->getChild(0)->accept(this);
 }
 
 void x86Visitor::createSubroutine(string name) {
-    program << "_" << name << ":\n";    
-    program << "\tpush rbp\n";
-    program << "\tmov rbp, rsp\n";
+    text << "_" << name << ":\n";    
+    text << "\tpush rbp\n";
+    text << "\tmov rbp, rsp\n";
 }
     /* Create label and save ebp/esp */
     /* Allocate space on stack for local variables */
@@ -202,44 +242,47 @@ void x86Visitor::createSubroutine(string name) {
     /* Restore EBP  and return */
 
 void x86Visitor::saveCalleeReg() {
-    program << "push rbx\n";
-    program << "push rdi\n";
-    program << "push rsi\n";
+    text << "push rbx\n";
+    text << "push rdi\n";
+    text << "push rsi\n";
 }    
 
 void x86Visitor::restoreCalleeReg() {
     /** Return from subroutine**/
-    program << "pop rsi\n";
-    program << "pop rdi\n";
-    program << "pop rbx\n";
+    text << "pop rsi\n";
+    text << "pop rdi\n";
+    text << "pop rbx\n";
 }
 void x86Visitor::deallocVar() {
 
 }
 void x86Visitor::ret() {
-    program << "mov esp,ebp\n";
-    program << "pop ebp\n";   
-    program << "ret\n";
+    text << "mov esp,ebp\n";
+    text << "pop ebp\n";   
+    text << "ret\n";
 }
 
 string x86Visitor::getAssembly() {
-    return this->program.str();
+	data << text.str();
+    return data.str();
 }
 
 void x86Visitor::init(Node* root) {
     /* initial call to set up our .data section*/
-    program << "%include\t\'system.inc\'\n\n";
-    program << "section .data\n";
-    /* get all global variables and string literals used in program...*/
+    data << "%include\t\'system.inc\'\n\n";
+    data << "section .data\n\n";
+
+    /* get all global variables and string literals used in text...*/
     boost::shared_ptr<SymbolTable> t = root->getTable();
     table_t::iterator it;
+
     /* global vars, reserve space for em init" */
     for(it = t->start(); it != t->end(); it++) {
-        program << "common\t" << it->first << "  " 
+        data << "common\t" << it->first << "  " 
                 << it->second->getSize() << endl;
     }
  
-    program << "section .text\n";
-    program << "global _start\n";
-    program << "_start:\n";
+    text << "section .text\n";
+    text << "global _start\n\n";
+    text << "_start:\n";
 }
