@@ -6,7 +6,8 @@
 #include <sstream>
 class x86Visitor : public ASTVisitor {
 protected:
-    stringstream program;
+    stringstream text; 
+    stringstream data;
 public:
     x86Visitor();
     virtual void visit(NArrayAccess*);
