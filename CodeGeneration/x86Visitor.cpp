@@ -126,6 +126,24 @@ void x86Visitor::visit(NInteger *node) {
 }
 
 void x86Visitor::visit(NLoop *node) {
+	/* Get a label for the start and end of the while loop. Print start label.*/
+	string startLabel = labelMaker.getNewLabel();
+	string endLabel = labelMaker.getNewLabel();
+	data << startLabel << ":\n";
+
+	/* 
+	 * Visit condition. Assuming that 0 is stored in flags register if false,
+	 * jump to endLabel if the condition does not hold.
+	 */
+	node->getChild(0)->accept(this);
+	data << "jz " << endLabel << "\n";
+	
+	/* Visit the statement list of the loop node, then recheck condition. */
+	node->getChild(1)->accept(this);
+	data << "jmp " << startLabel << "\n";
+
+	/* Print end label finish. */
+	data << endLabel << ":\n";
 
 }
 
