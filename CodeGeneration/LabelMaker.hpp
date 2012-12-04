@@ -16,6 +16,7 @@ public:
 	LabelMaker();
 	string getNewLabel();
 	string getEndCondLabel();
+	bool needsNewEndCondLabel();
 	void resetEndCondLabel();
 	void pushEndCondLabel();
 	void popEndCondLabel();

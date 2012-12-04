@@ -36,27 +36,32 @@ void x86Visitor::visit(NCodeBlock *node) {
 }
 
 void x86Visitor::visit(NConditional *node) {
+	bool startConditional = this->labelMaker.needsNewEndCondLabel();
 	string endLabel = this->labelMaker.getEndCondLabel();
 	// Visit the predicate to print out condition
 	node->getChild(0)->accept(this);
 	// If condition is false, jump to next condition
-	data << "jz " << this->labelMaker.getNewLabel() << endl;
+	string elseLabel = this->labelMaker.getNewLabel();
+	text << "\tjz " << elseLabel << endl;
 	// Otherwise, execute the statement list, first pushing
 	// the end condition label onto the stack
 	this->labelMaker.pushEndCondLabel();
 	node->getChild(1)->accept(this);
 	this->labelMaker.popEndCondLabel();
 	// Return to end of conditional
-	data << "jz " << endLabel << endl;
+	text << "\tjz " << endLabel << endl;
 	// Print out code for rest of cases
+	text << elseLabel << ":" << endl;
 	node->getChild(2)->accept(this);
 	//
-	// SHOULD ONLY BE DOING THIS THE FIRST TIME!
-	data << endLabel << ":" << endl;
+	if (startConditional)
+	{
+		text << endLabel << ":" << endl;
+		this->labelMaker.resetEndCondLabel();
+	}
 }
 
 void x86Visitor::visit(NEndIf *node) {
-	this->labelMaker.resetEndCondLabel();
 }
 
 /* NDeclarationBlock is our 'entry' point - its not exclusve though, ie every 
@@ -129,21 +134,21 @@ void x86Visitor::visit(NLoop *node) {
 	/* Get a label for the start and end of the while loop. Print start label.*/
 	string startLabel = labelMaker.getNewLabel();
 	string endLabel = labelMaker.getNewLabel();
-	data << startLabel << ":\n";
+	text << startLabel << ":" << endl;
 
 	/* 
 	 * Visit condition. Assuming that 0 is stored in flags register if false,
 	 * jump to endLabel if the condition does not hold.
 	 */
 	node->getChild(0)->accept(this);
-	data << "jz " << endLabel << "\n";
+	text << "jz " << endLabel << "\n";
 	
 	/* Visit the statement list of the loop node, then recheck condition. */
 	node->getChild(1)->accept(this);
-	data << "jmp " << startLabel << "\n";
+	text << "jmp " << startLabel << "\n";
 
 	/* Print end label finish. */
-	data << endLabel << ":\n";
+	text << endLabel << ":\n";
 
 }
 

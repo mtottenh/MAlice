@@ -1,25 +1,36 @@
 #include "LabelMaker.hpp"
+#include <iostream>
+#include <sstream>
 
-LabelMaker::LabelMaker() : currentLabelNumber(1) {} 
+using namespace std;
+
+LabelMaker::LabelMaker() : currentLabelNumber(1), endLabel(NULL) {} 
 
 string LabelMaker::getNewLabel() 
 {
-	return string("label%f", currentLabelNumber++);
+	stringstream s;
+	s << "label" << currentLabelNumber++;
+	return s.str();
 }
 
 string LabelMaker::getEndCondLabel()
 {
-	if (!this->endLabel)
+	if (this->needsNewEndCondLabel())
 	{
 		this->endLabel = new string(this->getNewLabel());
 	}
 	return *(this->endLabel);
 }
 
+bool LabelMaker::needsNewEndCondLabel()
+{
+	return !(this->endLabel);
+}
+
 void LabelMaker::pushEndCondLabel()
 {
 	this->endCondLabelStack.push(this->endLabel);
-	this->resetEndCondLabel();
+	this->endLabel = NULL;
 }
 
 void LabelMaker::popEndCondLabel()
