@@ -53,6 +53,7 @@ public:
 	 * 0 otherwise.
 	 */
 	virtual int check();
+    int getOp();
 };
 
 #endif
