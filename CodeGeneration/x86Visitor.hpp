@@ -3,11 +3,14 @@
 
 
 #include "ASTVisitor.hpp"
+#include "LabelMaker.hpp"
+
 #include <sstream>
 class x86Visitor : public ASTVisitor {
 protected:
     stringstream text; 
     stringstream data;
+	LabelMaker labelMaker;
 public:
     x86Visitor();
     virtual void visit(NArrayAccess*);
