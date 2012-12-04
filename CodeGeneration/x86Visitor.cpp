@@ -18,9 +18,7 @@ void x86Visitor::visit(NAssignment *node) {
  */
 void x86Visitor::visit(NBinOp *node) {
 	node->getChild(0)->accept(this);
-        node->getChild(1)->accept(this);
-
-				
+    node->getChild(1)->accept(this);
 }
 
 void x86Visitor::visit(NCharLit *node) {
@@ -31,7 +29,10 @@ void x86Visitor::visit(NCharLit *node) {
 }
 
 void x86Visitor::visit(NCodeBlock *node) {
-
+	/* Visit the statement list, and declaration list if it exists. */
+	for(int i = 0; i < node->getChildrenSize(); ++i) {
+		node->getChild(i)->accept(this);
+	}
 }
 
 void x86Visitor::visit(NConditional *node) {
