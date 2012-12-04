@@ -1,6 +1,6 @@
 #include "NCharLit.hpp"
 #include "TypeDefs.hpp"
-
+#include "../CodeGeneration/ASTVisitor.hpp"
 /* Constructors. */
 NCharLit::NCharLit() {
 	this->name = "<Character Literal>";
@@ -25,7 +25,10 @@ int NCharLit::check() {
 	 */
 	return 1;
 }
-
+void NCharLit::accept(ASTVisitor *v) {
+	cerr << "Node: Character Literal" << endl;
+	v->visit(this);
+}
 /* Private methods. */
 
 int NCharLit::resolveType() {

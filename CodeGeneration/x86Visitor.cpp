@@ -19,13 +19,16 @@ void x86Visitor::visit(NAssignment *node) {
  * like the tutorial.
  */
 void x86Visitor::visit(NBinOp *node) {
-		node->getChild(0)->accept(this);
+	node->getChild(0)->accept(this);
         node->getChild(1)->accept(this);
 
 				
 }
 
 void x86Visitor::visit(NCharLit *node) {
+    data << "\nAUTOGEN:\tdb\t";
+    data << "'" << node->getID() << "'"; 
+    data << "\nAUTOGENS:\tequ $-AUTOGEN:\n";
 
 }
 
@@ -37,9 +40,14 @@ void x86Visitor::visit(NConditional *node) {
 
 }
 
-/* NDeclarationBlock is our 'entry' point */
+/* NDeclarationBlock is our 'entry' point - its not exclusve though, ie every 
+ * function has one
+ */
 void x86Visitor::visit(NDeclarationBlock *node) {
-    cerr << "Declaration Block" << endl;
+	/* if we have a delcaration block just visit every child*/
+    for (int i = 0; i < node->getChildrenSize(); i++) {
+		node->getChild(i)->accept(this);
+	}
 }
 
 void x86Visitor::visit(NEndIf *node) {
@@ -110,7 +118,8 @@ void x86Visitor::visit(Node *node) {
 
 void x86Visitor::visit(NParamBlock *node) {
 	/* Here we will need to push the children onto the stack
-	   in the reverse order */
+	 * in the reverse order 
+	 */
 }
 
 void x86Visitor::visit(NParamDeclarationBlock *node) {
@@ -144,7 +153,6 @@ void x86Visitor::visit(NStatementList *node) {
 	{
 		node->getChild(i)->accept(this);
 	}
-	cerr << "Statement List" << endl;
 }
 
 void x86Visitor::visit(NStringLit *node) {
@@ -152,9 +160,6 @@ void x86Visitor::visit(NStringLit *node) {
      * TODO: We still need to find a way
      * of labeling stringlits and their sizes
      *
-     */
-    /* Really bad complexity, basically create a copy,find the data section
-     * and insert our new string into the data section TROLOLOL
      */
     data << "\nAUTOGEN:\tdb\t";
     data << node->getID(); 
@@ -169,9 +174,8 @@ void x86Visitor::visit(NUnaryOp *node) {
 
 void x86Visitor::visit(NVariableDeclaration *node) {
     cerr << "Variable Declaration" << endl;
-    ///* if we are in the global scope*/
-  //  node->getType();
-//    text << 
+	/* figure out what do..*/
+	//node->getChild(0)->accept(this);
 }
 
 void x86Visitor::createSubroutine(string name) {
@@ -218,10 +222,12 @@ string x86Visitor::getAssembly() {
 void x86Visitor::init(Node* root) {
     /* initial call to set up our .data section*/
     data << "%include\t\'system.inc\'\n\n";
-    data << "section .data\n";
+    data << "section .data\n\n";
+
     /* get all global variables and string literals used in text...*/
     boost::shared_ptr<SymbolTable> t = root->getTable();
     table_t::iterator it;
+
     /* global vars, reserve space for em init" */
     for(it = t->start(); it != t->end(); it++) {
         data << "common\t" << it->first << "  " 
@@ -229,6 +235,6 @@ void x86Visitor::init(Node* root) {
     }
  
     text << "section .text\n";
-    text << "global _start\n";
+    text << "global _start\n\n";
     text << "_start:\n";
 }
