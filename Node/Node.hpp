@@ -58,6 +58,9 @@ protected:
 
 	/* String representing the name of the node - usually its identifier. */
 	string name;
+	
+	/* String representing the label of a declared variable */
+	string label;
 
 	/* Field for the weight of the node (number of registers required). */
 	int weight; 
@@ -123,6 +126,12 @@ public:
 	/* Sets the location class of the node to a given FileLocation. */
 	void setLocation(FileLocation);
 	void setLocation(FileLocation *);
+
+	/* Sets the label in assembly code of a declaration for reference */
+	void setLabel(string);
+
+	/* Get the label associated with the declared variable */
+	string getLabel();
 
 	/* Prints the contents of the node. Returns SUCCESS or FAILURE. */
 	virtual int print() const;

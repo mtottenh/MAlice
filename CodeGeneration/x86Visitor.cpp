@@ -10,7 +10,12 @@ void x86Visitor::visit(NArrayAccess *node) {
 }
 
 void x86Visitor::visit(NAssignment *node) {
-
+	int rval = node->getChildrenSize() - 1;
+	node->getChild(rval)->accept(this);
+	if (node->getChildrenSize() > 1)
+	{
+		//Assign the result to the variable
+	}
 }
 /* TODO: still need to implement a register saving mechanism 
  * maybe paramerterise visit with a list of reg's it can use
@@ -76,7 +81,7 @@ void x86Visitor::visit(NDeclarationBlock *node) {
 
 void x86Visitor::visit(NFunctionDeclaration *node) {
     /* Sets up our function label and base pointer*/
-    createSubroutine(node->getID());
+    createSubroutine(node->getLabel());
     int numChildren = node->getChildrenSize();
     
     if (numChildren == 2) {
@@ -97,7 +102,7 @@ void x86Visitor::visit(NFunctionDeclaration *node) {
         text << "\tsub rsp," << decblock->getChildrenSize() * 4 <<"\n";
     } 
     statlist->accept(this);    
-
+	this->ret();
 }
 
 void x86Visitor::visit(NIdentifier *node) {
@@ -141,11 +146,11 @@ void x86Visitor::visit(NLoop *node) {
 	 * jump to endLabel if the condition does not hold.
 	 */
 	node->getChild(0)->accept(this);
-	text << "jz " << endLabel << "\n";
+	text << "\tjz " << endLabel << "\n";
 	
 	/* Visit the statement list of the loop node, then recheck condition. */
 	node->getChild(1)->accept(this);
-	text << "jmp " << startLabel << "\n";
+	text << "\tjmp " << startLabel << "\n";
 
 	/* Print end label finish. */
 	text << endLabel << ":\n";
@@ -153,7 +158,13 @@ void x86Visitor::visit(NLoop *node) {
 }
 
 void x86Visitor::visit(NMethodCall *node) {
-
+	if (node->getChildrenSize() > 0)
+	{
+		node->getChild(0)->accept(this);
+	}
+	cout << "Hello!" << endl;
+	text << "\tcall " << node->getTable()->
+				lookup(node->getID())->getLabel() << endl;
 }
 
 void x86Visitor::visit(NNullToken *node) {
@@ -222,8 +233,6 @@ void x86Visitor::visit(NUnaryOp *node) {
 
 void x86Visitor::visit(NVariableDeclaration *node) {
     cerr << "Variable Declaration" << endl;
-	/* figure out what do..*/
-	//node->getChild(0)->accept(this);
 }
 
 void x86Visitor::createSubroutine(string name) {
@@ -257,9 +266,9 @@ void x86Visitor::deallocVar() {
 
 }
 void x86Visitor::ret() {
-    text << "mov esp,ebp\n";
-    text << "pop ebp\n";   
-    text << "ret\n";
+    text << "\tmov esp,ebp\n";
+    text << "\tpop ebp\n";   
+    text << "\tret\n";
 }
 
 string x86Visitor::getAssembly() {
@@ -276,10 +285,14 @@ void x86Visitor::init(Node* root) {
     boost::shared_ptr<SymbolTable> t = root->getTable();
     table_t::iterator it;
 
+	string labelSuffix = this->labelMaker.getNewLabel();
+
     /* global vars, reserve space for em init" */
     for(it = t->start(); it != t->end(); it++) {
-        data << "common\t" << it->first << "  " 
+		string label = it->first + labelSuffix;
+		data << "common\t" << label << "  " 
                 << it->second->getSize() << endl;
+		it->second->setLabel(label);
     }
  
     text << "section .text\n";

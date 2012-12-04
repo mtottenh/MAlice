@@ -7,7 +7,7 @@
  * Construct a node with no children; set to unknown data type and set as a 
  * generic node.
  */
-Node::Node() : loc() {
+Node::Node() : loc(), label("") {
 	name = "Node";
 	type = INVALIDTYPE;
 	nodeType = GENERIC_NODE;
@@ -206,4 +206,12 @@ int Node::calculateWeight() {
 	}
 
 	return weight;
+}
+
+string Node::getLabel() {
+	return this->label;
+}
+
+void Node::setLabel(string label) {
+	this->label = label;
 }

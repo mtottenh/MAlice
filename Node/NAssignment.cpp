@@ -1,6 +1,7 @@
 #include "NAssignment.hpp"
 #include "TypeDefs.hpp"
 #include "../Errors/TypeMap.hpp"
+#include "../CodeGeneration/ASTVisitor.hpp"
 
 /* Constructors */
 
@@ -152,4 +153,9 @@ int NAssignment::checkMethod() {
 	}
 
 	return isValid;
+}
+
+void NAssignment::accept(ASTVisitor *v)
+{
+	v->visit(this);
 }
