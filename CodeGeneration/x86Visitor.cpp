@@ -143,7 +143,7 @@ void x86Visitor::visit(NReturn *node) {
 }
 
 void x86Visitor::visit(NStatementList *node) {
-    for (int i = 0; i < node.getSize(); i++)
+    for (int i = 0; i < node->getChildrenSize(); i++)
 	{
 		node->getChild(i)->accept(this);
 	}
