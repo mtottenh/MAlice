@@ -141,7 +141,11 @@ void x86Visitor::visit(NReturn *node) {
 }
 
 void x86Visitor::visit(NStatementList *node) {
-    cerr << "Statement List" << endl;
+    for (int i = 0; i < node.getSize(); i++)
+	{
+		node->getChild(i)->accept(this);
+	}
+	cerr << "Statement List" << endl;
 }
 
 void x86Visitor::visit(NStringLit *node) {
