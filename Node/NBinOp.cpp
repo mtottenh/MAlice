@@ -16,7 +16,9 @@ NBinOp::NBinOp(Node* left, Node* right, int op) {
 int NBinOp::getType() {
 	return resolveType();
 }
-
+int NBinOp::getOp() {
+    return op;
+}
 int NBinOp::check() {
 	int isValid = 1;
 

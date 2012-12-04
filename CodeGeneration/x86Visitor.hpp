@@ -7,10 +7,14 @@
 
 #include <sstream>
 class x86Visitor : public ASTVisitor {
+private:
+    string getReg(int);
 protected:
     stringstream text; 
     stringstream data;
 	LabelMaker labelMaker;
+    std::deque<string> freeRegs;
+    std::deque<string> allRegs;
 public:
     x86Visitor();
     virtual void visit(NArrayAccess*);

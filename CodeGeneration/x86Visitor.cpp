@@ -1,8 +1,37 @@
 #include "x86Visitor.hpp"
 #include <boost/shared_ptr.hpp>
 #include "../Node/NodeIncludes.hpp"
+#include "../Node/TypeDefs.hpp"
+/* Register conventions -
+ * RAX stores the result of any procedure or function
+ * a function can have an arbitrary number of paramters which are stored on the
+ * stack in reverse order
+ */
 
-x86Visitor::x86Visitor() : labelMaker() {}
+
+
+x86Visitor::x86Visitor() : labelMaker() {
+
+    freeRegs.clear();
+    /* general purpose registers */
+    allRegs.clear();
+    allRegs.push_back("r8");
+    allRegs.push_back("r9");
+    allRegs.push_back("r10");
+    allRegs.push_back("r11");
+    allRegs.push_back("r12");
+    allRegs.push_back("r13");
+    allRegs.push_back("r14");
+    allRegs.push_back("r15");
+    allRegs.push_back("rax");
+    allRegs.push_back("rbx");
+    allRegs.push_back("rcx");
+    allRegs.push_back("rdx");
+    allRegs.push_back("rsi");
+    allRegs.push_back("rdi");
+    freeRegs = allRegs;
+}
+
 
 
 void x86Visitor::visit(NArrayAccess *node) {
@@ -22,8 +51,52 @@ void x86Visitor::visit(NAssignment *node) {
  * like the tutorial.
  */
 void x86Visitor::visit(NBinOp *node) {
-	node->getChild(0)->accept(this);
-    node->getChild(1)->accept(this);
+    if (node->getChild(0)->weight() > node->getChild(1)->weight()) {
+        node->getChild(0)->accept(this);
+        string resultReg = freeRegs.pop();
+        node->getChild(1)->accept(this);
+        string nxtReg = freeRegs.pop();
+    } else {
+        node->getChild(1)->accept(this);
+        node->getChild(0)->accept(this);
+    }
+    
+
+    switch(node->getOp() ) {
+        case LOR:
+            break;
+        case LAND:
+             break;
+        case LEQU:
+             break;
+        case LLTHAN:
+             break;
+        case LLTHANEQ:
+             break;
+        case LGTHAN:
+             break;
+        case LGTHANEQ:
+             break;
+        case LNOTEQU:
+             break;
+        case AND:
+             break;
+        case OR:
+             break;
+        case XOR:
+             break;
+        case PLUS:
+             break;
+        case DASH:
+             break;
+        case MULT:
+             break;
+        case DIV:
+             break;
+        case MOD:
+             break;
+    }
+	text << resultReg << "," << nxtReg;
 }
 
 void x86Visitor::visit(NCharLit *node) {
@@ -168,7 +241,7 @@ void x86Visitor::visit(NMethodCall *node) {
 }
 
 void x86Visitor::visit(NNullToken *node) {
-	cout << "Visiting a null token" << endl;
+	cout << "Node: NNullToken" << endl;
 }
 
 void x86Visitor::visit(Node *node) {
@@ -299,3 +372,15 @@ void x86Visitor::init(Node* root) {
     text << "global _start\n\n";
     text << "_start:\n";
 }
+
+/* private helper functions */
+
+string x86Visitor::getReg(int reg) {
+    stringstream converter;
+    converter << reg;
+    return converter.str();
+}
+
+/* list of avalible registers for GP computation 
+ * rax, rbx rcx, rdx, rdi, rsi, r8, r9, r10, r11, r12, r13, r14, r15,
+ */
