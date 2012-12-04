@@ -3,9 +3,11 @@
 #include <iostream>
 #include <cstdarg>
 #include "Node/NodeIncludes.hpp"
-#include "TreePrinter/TreePrinter.hpp"
+#include "TreeUtils/TreePrinter.hpp"
 #include "Errors/TypeMap.hpp"
-#include "TreeWalker/SymbolTableGenerator.hpp"
+#include "TreeUtils/SymbolTableGenerator.hpp"
+#include "CodeGeneration/ASTVisitor.hpp"
+#include "CodeGeneration/x86Visitor.hpp"
 extern int yylex();
 extern void yylex_destroy();
 extern void yyerror (char *s, ...);
@@ -484,10 +486,42 @@ int main(int argc, char* argv[]) {
 
 	//Check that the AST is semantically valid.
 	isValid &= root->check();
+    /* generate code using x86Visitor*/
+    x86Visitor *v = new x86Visitor();
+    v->init(root);
+    root->accept(v);
 
+    /*create the output file*/
+    string outputFname(argv[1]);
+    size_t pos = outputFname.find(".alice");
+    outputFname = outputFname.substr(0,pos);
+    outputFname = outputFname + ".asm";
+    FILE *output = fopen(outputFname.c_str(),"w");
+    if (output != NULL) {
+        fputs(v->getAssembly().c_str(),output);
+        fputs("\n\n\tpop rbp\n\tsys.exit\n",output);
+        fclose(output);
+        /* assemble with nasm */
+        /* TODO - Ask mark whether it would be easier
+         * to just create a shell script, ie not relying
+         * on nasm/ld to be under /usr/bin
+         */
+        execl("/usr/bin/nasm","/usr/bin/nasm", "-f elf64",
+                outputFname.c_str(),(char *) 0);
+        /* link with ld */
+        pos = outputFname.find(".asm");
+        string objFname = outputFname.substr(0,pos) + ".o";
+        outputFname = "-o " + outputFname.substr(0,pos);
+        execl("/usr/bin/ld","/usr/bin/ld",objFname.c_str(),
+                    outputFname.c_str(),(char*)0);
+    } else {
+        cerr << "error opening output file for writing: " << outputFname << endl;
+    }
 	//Finish up with a bit of memory management.
 	delete root;
+    delete v;
 	fclose(input);
+    fclose(output);
 	yylex_destroy();
 	return isValid ? EXIT_SUCCESS : EXIT_FAILURE;
 }

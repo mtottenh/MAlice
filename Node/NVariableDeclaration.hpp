@@ -4,7 +4,7 @@
 #include "Node.hpp"
 #include "NIdentifier.hpp"
 #include <string>
-
+class ASTVisitor;
 class NVariableDeclaration : public Node {
 //private:
 //	int type;
@@ -15,6 +15,7 @@ public:
 	NVariableDeclaration(NIdentifier*, int, Node*);
 	string getID() const { return name;}
 	int getArrayType(int);
+    virtual void accept(ASTVisitor*);
 }; 
 
 #endif

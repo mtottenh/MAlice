@@ -10,6 +10,7 @@ public:
 	NStringLit(string);
 	string literal;
 	virtual int resolveType();
+    void accept(ASTVisitor*);
 };
 
 #endif

@@ -12,6 +12,7 @@ public:
 	NPrint(const char*); 
 	NPrint(Node*);
 	virtual int check();
+    void accept(ASTVisitor*);
 };
 
 #endif

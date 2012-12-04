@@ -11,9 +11,9 @@ output
 *.log
 *.aux
 
-#ignore junk files from compiling C code
+#ignore junk files from compiling C code and asembly files
 *.o
-
+*.asm
 #ignore junk files from compiling Haskell code
 *.hi
 
@@ -34,8 +34,10 @@ output
 *.tab.h
 
 #ignore binaries
-parser
-scanner
+compile
 
 #ignore MAlice reference compiler junk
 *.py
+
+#test stuff
+test*

@@ -9,6 +9,7 @@ public:
         NStatementList();
 	NStatementList(Node* , Node*);
 	virtual int check();
+    void accept(ASTVisitor* );
 }; 
 
 #endif

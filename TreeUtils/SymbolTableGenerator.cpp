@@ -11,7 +11,7 @@ SymbolTableGenerator::SymbolTableGenerator(Node* tree) {
 
 int SymbolTableGenerator::generateTable() {
     int isValid = 1;
-	sym_table_ptr table (new SymbolTable());
+	sym_table_ptr table( new SymbolTable() );
 	root->addTable(table);
 	std::deque<Node*> children = root->getChildren();
 	Node* node;

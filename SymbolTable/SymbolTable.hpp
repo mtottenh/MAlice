@@ -33,7 +33,8 @@ class SymbolTable {
 		 */
 		table_t table;
 		SymbolTable* parent;
-				
+    protected:
+        int table_id;				
 	public:
 		/* 
 		 * Constructors for creating a global variable table
@@ -62,8 +63,16 @@ class SymbolTable {
 		 * 0 otherwise.
 		 */
 		int parentExists();
-		/*nt markedForDeletion();*/
+
 		void print();
+        /*
+         * Getters and setters for table_id
+         */
+         int getTableID();
+         void setTableID(int);
+        /* getter for map iterator I NEED DEES */
+        table_t::iterator start();
+        table_t::iterator end();
 };
 
 #endif
