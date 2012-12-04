@@ -96,8 +96,8 @@ int NBinOp::calculateWeight() {
 	 * The weight of the binary operator is the minimum weight of evaluating
 	 * the LHS or RHS.
 	 */
-	Node* lhsWeight = children[0]->getWeight();
-	Node* rhsWeight = children[1]->getWeight();
+	int lhsWeight = children[0]->getWeight();
+	int rhsWeight = children[1]->getWeight();
 
 	/* Cost of evaluating rhs first, plus 1 to store the value of rhs. */
 	int cost1 = max(lhsWeight, rhsWeight + 1);

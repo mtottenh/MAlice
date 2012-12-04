@@ -27,6 +27,7 @@ public:
 	 * 0 otherwise.
 	 */
 	virtual int check();
+	void accept(ASTVisitor*);
 };  
 
 #endif

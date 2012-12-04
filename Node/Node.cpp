@@ -167,6 +167,23 @@ void Node::accept(ASTVisitor* v) {
     v->visit(this);
 }
 
+int Node::getSize() {
+    switch(this->getType()) {
+        case TNUMBER:
+            return 4;
+        case PROCEDURE:
+        case  FUNC:
+            return 90001;
+    } 
+}
+
+int Node::getWeight() {
+	if(weight == -1 ) {
+		return calculateWeight();
+	}
+
+	return weight;
+}
 
 /* Protected methods. */
 
@@ -179,13 +196,10 @@ boost::shared_ptr<SymbolTable> Node::getTable() {
     return table;
 }
 
+int Node::calculateWeight() {
+	for(int i = 0; i < this->getChildrenSize(); ++i) {
+		weight += this->getChild(i)->getWeight();
+	}
 
-int Node::getSize() {
-    switch(this->getType()) {
-        case TNUMBER:
-            return 4;
-        case PROCEDURE:
-        case  FUNC:
-            return 90001;
-    } 
+	return weight;
 }
