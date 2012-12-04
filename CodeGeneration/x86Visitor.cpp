@@ -40,9 +40,6 @@ void x86Visitor::visit(NConditional *node) {
 
 }
 
-void x86Visitor::visit(NDec *node) {
-
-}
 /* NDeclarationBlock is our 'entry' point */
 void x86Visitor::visit(NDeclarationBlock *node) {
     cerr << "Declaration Block" << endl;
@@ -86,6 +83,10 @@ void x86Visitor::visit(NInc *node) {
 
 }
 
+void x86Visitor::visit(NDec *node) {
+
+}
+
 void x86Visitor::visit(NInput *node) {
 
 }
@@ -103,7 +104,7 @@ void x86Visitor::visit(NMethodCall *node) {
 }
 
 void x86Visitor::visit(NNullToken *node) {
-
+	cout << "Visiting a null token" << endl;
 }
 
 void x86Visitor::visit(Node *node) {
