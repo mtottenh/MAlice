@@ -19,6 +19,9 @@ protected:
 	 * array will resolve to type letter.
 	 */
 	virtual int resolveType();
+
+	/* Calculates the weight of the node. */
+	virtual int calculateWeight();
 public:
 	NArrayAccess(NIdentifier*, Node*);
 

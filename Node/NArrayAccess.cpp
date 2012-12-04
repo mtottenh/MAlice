@@ -76,3 +76,8 @@ int NArrayAccess::resolveType() {
 		break;
 	}
 }
+
+int NArrayAccess::calculateWeight() {
+	/* Weight of the index expression. */
+	return children[1]->getWeight();
+}
