@@ -56,7 +56,13 @@ protected:
 	node_children_t children; 
 
 	/* String representing the name of the node - usually its identifier. */
-	string name; 
+	string name;
+
+	/* Field for the weight of the node (number of registers required). */
+	int weight; 
+
+	/* Calculate the weight of the node. */
+	virtual int calculateWeight();
 
 	/* 
 	 * Virtual method that determines the type of the node. Returns an 
@@ -101,6 +107,9 @@ public:
 	/* Returns a FileLocation pointer giving the node's location. */
 	FileLocation* getLocation();
 
+	/* Returns the weight of the node. */
+	int getWeight();
+
 	/* Returns SUCCESS if the node is the root node, FAILURE otherwise. */
 	int isRoot();
 
@@ -113,6 +122,7 @@ public:
 	/* Sets the location class of the node to a given FileLocation. */
 	void setLocation(FileLocation);
 	void setLocation(FileLocation *);
+
 	/* Prints the contents of the node. Returns SUCCESS or FAILURE. */
 	virtual int print() const;
 

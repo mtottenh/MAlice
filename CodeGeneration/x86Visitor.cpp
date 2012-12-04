@@ -19,13 +19,10 @@ void x86Visitor::visit(NAssignment *node) {
  * like the tutorial.
  */
 void x86Visitor::visit(NBinOp *node) {
-    switch(node->getType()) {
-        case PLUS:
-            node->getChild(0)->accept(this);
-            node->getChild(1)->accept(this);
-            
-    }
+		node->getChild(0)->accept(this);
+        node->getChild(1)->accept(this);
 
+				
 }
 
 void x86Visitor::visit(NCharLit *node) {
