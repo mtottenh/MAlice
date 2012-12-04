@@ -2,9 +2,7 @@
 #include <boost/shared_ptr.hpp>
 #include "../Node/NodeIncludes.hpp"
 
-x86Visitor::x86Visitor() {
-
-}
+x86Visitor::x86Visitor() : labelMaker() {}
 
 
 void x86Visitor::visit(NArrayAccess *node) {
