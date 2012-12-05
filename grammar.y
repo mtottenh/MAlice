@@ -490,6 +490,9 @@ int main(int argc, char* argv[]) {
     x86Visitor *v = new x86Visitor();
     v->init(root);
     root->accept(v);
+	// TODO
+	// There may be a cleaner way to encapsulate this
+	v->generateFunctionDefinitions();
 
     /*create the output file*/
     string outputFname(argv[1]);
@@ -499,7 +502,7 @@ int main(int argc, char* argv[]) {
     FILE *output = fopen(outputFname.c_str(),"w");
     if (output != NULL) {
         fputs(v->getAssembly().c_str(),output);
-        fputs("\n\n\tpop rbp\n\tsys.exit\n",output);
+       // fputs("\n\n\tpop rbp\n\tsys.exit\n",output);
         fclose(output);
         /* assemble with nasm */
         /* TODO - Ask mark whether it would be easier
@@ -512,6 +515,7 @@ int main(int argc, char* argv[]) {
         pos = outputFname.find(".asm");
         string objFname = outputFname.substr(0,pos) + ".o";
         outputFname = "-o " + outputFname.substr(0,pos);
+		cerr << "\nOutput filename:  " << outputFname << "\t" << objFname <<endl;
         execl("/usr/bin/ld","/usr/bin/ld",objFname.c_str(),
                     outputFname.c_str(),(char*)0);
     } else {

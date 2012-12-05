@@ -4,7 +4,9 @@
 
 #include "ASTVisitor.hpp"
 #include "LabelMaker.hpp"
-
+#include <deque>
+#include <vector>
+#include <queue>
 #include <sstream>
 class x86Visitor : public ASTVisitor {
 private:
@@ -15,6 +17,7 @@ protected:
 	LabelMaker labelMaker;
     std::deque<string> freeRegs;
     std::deque<string> allRegs;
+	std::queue<NFunctionDeclaration*> funcDecQueue;
 public:
     x86Visitor();
     virtual void visit(NArrayAccess*);
@@ -50,6 +53,12 @@ public:
     void ret();
     void init(Node*); 
     string getAssembly();
+	string getNextReg();
+	string getNextStore();
+	void unfoldedFunctionVisitor(NFunctionDeclaration*);
+	void generateFunctionDefinitions();
+	void restoreStore(string);
+
 };
 
 #endif
