@@ -66,13 +66,15 @@ void x86Visitor::visit(NBinOp *node) {
     }
     
 
-    switch(node->getOp() ) {
+    switch(node->getOp()) {
         case LOR:
-            break;
+            text << "or ";	
+			break;
         case LAND:
-             break;
+            text << "and ";
+			break;
         case LEQU:
-             break;
+			break; 
         case LLTHAN:
              break;
         case LLTHANEQ:
@@ -100,7 +102,10 @@ void x86Visitor::visit(NBinOp *node) {
         case MOD:
              break;
     }
+
     text << resultReg << "," << nxtReg;
+	restoreStore(nxtReg);
+	restoreStore(resultReg);
 }
 
 void x86Visitor::visit(NCharLit *node) {
@@ -124,14 +129,16 @@ void x86Visitor::visit(NConditional *node) {
     node->getChild(0)->accept(this);
     // If condition is false, jump to next condition
     string elseLabel = this->labelMaker.getNewLabel();
-    text << "\tjz " << elseLabel << endl;
+	string resultReg = this->getNextReg();
+	text << "\tcmp " << resultReg << ", 1" << endl;
+    text << "\tjne " << elseLabel << endl;
     // Otherwise, execute the statement list, first pushing
     // the end condition label onto the stack
     this->labelMaker.pushEndCondLabel();
     node->getChild(1)->accept(this);
     this->labelMaker.popEndCondLabel();
     // Return to end of conditional
-    text << "\tjz " << endLabel << endl;
+    text << "\tjmp " << endLabel << endl;
     // Print out code for rest of cases
     text << elseLabel << ":" << endl;
     node->getChild(2)->accept(this);
@@ -141,6 +148,7 @@ void x86Visitor::visit(NConditional *node) {
         text << endLabel << ":" << endl;
         this->labelMaker.resetEndCondLabel();
     }
+	restoreStore(resultReg);
 }
 
 void x86Visitor::visit(NEndIf *node) {
