@@ -14,6 +14,7 @@ x86Visitor::x86Visitor() : labelMaker() {
 
     freeRegs.clear();
     /* general purpose registers */
+	/* TODO - rax..rdx aren't necessarily general purpose - see IDIV! */
     allRegs.clear();
     allRegs.push_back("r8");
     allRegs.push_back("r9");
@@ -67,47 +68,87 @@ void x86Visitor::visit(NBinOp *node) {
     
 
     switch(node->getOp()) {
-        case LOR:
-            text << "or ";	
+        case OR:
+		case LOR:
+            text << "or " << resultReg << "," << nxtReg;
 			break;
+		case AND:
         case LAND:
-            text << "and ";
+            text << "and " << resultReg << "," << nxtReg;
 			break;
         case LEQU:
+			comparePredicate("sete", resultReg, nxtReg);	
 			break; 
         case LLTHAN:
-             break;
+			comparePredicate("setl", resultReg, nxtReg);
+			break;
         case LLTHANEQ:
-             break;
+            comparePredicate("setle", resultReg, nxtReg);
+			break;
         case LGTHAN:
-             break;
+            comparePredicate("setg", resultReg, nxtReg);
+			break;
         case LGTHANEQ:
-             break;
+            comparePredicate("setge", resultReg, nxtReg);
+			break;
         case LNOTEQU:
-             break;
-        case AND:
-             break;
-        case OR:
-             break;
+            comparePredicate("setne", resultReg, nxtReg);
+			break;
         case XOR:
-             break;
+            text << "xor " << resultReg << ", " << nxtReg << endl;
+			break;
         case PLUS:
-             break;
+            text << "add " << resultReg << ", " << nxtReg << endl;
+			break;
         case DASH:
-             break;
+            text << "sub " << resultReg << ", " << nxtReg << endl;
+			break;
         case MULT:
-             break;
+            text << "imul " << resultReg << ", " << nxtReg << endl;
+			break;
         case DIV:
-             break;
+			text << "push rax" << endl;
+			text << "push rdx" << endl;
+			/* not sure if rax or rdx... see intel documentation */
+			text << "mov " << resultReg << ", rdx" << endl;
+            text << "cqo" << endl;
+			text << "idiv " << nxtReg << endl;
+			/* quotient lives in rax, move to resultReg */
+			text << "mov " << resultReg << ", rax";
+			text << "pop rdx" << endl;
+			text << "pop rax" << endl;
+			break;
         case MOD:
-             break;
+            text << "push rax" << endl;
+			text << "push rdx" << endl;
+			/* not sure if rax or rdx... see intel documentation */
+			text << "mov " << resultReg << ", rdx" << endl;
+            text << "cqo" << endl;
+			text << "idiv " << nxtReg << endl;
+			/* remainder lives in rdx, move to resultReg */
+			text << "mov " << resultReg << ", rdx";
+			text << "pop rdx" << endl;
+			text << "pop rax" << endl;
+ 			break;
     }
 
-    text << resultReg << "," << nxtReg;
 	restoreStore(nxtReg);
 	restoreStore(resultReg);
 }
 
+void x86Visitor::comparePredicate(string setInstr, string resultReg,
+									string nxtReg) {
+		/* 
+		 * SETX instructions check EFLAGS for equality, less than etc.. and
+		 * set a BYTE if the condition matches X. We use MOVZX to put it in
+		 * the 64 bit register.
+		 */ 
+		text << "cmp " << resultReg << ", " << nxtReg << endl;
+		text << "push al" << endl;
+		text << setInstr << " al" << endl;
+		text << "movzx " << resultReg << ", al";
+		text << "pop al";
+}
 void x86Visitor::visit(NCharLit *node) {
     data << "\nAUTOGEN:\tdb\t";
     data << "'" << node->getID() << "'"; 

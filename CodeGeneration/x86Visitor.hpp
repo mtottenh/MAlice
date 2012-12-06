@@ -11,6 +11,7 @@
 class x86Visitor : public ASTVisitor {
 private:
     string getReg(int);
+	void comparePredicate(string, string, string);
 protected:
     stringstream text; 
     stringstream data;
