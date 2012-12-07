@@ -119,7 +119,7 @@ access.the.linux.kernel:
 	mov rcx, [%1]
 	cmp  rcx ,0
 	je   %%end
-	output.char %1
+	output.char [%1]
 	pop rcx
 	inc %1
 	jmp %%start
@@ -150,7 +150,9 @@ access.the.linux.kernel:
 
          cmp  rax, 0              ; skip if N<10
          je   %%end
+    ; THIS SEEMS TO BE BREAKING???
          add  rdx, '0'           ; output char for digit N % 10
+    ; 
 		 output.char rdx
          jmp %%print			  ; output.int (N / 10)
 
@@ -169,3 +171,6 @@ access.the.linux.kernel:
 	output.char rax
 	pop rax
 %endmacro
+
+section .data
+    octetbuffer DQ 0

@@ -117,7 +117,9 @@ closed		{ tokenpos += yyleng; yylval.values.string = yytext;  return CBRACE; }
 		   return STRING; }
 
  /* Integer and bitwise expressions */
-{integer}	{ tokenpos += yyleng; yylval.values.token = atoi(yytext); return INTEGER; }
+{integer}	{ tokenpos += yyleng; yylval.values.token = atoi(yytext); 
+              printf( "yytext: %s\nyylval.values.token: %d\n",yytext,yylval.values.token);
+              return INTEGER; }
 \+			{ tokenpos += yyleng; yylval.values.string = yytext;  return PLUS; }
 \*			{ tokenpos += yyleng; yylval.values.string = yytext;  return MULT; }
 \/			{ tokenpos += yyleng; yylval.values.string = yytext;  return DIV; }

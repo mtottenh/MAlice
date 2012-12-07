@@ -1,3 +1,4 @@
+#include "../CodeGeneration/ASTVisitor.hpp"
 #include "NBinOp.hpp"
 #include "TypeDefs.hpp"
 
@@ -192,4 +193,9 @@ int NBinOp::isBoolean() {
 	return (op == LEQU || op == LAND || op == LOR || op == LNOTEQU 
 			|| op == LGTHAN || op == LGTHANEQ || op == LLTHAN 
 			|| op == LLTHANEQ);
+}
+
+
+void NBinOp::accept(ASTVisitor *v) {
+    v->visit(this);
 }

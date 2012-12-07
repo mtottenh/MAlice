@@ -11,6 +11,7 @@ class NParamBlock : public Node
  */
 public:
 	NParamBlock(Node*);
+    virtual void accept(ASTVisitor*);
 };
 
 #endif

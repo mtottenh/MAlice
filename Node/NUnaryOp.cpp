@@ -1,3 +1,5 @@
+#include "../CodeGeneration/ASTVisitor.hpp"
+
 #include "NUnaryOp.hpp"
 #include "TypeDefs.hpp"
 
@@ -64,4 +66,9 @@ int NUnaryOp::checkBoolean() {
 int NUnaryOp::calculateWeight() {
 	/* The weight of applying a unary operator is the weight of the operand. */
 	return children[0]->getWeight();
+}
+
+
+void NUnaryOp::accept(ASTVisitor *v) {
+    v->visit(this);
 }

@@ -1,3 +1,4 @@
+#include "../CodeGeneration/ASTVisitor.hpp"
 #include "NInc.hpp"
 #include "TypeDefs.hpp"
 
@@ -45,4 +46,9 @@ int NInc::resolveType() {
 	else {
 		return INVALIDTYPE;
 	}
+}
+
+
+void NInc::accept(ASTVisitor *v) {
+    v->visit(this);
 }

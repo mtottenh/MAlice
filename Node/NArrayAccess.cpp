@@ -1,3 +1,4 @@
+#include "../CodeGeneration/ASTVisitor.hpp"
 #include "NArrayAccess.hpp"
 #include "TypeDefs.hpp"
 
@@ -81,4 +82,10 @@ int NArrayAccess::resolveType() {
 int NArrayAccess::calculateWeight() {
 	/* Weight of the index expression, plus a register to store it in. */
 	return children[1]->getWeight() + 1;
+}
+
+
+void NArrayAccess::accept(ASTVisitor *v) {
+    v->visit(this);
+    
 }

@@ -27,6 +27,8 @@ public:
  	 * case, 0 otherwise.                                                        
 	 */
 	virtual int check();
+    virtual void accept(ASTVisitor*);
+    int getValue();
 };
 
 #endif

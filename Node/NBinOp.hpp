@@ -54,6 +54,7 @@ public:
 	 */
 	virtual int check();
     int getOp();
+    void accept(ASTVisitor*);
 };
 
 #endif

@@ -2,12 +2,16 @@
 #include <string>
 #include <iostream>
 #include <cstdarg>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
 #include "Node/NodeIncludes.hpp"
 #include "TreeUtils/TreePrinter.hpp"
 #include "Errors/TypeMap.hpp"
 #include "TreeUtils/SymbolTableGenerator.hpp"
 #include "CodeGeneration/ASTVisitor.hpp"
 #include "CodeGeneration/x86Visitor.hpp"
+    
 extern int yylex();
 extern void yylex_destroy();
 extern void yyerror (char *s, ...);
@@ -246,7 +250,7 @@ Factor
 	| Value { $$ = $1; }
 	;
 Value
-	: INTEGER { $$ = new NInteger($1); $$->setLocation(generateLocation()); }
+	: INTEGER { $$ = new NInteger(yylval.values.token); $$->setLocation(generateLocation()); }
 	| Identifier { $$ = $1; }
 	| Call { $$ = $1; }
 	| ArrayVal { $$ = $1; }
@@ -509,15 +513,22 @@ int main(int argc, char* argv[]) {
          * to just create a shell script, ie not relying
          * on nasm/ld to be under /usr/bin
          */
-        execl("/usr/bin/nasm","/usr/bin/nasm", "-f elf64",
-                outputFname.c_str(),(char *) 0);
-        /* link with ld */
-        pos = outputFname.find(".asm");
-        string objFname = outputFname.substr(0,pos) + ".o";
-        outputFname = "-o " + outputFname.substr(0,pos);
-		cerr << "\nOutput filename:  " << outputFname << "\t" << objFname <<endl;
-        execl("/usr/bin/ld","/usr/bin/ld",objFname.c_str(),
-                    outputFname.c_str(),(char*)0);
+        cerr << "Assembling with nasm, output filename: " << outputFname << endl;
+        if (fork() == 0) {
+            execl("/usr/bin/nasm","/usr/bin/nasm", "-f elf64",
+                    outputFname.c_str(),(char *) 0);
+        } else {
+            int status;
+            wait(&status);
+            cerr << "ALLO?";
+            /* link with ld */
+            pos = outputFname.find(".asm");
+            string objFname = outputFname.substr(0,pos) + ".o";
+            outputFname = "-o" + outputFname.substr(0,pos);
+		    cerr << "\nOutput filename:  " << outputFname << "\t" << objFname <<endl;
+            execl("/usr/bin/ld","/usr/bin/ld",objFname.c_str(),
+                        outputFname.c_str(),(char*)0);
+        }
     } else {
         cerr << "error opening output file for writing: " << outputFname << endl;
     }

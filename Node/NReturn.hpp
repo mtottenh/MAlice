@@ -11,6 +11,7 @@ public:
 	 */
 	NReturn(Node *exp);
 	virtual int resolveType();
+    virtual void accept(ASTVisitor*);
 };
 #endif
 

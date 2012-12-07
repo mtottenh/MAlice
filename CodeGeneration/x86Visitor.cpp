@@ -41,9 +41,14 @@ void x86Visitor::visit(NArrayAccess *node) {
 
 void x86Visitor::visit(NAssignment *node) {
     int rval = node->getChildrenSize() - 1;
+    int lval = rval-1;
+
     node->getChild(rval)->accept(this);
-    if (node->getChildrenSize() > 1)
-    {
+    if (node->getChildrenSize() > 1) {
+       Node* leftChildID = node->getChild(lval);
+       Node* declaredNode = node->getTable()->lookup(leftChildID->getID());
+       text << "\tmov " << "[" << declaredNode->getLabel() << "]";
+       text << ", " << freeRegs.front() <<  endl;
         //Assign the result to the variable
     }
 }
@@ -149,10 +154,17 @@ void x86Visitor::comparePredicate(string setInstr, string resultReg,
 		text << "movzx " << resultReg << ", al";
 		text << "pop al";
 }
+
+/* TODO: As we have an output charlit macro I'm sure that we
+ * no longer need to store this in the data segment
+ * i.e the only reason we wanted to store it in .data was
+ * because we didnt have a way of printing it before
+ */
 void x86Visitor::visit(NCharLit *node) {
-    data << "\nAUTOGEN:\tdb\t";
-    data << "'" << node->getID() << "'"; 
-    data << "\nAUTOGENS:\tequ $-AUTOGEN:\n";
+    
+//    data << "\nAUTOGEN:\tdb\t";
+    text << "'" << node->getID() << "'"; 
+ //   data << "\nAUTOGENS:\tequ $-AUTOGEN:\n";
 
 }
 
@@ -206,7 +218,7 @@ void x86Visitor::visit(NDeclarationBlock *node) {
         }
     } else {
         for (int i = 0; i < node->getChildrenSize(); i++) {
-            if (node->getChild(i)->getType() == VARDEC) {
+            if (node->getChild(i)->getNodeType() == VARDEC) {
                 cerr << "I CANNE HOLD EM CAP'N " << endl;
             } else {
                 node->getChild(i)->accept(this);
@@ -248,6 +260,8 @@ void x86Visitor::visit(NInput *node) {
 }
 
 void x86Visitor::visit(NInteger *node) {
+    text << "\n\tmov " << freeRegs.front() << ", " << node->getValue();
+    text << endl;
 
 }
 
@@ -304,7 +318,7 @@ void x86Visitor::visit(NParamDeclarationBlock *node) {
        references between their position on the stack in order
        to utilise the stack values */
 }
-
+/*TODO: change this from output char to output string or something..*/
 void x86Visitor::visit(NPrint *node) {
     /* save any reigsters we are going to use 
     text << "push rax\n"; 
@@ -314,9 +328,25 @@ void x86Visitor::visit(NPrint *node) {
     /* the contract for this is that it has to leave
      * the thing to print in rax??
      */  
-	node->getChild(0)->accept(this);
+    if(node->getChild(0)->getNodeType() == CHARLIT) {
     /* We can use the macro defed in system.inc */
-    text << "output.char " << endl;
+        text << "output.char ";
+ 	    node->getChild(0)->accept(this);   
+    }
+    if(node->getChild(0)->getNodeType() == STRINGLIT) {
+ 	    node->getChild(0)->accept(this);   
+        text << "\tpush rax\nmov rax," <<node->getChild(0)->getLabel();
+        text << "\n\toutput.string rax" << endl;
+        text << "\tpop rax";
+//        text << node->getChild(0)->getLabel();
+    } else {
+       node->getChild(0)->accept(this);
+       text << "\toutput.int " << freeRegs.front() << endl;
+       node->getChild(0)->getType();
+    }
+    
+
+    text << "\n";
 }
 
 void x86Visitor::visit(NReturn *node) {
@@ -336,20 +366,27 @@ void x86Visitor::visit(NStringLit *node) {
      * of labeling stringlits and their sizes
      *
      */
-    data << "\nAUTOGEN:\tdb\t";
-    data << node->getID(); 
-    data << "\nAUTOGENS:\tequ $-AUTOGEN:\n";
-
-
+    string label = this->labelMaker.getNewLabel();
+    data << label << ": db  " ;
+    data << node->getID() <<",0x0" << endl; 
+    node->setLabel(label);
 }
 
 void x86Visitor::visit(NUnaryOp *node) {
     cerr << "UnaryOp" << endl;
 }
 /* Variables are allocated on the stack, and are given
- * an address as [rbp +/- offset]
+ * an address as [rbp +/- offset] TODO: Replace 4 with offset
  */
 void x86Visitor::visit(NVariableDeclaration *node) {
+    int type = node->getType();
+    switch(type) {
+        case TNUMBER:
+            /* reserve 4 bytes for an integer */
+            text << "sub rsp,4\n";
+            node->setLabel("rbp+4");
+    
+    }
     cerr << "Variable Declaration" << endl;
 }
 

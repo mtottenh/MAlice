@@ -13,6 +13,7 @@ protected:
 public:
 	NUnaryOp(int, Node*);
 	virtual int check();
+    virtual void accept(ASTVisitor*);
 };
 
 #endif

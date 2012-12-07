@@ -1,3 +1,4 @@
+#include "../CodeGeneration/ASTVisitor.hpp"
 #include "NInteger.hpp"
 #include <boost/lexical_cast.hpp>
 #include "TypeDefs.hpp"
@@ -11,7 +12,7 @@ NInteger::NInteger() {
 NInteger::NInteger(int value) {
 	this->value = value;
 	this->type = resolveType();
-
+    cerr << "Value: " << value << "\n";
 	/* Cast the int to a string to get a representation of its value. */
 	this->name = boost::lexical_cast<string>(value);
 
@@ -35,4 +36,13 @@ int NInteger::resolveType() {
 int NInteger::calculateWeight() {
 	/* Integer is a constant - 1 register to store. */
 	return 1;
+}
+
+
+void NInteger::accept(ASTVisitor *v) {
+    v->visit(this);
+}
+
+int NInteger::getValue() {
+    return value;
 }

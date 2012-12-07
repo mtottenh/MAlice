@@ -33,6 +33,7 @@ public:
 	 * Returns SUCCESS if correct, FAILURE otherwise.
 	 */
 	virtual int check();
+    void accept(ASTVisitor*);
 };
 
 #endif
