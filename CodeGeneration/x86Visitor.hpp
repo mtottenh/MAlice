@@ -13,6 +13,7 @@ private:
     string getReg(int);
 	void comparePredicate(string, string, string);
 protected:
+    int offset;
     stringstream text; 
     stringstream data;
 	LabelMaker labelMaker;

@@ -116,7 +116,8 @@ public:
 
 	/* Returns SUCCESS if the node is the root node, FAILURE otherwise. */
 	int isRoot();
-
+    /* sets the node to be the root node */
+    int setRoot();
 	/*
 	 * Checks whether the node has an associated symbol table. Returns
 	 * SUCCESS if one exists, FAILURE otherwise.

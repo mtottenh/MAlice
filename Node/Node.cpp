@@ -97,11 +97,13 @@ FileLocation* Node::getLocation() {
 
 /* TODO rename to setAsRoot()
  */
-int Node::isRoot() {
+int Node::setRoot() {
 	isRootNode = 1;
 	return isRootNode;
 }
-
+int Node::isRoot() {
+    return isRootNode;
+}
 int Node::hasTable() {
 	return table == NULL;
 }

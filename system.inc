@@ -127,50 +127,56 @@ access.the.linux.kernel:
 	pop rcx
 %endmacro
 
-%macro output.int 1
-%%start:
-         ; rax=N then N/10, rdx=N%10, rbx=10
-
-         push rax                ; save registers
-         push rbx
-         push rdx
-
-         cmp  %1, 0 ; minus sign for negative numbers
-         mov  rax, %1       ; rax = N
-
-         jge  %%print
-
-         output.minus
-         neg  %1
-%%print:
-
-         mov  rdx, 0              ; rdx:rax = N (unsigned equivalent of "cqo")
-         mov  rbx, 10
-         idiv rbx                ; rax=N/10, rdx=N%10
-
-         cmp  rax, 0              ; skip if N<10
-         je   %%end
-    ; THIS SEEMS TO BE BREAKING???
-         add  rdx, '0'           ; output char for digit N % 10
-    ; 
-		 output.char rdx
-         jmp %%print			  ; output.int (N / 10)
-
-%%end:
-         add  rdx, '0'           ; output char for digit N % 10
-		 output.char rdx
-
-         pop  rdx                ; restore registers
-         pop  rbx
-         pop  rax
-%endmacro
-
 %macro output.minus 0			; void output_minus()
 	push rax
 	mov rax, '-'
 	output.char rax
 	pop rax
 %endmacro
+
+%macro output.int 1
+    push %1
+    call output_int
+%endmacro
+
+output_int:
+    push rbp
+    mov rbp, rsp
+    
+    push rax
+    push rbx
+    push rdx
+    
+    cmp qword [rbp+16], 0
+    jge L88
+    
+    output.minus
+    neg qword [rbp+16]
+L88:
+    mov rax, [rbp+16]
+    mov rdx, 0
+    mov rbx, 10
+    idiv rbx
+
+    cmp rax, 0
+    je L99
+    
+    push rax
+    call output_int
+    add rsp, 8
+
+L99:
+    add rdx, '0'
+    output.char rdx
+    pop rdx
+    pop rbx
+    pop rax
+    pop rbp
+    ret
+
+
+
+
 
 section .data
     octetbuffer DQ 0

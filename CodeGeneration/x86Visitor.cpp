@@ -11,7 +11,7 @@
 
 
 x86Visitor::x86Visitor() : labelMaker() {
-
+    offset = 0;
     freeRegs.clear();
     /* general purpose registers */
 	/* TODO - rax..rdx aren't necessarily general purpose - see IDIV! */
@@ -59,12 +59,14 @@ void x86Visitor::visit(NAssignment *node) {
 void x86Visitor::visit(NBinOp *node) {
 	string resultReg, nxtReg;
     if (node->getChild(0)->getWeight() > node->getChild(1)->getWeight()) {
+        cerr << "\nBinOp: evaluating left first\n";
         node->getChild(0)->accept(this);
         resultReg = getNextReg();
         node->getChild(1)->accept(this);
         nxtReg = getNextStore();
     } else {
 		/* TODO PopnSwap - BUBBLE POP */
+        cerr << "\nBinOp: evaluating right first\n";
         node->getChild(1)->accept(this);
 		nxtReg = getNextReg();
         node->getChild(0)->accept(this);
@@ -75,11 +77,11 @@ void x86Visitor::visit(NBinOp *node) {
     switch(node->getOp()) {
         case OR:
 		case LOR:
-            text << "or " << resultReg << "," << nxtReg;
+            text << "\tor " << resultReg << "," << nxtReg;
 			break;
 		case AND:
         case LAND:
-            text << "and " << resultReg << "," << nxtReg;
+            text << "\tand " << resultReg << "," << nxtReg;
 			break;
         case LEQU:
 			comparePredicate("sete", resultReg, nxtReg);	
@@ -100,16 +102,16 @@ void x86Visitor::visit(NBinOp *node) {
             comparePredicate("setne", resultReg, nxtReg);
 			break;
         case XOR:
-            text << "xor " << resultReg << ", " << nxtReg << endl;
+            text << "\txor " << resultReg << ", " << nxtReg << endl;
 			break;
         case PLUS:
-            text << "add " << resultReg << ", " << nxtReg << endl;
+            text << "\tadd " << resultReg << ", " << nxtReg << endl;
 			break;
         case DASH:
-            text << "sub " << resultReg << ", " << nxtReg << endl;
+            text << "\tsub " << resultReg << ", " << nxtReg << endl;
 			break;
         case MULT:
-            text << "imul " << resultReg << ", " << nxtReg << endl;
+            text << "\timul " << resultReg << ", " << nxtReg << endl;
 			break;
         case DIV:
 			text << "push rax" << endl;
@@ -163,7 +165,8 @@ void x86Visitor::comparePredicate(string setInstr, string resultReg,
 void x86Visitor::visit(NCharLit *node) {
     
 //    data << "\nAUTOGEN:\tdb\t";
-    text << "'" << node->getID() << "'"; 
+
+    text << "\t mov " << freeRegs.front() << ", '" << node->getID() << "'\n"; 
  //   data << "\nAUTOGENS:\tequ $-AUTOGEN:\n";
 
 }
@@ -212,6 +215,7 @@ void x86Visitor::visit(NEndIf *node) {
  */
 void x86Visitor::visit(NDeclarationBlock *node) {
     /* if we have a delcaration block just visit every child*/
+    offset = 0;
     if (!node->isRoot()) {
         for (int i = 0; i < node->getChildrenSize(); i++) {
             node->getChild(i)->accept(this);
@@ -234,6 +238,9 @@ void x86Visitor::visit(NFunctionDeclaration *node) {
 }
 
 void x86Visitor::visit(NIdentifier *node) {
+    Node *declarationNode = node->getTable()->lookup(node->getID());
+    text << "\tmov " << freeRegs.front() << ", " << "["
+         << declarationNode->getLabel() << "]" << endl; 
 
 }
 
@@ -380,14 +387,22 @@ void x86Visitor::visit(NUnaryOp *node) {
  */
 void x86Visitor::visit(NVariableDeclaration *node) {
     int type = node->getType();
+    stringstream convert;
     switch(type) {
         case TNUMBER:
             /* reserve 4 bytes for an integer */
-            text << "sub rsp,4\n";
-            node->setLabel("rbp+4");
-    
+            offset += 4;
+            text << "\tsub rsp, " << offset << endl;
+             convert << "rbp-" << offset;
+            node->setLabel(convert.str());
+            break;
+        case TCHAR:
+            offset += 4; 
+            text << "\tsub rsp, " << offset << endl;
+            convert << "rbp-" << offset;
+            node->setLabel(convert.str());           
+            break;
     }
-    cerr << "Variable Declaration" << endl;
 }
 
 void x86Visitor::createSubroutine(string name) {
@@ -460,10 +475,10 @@ void x86Visitor::unfoldedFunctionVisitor(NFunctionDeclaration* node) {
         statlist = (NStatementList*)codeblock->getChild(1);
         /* reserve space on stack from them */
         /*TODO should probably get some way of total size of local vars*/
-        /* rather than just assuming they are all 32bits */
-        text << "\tsub rsp," << decblock->getChildrenSize() * 4 <<"\n";
+        /* ratheri than just assuming they are all 32bits */
+        decblock->accept(this);
     } 
-    statlist->accept(this);    
+//    statlist->accept(this);    
     this->ret();
 }
 

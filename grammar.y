@@ -93,7 +93,7 @@ PARAMBLOCK PRED UNARYOP SEPARATOR INVALIDTYPE BOOLEAN VOID ENDIF
 /* We define a program as a list of Declarations, this allows global vaiables*/
 
 /* Reduce to a Program and at root */
-Program : DeclarationList { root = $1; root->isRoot(); }
+Program : DeclarationList { root = $1; root->setRoot(); }
 	;
 
 /* Create an AST node whose children are declarations. */
