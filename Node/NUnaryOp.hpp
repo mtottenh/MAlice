@@ -14,6 +14,7 @@ public:
 	NUnaryOp(int, Node*);
 	virtual int check();
     virtual void accept(ASTVisitor*);
+    int getOp();
 };
 
 #endif

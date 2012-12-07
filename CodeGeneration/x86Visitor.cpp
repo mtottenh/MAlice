@@ -77,11 +77,11 @@ void x86Visitor::visit(NBinOp *node) {
     switch(node->getOp()) {
         case OR:
 		case LOR:
-            text << "\tor " << resultReg << "," << nxtReg;
+            text << "\tor " << resultReg << "," << nxtReg << endl;
 			break;
 		case AND:
         case LAND:
-            text << "\tand " << resultReg << "," << nxtReg;
+            text << "\tand " << resultReg << "," << nxtReg << endl;
 			break;
         case LEQU:
 			comparePredicate("sete", resultReg, nxtReg);	
@@ -114,28 +114,28 @@ void x86Visitor::visit(NBinOp *node) {
             text << "\timul " << resultReg << ", " << nxtReg << endl;
 			break;
         case DIV:
-			text << "push rax" << endl;
-			text << "push rdx" << endl;
+			text << "\tpush rax" << endl;
+			text << "\tpush rdx" << endl;
 			/* not sure if rax or rdx... see intel documentation */
-			text << "mov " << resultReg << ", rdx" << endl;
-            text << "cqo" << endl;
-			text << "idiv " << nxtReg << endl;
+			text << "\tmov " << resultReg << ", rdx" << endl;
+            text << "\tcqo" << endl;
+			text << "\tidiv " << nxtReg << endl;
 			/* quotient lives in rax, move to resultReg */
-			text << "mov " << resultReg << ", rax";
-			text << "pop rdx" << endl;
-			text << "pop rax" << endl;
+			text << "\tmov " << resultReg << ", rax" << endl;
+			text << "\tpop rdx" << endl;
+			text << "\tpop rax" << endl;
 			break;
         case MOD:
-            text << "push rax" << endl;
-			text << "push rdx" << endl;
+            text << "\tpush rax" << endl;
+			text << "\tpush rdx" << endl;
 			/* not sure if rax or rdx... see intel documentation */
-			text << "mov " << resultReg << ", rdx" << endl;
-            text << "cqo" << endl;
-			text << "idiv " << nxtReg << endl;
+			text << "\tmov " << resultReg << ", rdx" << endl;
+            text << "\tcqo" << endl;
+			text << "\tidiv " << nxtReg << endl;
 			/* remainder lives in rdx, move to resultReg */
-			text << "mov " << resultReg << ", rdx";
-			text << "pop rdx" << endl;
-			text << "pop rax" << endl;
+			text << "\tmov " << resultReg << ", rdx" << endl;
+			text << "\tpop rdx" << endl;
+			text << "\tpop rax" << endl;
  			break;
     }
 
@@ -295,8 +295,7 @@ void x86Visitor::visit(NLoop *node) {
 }
 
 void x86Visitor::visit(NMethodCall *node) {
-    if (node->getChildrenSize() > 0)
-    {
+    if (node->getChildrenSize() > 0) {
         node->getChild(0)->accept(this);
     }
     cout << "Hello!" << endl;
@@ -380,7 +379,20 @@ void x86Visitor::visit(NStringLit *node) {
 }
 
 void x86Visitor::visit(NUnaryOp *node) {
-    cerr << "UnaryOp" << endl;
+    node->getChild(0)->accept(this);
+    string resultReg =  getNextReg();
+    switch(node->getOp()) {
+        case DASH:
+            text << "\tneg " << resultReg << endl;           
+			break;
+        case LNOT:
+ 		case NOT:
+            text << "\tnot " << resultReg << endl;           
+        	break;
+        case PLUS:
+            break;
+    }
+	restoreStore(resultReg);
 }
 /* Variables are allocated on the stack, and are given
  * an address as [rbp +/- offset] TODO: Replace 4 with offset
@@ -420,12 +432,6 @@ void x86Visitor::createSubroutine(string name) {
     /* Deallocate local variables */
     /* Restore EBP  and return */
 
-void x86Visitor::saveCalleeReg() {
-    text << "push rbx\n";
-    text << "push rdi\n";
-    text << "push rsi\n";
-}    
-
 void x86Visitor::restoreCalleeReg() {
     /** Return from subroutine**/
     text << "pop rsi\n";
@@ -449,14 +455,17 @@ string x86Visitor::getAssembly() {
 void x86Visitor::generateFunctionDefinitions()
 {
 	text << "\tcall _hattalabel1\n \tsys.exit\n";	
-    while (funcDecQueue.front())
-    {
+    while (!funcDecQueue.empty()) {
+        cerr << "Generating Function Body for : " 
+             << funcDecQueue.front()->getID();
         unfoldedFunctionVisitor(funcDecQueue.front());
         funcDecQueue.pop();
+        
     }
 }
 
 void x86Visitor::unfoldedFunctionVisitor(NFunctionDeclaration* node) {
+    cerr << "\nUnfolding: " << node->getID() << endl;
     /* Sets up our function label and base pointer*/
     createSubroutine(node->getLabel());
     int numChildren = node->getChildrenSize();

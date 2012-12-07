@@ -72,3 +72,7 @@ int NUnaryOp::calculateWeight() {
 void NUnaryOp::accept(ASTVisitor *v) {
     v->visit(this);
 }
+
+int NUnaryOp::getOp() {
+    return op;
+}
