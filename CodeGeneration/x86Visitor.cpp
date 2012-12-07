@@ -151,10 +151,10 @@ void x86Visitor::comparePredicate(string setInstr, string resultReg,
 		 * the 64 bit register.
 		 */ 
 		text << "cmp " << resultReg << ", " << nxtReg << endl;
-		text << "push al" << endl;
+		text << "push rax" << endl;
 		text << setInstr << " al" << endl;
-		text << "movzx " << resultReg << ", al";
-		text << "pop al";
+		text << "movzx " << resultReg << ", al" << endl;
+		text << "pop rax" << endl;
 }
 
 /* TODO: As we have an output charlit macro I'm sure that we
