@@ -327,31 +327,31 @@ void x86Visitor::visit(NParamDeclarationBlock *node) {
 }
 /*TODO: change this from output char to output string or something..*/
 void x86Visitor::visit(NPrint *node) {
-    /* save any reigsters we are going to use 
-    text << "push rax\n"; 
-    text << "push rcx\n";    
-    text << "push rbx\n";    */
-    /* evaluate what we want to print */
-    /* the contract for this is that it has to leave
-     * the thing to print in rax??
-     */  
-    if(node->getChild(0)->getNodeType() == CHARLIT) {
+    int type,nodeType;
+    nodeType = node->getChild(0)->getNodeType();
+    type = node->getChild(0)->getType();
+    cerr << "\nType: " << type << "\tNodeType: " << nodeType << endl;
+    if(nodeType == CHARLIT) {
     /* We can use the macro defed in system.inc */
         text << "output.char ";
  	    node->getChild(0)->accept(this);   
     }
-    if(node->getChild(0)->getNodeType() == STRINGLIT) {
+    if(nodeType == STRINGLIT) {
  	    node->getChild(0)->accept(this);   
         text << "\tpush rax\nmov rax," <<node->getChild(0)->getLabel();
         text << "\n\toutput.string rax" << endl;
         text << "\tpop rax";
 //        text << node->getChild(0)->getLabel();
-    } else {
-       node->getChild(0)->accept(this);
-       text << "\toutput.int " << freeRegs.front() << endl;
-       node->getChild(0)->getType();
+    } 
+    if (type == TNUMBER) {
+           node->getChild(0)->accept(this);
+           text << "\toutput.int " << freeRegs.front() << endl;
     }
-    
+     if (type == TCHAR) {
+           node->getChild(0)->accept(this);
+           text << "\toutput.char " << freeRegs.front() << endl;
+    }
+
 
     text << "\n";
 }
@@ -391,13 +391,13 @@ void x86Visitor::visit(NVariableDeclaration *node) {
     switch(type) {
         case TNUMBER:
             /* reserve 4 bytes for an integer */
-            offset += 4;
+            offset += 8;
             text << "\tsub rsp, " << offset << endl;
              convert << "rbp-" << offset;
             node->setLabel(convert.str());
             break;
         case TCHAR:
-            offset += 4; 
+            offset += 8; 
             text << "\tsub rsp, " << offset << endl;
             convert << "rbp-" << offset;
             node->setLabel(convert.str());           

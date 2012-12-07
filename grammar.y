@@ -520,7 +520,6 @@ int main(int argc, char* argv[]) {
         } else {
             int status;
             wait(&status);
-            cerr << "ALLO?";
             /* link with ld */
             pos = outputFname.find(".asm");
             string objFname = outputFname.substr(0,pos) + ".o";
