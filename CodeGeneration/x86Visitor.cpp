@@ -102,7 +102,7 @@ void x86Visitor::generateBinOpInstr(int op, string resultReg, string nxtReg) {
 			text << "\tpush rax" << endl;
 			text << "\tpush rdx" << endl;
 			/* not sure if rax or rdx... see intel documentation */
-			text << "\tmov " << resultReg << ", rdx" << endl;
+			text << "\tmov " << "rax, " << resultReg << endl;
             text << "\tcqo" << endl;
 			text << "\tidiv " << nxtReg << endl;
 			/* quotient lives in rax, move to resultReg */
@@ -114,7 +114,7 @@ void x86Visitor::generateBinOpInstr(int op, string resultReg, string nxtReg) {
             text << "\tpush rax" << endl;
 			text << "\tpush rdx" << endl;
 			/* not sure if rax or rdx... see intel documentation */
-			text << "\tmov " << resultReg << ", rdx" << endl;
+			text << "\tmov " << "rax, " << resultReg << endl;
             text << "\tcqo" << endl;
 			text << "\tidiv " << nxtReg << endl;
 			/* remainder lives in rdx, move to resultReg */
