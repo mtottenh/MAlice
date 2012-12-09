@@ -247,19 +247,27 @@ void x86Visitor::visit(NIdentifier *node) {
 void x86Visitor::visit(NInc *node) {
     /* Visit the node containing the expression to be incremented. */
     node->getChild(0)->accept(this);
-    
+	boost::shared_ptr<SymbolTable> table = node->getTable();
+	string childID = node->getChild(0)->getID();
+	Node *childDeclarationNode = table->lookup(childID);
     /* Increment the register containing the result of the expression */
-    /* Where will this be stored?? */
-    /* text << "\tinc rxx\n"; */
+	string store = getNextStore();
+	text << "\tinc " << store << "\n";
+	text << "\tmov " << "[" << childDeclarationNode->getLabel() << "], "
+		 << store << endl;
 }
 
 void x86Visitor::visit(NDec *node) {
     /* Visit the node containing the expression to be decremented. */
     node->getChild(0)->accept(this);
-
+	boost::shared_ptr<SymbolTable> table = node->getTable();
+	string childID = node->getChild(0)->getID();
+	Node *childDeclarationNode = table->lookup(childID);
     /* Increment the register containing the result of the expression */
-    /* Where will this be stored?? */
-    /* text << "\tdec rxx\n"; */
+	string store = getNextStore();
+	text << "\tdec " << store << "\n";
+	text << "\tmov " << "[" << childDeclarationNode->getLabel() << "], "
+		 << store << endl;
 }
 
 void x86Visitor::visit(NInput *node) {
