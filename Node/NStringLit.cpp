@@ -12,6 +12,7 @@ NStringLit::NStringLit(char* literal) {
 	this->type = resolveType();
 	this->name = literal;
 	this->weight = -1;
+	name.replace(name.find("\\n"), 2, "\", 0xA, \"");
 }
 
 NStringLit::NStringLit(string s) {

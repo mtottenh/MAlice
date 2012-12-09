@@ -12,6 +12,7 @@ class x86Visitor : public ASTVisitor {
 private:
     string getReg(int);
 	void comparePredicate(string, string, string);
+	void generateBinOpInstr(int, string, string);
 protected:
     int offset;
     stringstream text; 

@@ -72,7 +72,7 @@ access.the.linux.kernel:
 
 
 %macro output.char 1
-    push %1
+    push qword %1
     call output_char
     add rsp,8
 %endmacro

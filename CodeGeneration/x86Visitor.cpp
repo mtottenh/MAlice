@@ -1,6 +1,6 @@
 #include "x86Visitor.hpp"
 #include <boost/shared_ptr.hpp>
-
+#include <boost/lexical_cast.hpp>
 #include "../Node/NodeIncludes.hpp"
 /* Register conventions -
  * RAX stores the result of any procedure or function
@@ -40,6 +40,7 @@ void x86Visitor::visit(NArrayAccess *node) {
 }
 
 void x86Visitor::visit(NAssignment *node) {
+	cerr << "Node: Assignment" << endl;
     int rval = node->getChildrenSize() - 1;
     int lval = rval-1;
 
@@ -56,25 +57,9 @@ void x86Visitor::visit(NAssignment *node) {
  * maybe paramerterise visit with a list of reg's it can use
  * like the tutorial.
  */
-void x86Visitor::visit(NBinOp *node) {
-	string resultReg, nxtReg;
-    if (node->getChild(0)->getWeight() > node->getChild(1)->getWeight()) {
-        cerr << "\nBinOp: evaluating left first\n";
-        node->getChild(0)->accept(this);
-        resultReg = getNextReg();
-        node->getChild(1)->accept(this);
-        nxtReg = getNextStore();
-    } else {
-		/* TODO PopnSwap - BUBBLE POP */
-        cerr << "\nBinOp: evaluating right first\n";
-        node->getChild(1)->accept(this);
-		nxtReg = getNextReg();
-        node->getChild(0)->accept(this);
-		resultReg = getNextStore();
-    }
-    
-
-    switch(node->getOp()) {
+void x86Visitor::generateBinOpInstr(int op, string resultReg, string nxtReg) {
+	
+    switch(op) {
         case OR:
 		case LOR:
             text << "\tor " << resultReg << "," << nxtReg << endl;
@@ -139,8 +124,34 @@ void x86Visitor::visit(NBinOp *node) {
  			break;
     }
 
-	restoreStore(nxtReg);
-	restoreStore(resultReg);
+
+}
+void x86Visitor::visit(NBinOp *node) {
+	string resultReg, nxtReg;
+    if (node->getChild(0)->getWeight() > node->getChild(1)->getWeight()) {
+        cerr << "\nBinOp: evaluating left first\n";
+        node->getChild(0)->accept(this);
+        resultReg = getNextReg();
+        node->getChild(1)->accept(this);
+        nxtReg = getNextStore();
+	   	generateBinOpInstr(node->getOp(),resultReg,nxtReg);
+		restoreStore(nxtReg);
+		restoreStore(resultReg);
+    } else {
+		/* TODO PopnSwap - BUBBLE POP */
+        cerr << "\nBinOp: evaluating right first\n";
+        node->getChild(1)->accept(this);
+		nxtReg = getNextReg();
+        node->getChild(0)->accept(this);
+		resultReg = getNextStore();
+		cerr << "Result Register: " << resultReg << "\t Next Register: " << nxtReg << endl;
+	   	generateBinOpInstr(node->getOp(), resultReg, nxtReg);
+		restoreStore(nxtReg);
+		restoreStore(resultReg);
+
+    }
+ 
+
 }
 
 void x86Visitor::comparePredicate(string setInstr, string resultReg,
@@ -150,11 +161,11 @@ void x86Visitor::comparePredicate(string setInstr, string resultReg,
 		 * set a BYTE if the condition matches X. We use MOVZX to put it in
 		 * the 64 bit register.
 		 */ 
-		text << "cmp " << resultReg << ", " << nxtReg << endl;
-		text << "push rax" << endl;
-		text << setInstr << " al" << endl;
-		text << "movzx " << resultReg << ", al" << endl;
-		text << "pop rax" << endl;
+		text << "\tcmp " << resultReg << ", " << nxtReg << endl;
+		text << "\tpush rax" << endl;
+		text << "\t" << setInstr << " al" << endl;
+		text << "\tmovzx " << resultReg << ", al" << endl;
+		text << "\tpop rax" << endl;
 }
 
 /* TODO: As we have an output charlit macro I'm sure that we
@@ -163,48 +174,53 @@ void x86Visitor::comparePredicate(string setInstr, string resultReg,
  * because we didnt have a way of printing it before
  */
 void x86Visitor::visit(NCharLit *node) {
-    
-//    data << "\nAUTOGEN:\tdb\t";
-
+	cerr << "Node: Char Lit " << endl;
     text << "\t mov " << freeRegs.front() << ", '" << node->getID() << "'\n"; 
- //   data << "\nAUTOGENS:\tequ $-AUTOGEN:\n";
-
 }
 
 void x86Visitor::visit(NCodeBlock *node) {
     /* Visit the statement list, and declaration list if it exists. */
+	cerr << "Node: CodeBlock" << endl;
     for(int i = 0; i < node->getChildrenSize(); ++i) {
         node->getChild(i)->accept(this);
     }
 }
 
 void x86Visitor::visit(NConditional *node) {
+	cerr << "Node: Coditional " << endl;
     bool startConditional = this->labelMaker.needsNewEndCondLabel();
     string endLabel = this->labelMaker.getEndCondLabel();
+    string elseLabel = this->labelMaker.getNewLabel();
+
     // Visit the predicate to print out condition
     node->getChild(0)->accept(this);
-    // If condition is false, jump to next condition
-    string elseLabel = this->labelMaker.getNewLabel();
 	string resultReg = this->getNextReg();
+
+    // If condition is false, jump to next condition
+
 	text << "\tcmp " << resultReg << ", 1" << endl;
     text << "\tjne " << elseLabel << endl;
+	restoreStore(resultReg);
+
     // Otherwise, execute the statement list, first pushing
     // the end condition label onto the stack
     this->labelMaker.pushEndCondLabel();
     node->getChild(1)->accept(this);
+
     this->labelMaker.popEndCondLabel();
+
     // Return to end of conditional
     text << "\tjmp " << endLabel << endl;
+
     // Print out code for rest of cases
     text << elseLabel << ":" << endl;
     node->getChild(2)->accept(this);
-    //
-    if (startConditional)
-    {
+
+
+    if (startConditional)  {
         text << endLabel << ":" << endl;
         this->labelMaker.resetEndCondLabel();
     }
-	restoreStore(resultReg);
 }
 
 void x86Visitor::visit(NEndIf *node) {
@@ -214,6 +230,7 @@ void x86Visitor::visit(NEndIf *node) {
  * function has one
  */
 void x86Visitor::visit(NDeclarationBlock *node) {
+
     /* if we have a delcaration block just visit every child*/
     offset = 0;
     if (!node->isRoot()) {
@@ -238,6 +255,7 @@ void x86Visitor::visit(NFunctionDeclaration *node) {
 }
 
 void x86Visitor::visit(NIdentifier *node) {
+	cerr << "Node: Identifier" << endl;
     Node *declarationNode = node->getTable()->lookup(node->getID());
     text << "\tmov " << freeRegs.front() << ", " << "["
          << declarationNode->getLabel() << "]" << endl; 
@@ -251,10 +269,12 @@ void x86Visitor::visit(NInc *node) {
 	string childID = node->getChild(0)->getID();
 	Node *childDeclarationNode = table->lookup(childID);
     /* Increment the register containing the result of the expression */
-	string store = getNextStore();
+//	string store = getNextStore();
+	string store = freeRegs.front();
 	text << "\tinc " << store << "\n";
 	text << "\tmov " << "[" << childDeclarationNode->getLabel() << "], "
 		 << store << endl;
+//	restoreStore(
 }
 
 void x86Visitor::visit(NDec *node) {
@@ -264,7 +284,8 @@ void x86Visitor::visit(NDec *node) {
 	string childID = node->getChild(0)->getID();
 	Node *childDeclarationNode = table->lookup(childID);
     /* Increment the register containing the result of the expression */
-	string store = getNextStore();
+//	string store = getNextStore();
+	string store = freeRegs.front();
 	text << "\tdec " << store << "\n";
 	text << "\tmov " << "[" << childDeclarationNode->getLabel() << "], "
 		 << store << endl;
@@ -306,7 +327,7 @@ void x86Visitor::visit(NMethodCall *node) {
     if (node->getChildrenSize() > 0) {
         node->getChild(0)->accept(this);
     }
-    cout << "Hello!" << endl;
+    cout << "Node: Function or Procedure Call" << endl;
     text << "\tcall _" << node->getTable()->
                 lookup(node->getID())->getLabel() << endl;
 }
@@ -323,21 +344,37 @@ void x86Visitor::visit(NParamBlock *node) {
     /* Here we will need to push the children onto the stack
      * in the reverse order 
      */
+    unsigned int numChildren =  node->getChildrenSize();
+
+      for (unsigned int i = 0; i < numChildren; i++) {
+          
+          node->getChild(i)->accept(this);
+          text << "\t; push child node" << endl;
+          text << "\tpush " << freeRegs.front() << endl;
+      }
 }
 
 void x86Visitor::visit(NParamDeclarationBlock *node) {
-    /* I think this is only used in the semantic analysis,
-       past that assembly code doesn't know about the params
-       passed to a function. We might need to create symbolic
-       references between their position on the stack in order
-       to utilise the stack values */
+    /* This is a list of variable declarations, we need to 
+     * set the labels of them to [rsp+offset] where offset starts at
+     * 16 and goes up in 8's
+     */
+     unsigned int numChildren = node->getChildrenSize();
+    unsigned int offset = 16;
+    for(unsigned int i = 0; i < numChildren; i++) {
+        string label = "rsp+";
+        label = label + boost::lexical_cast<string>(offset);
+        node->getChild(i)->setLabel(label);
+        offset+=8;
+    }
+    
 }
 /*TODO: change this from output char to output string or something..*/
 void x86Visitor::visit(NPrint *node) {
+	cerr << "Node: Print";
     int type,nodeType;
     nodeType = node->getChild(0)->getNodeType();
     type = node->getChild(0)->getType();
-    cerr << "\nType: " << type << "\tNodeType: " << nodeType << endl;
     if(nodeType == CHARLIT) {
     /* We can use the macro defed in system.inc */
         text << "output.char ";
@@ -365,6 +402,8 @@ void x86Visitor::visit(NPrint *node) {
 
 void x86Visitor::visit(NReturn *node) {
     cerr << "Return Node" << endl;
+	Node *retVal = node->getChild(0);
+	retVal->accept(this);
 }
 
 void x86Visitor::visit(NStatementList *node) {
@@ -387,6 +426,7 @@ void x86Visitor::visit(NStringLit *node) {
 }
 
 void x86Visitor::visit(NUnaryOp *node) {
+	cerr << "Node: Unary Op" << endl;
     node->getChild(0)->accept(this);
     string resultReg =  getNextReg();
     switch(node->getOp()) {
@@ -481,21 +521,21 @@ void x86Visitor::unfoldedFunctionVisitor(NFunctionDeclaration* node) {
     if (numChildren == 2) {
         /* we have paramaters */
         /* TODO get dat stuff from the stack and put into regs son*/
-       NParamDeclarationBlock* params = (NParamDeclarationBlock*) node->getChild(numChildren - 1);
-      
+        NParamDeclarationBlock* params = (NParamDeclarationBlock*) node->getChild(numChildren - 1);
+        params->accept(this);
     }
     NCodeBlock* codeblock = (NCodeBlock*)node->getChild(0);
     NStatementList* statlist = (NStatementList*)codeblock->getChild(0);
     if (codeblock->getChildrenSize() == 2) {
         /* we have local variables*/
-        NDeclarationBlock* decblock = (NDeclarationBlock*)node->getChild(0);
+        NDeclarationBlock* decblock = (NDeclarationBlock*)codeblock->getChild(0);
         statlist = (NStatementList*)codeblock->getChild(1);
         /* reserve space on stack from them */
         /*TODO should probably get some way of total size of local vars*/
         /* ratheri than just assuming they are all 32bits */
         decblock->accept(this);
     } 
-//    statlist->accept(this);    
+    statlist->accept(this);    
     this->ret();
 }
 
@@ -530,6 +570,7 @@ string x86Visitor::getNextStore() {
     if (freeRegs.size() == 1) {
         res = "[rsp]";
     } else {
+
         res = getNextReg();
     }
     return res;
@@ -543,12 +584,14 @@ string x86Visitor::getNextReg() {
         res = freeRegs.front();
         freeRegs.pop_front();
     }
+	cerr << "\t Using register: " << res << endl;
     return res;
 }
 
 void x86Visitor::restoreStore(string store) {
     if (find(allRegs.begin(), allRegs.end(), store) != allRegs.end()) {
         /* allRegs contains store */
+		cerr << "\t Restoring register: " << store << endl;
         freeRegs.push_front(store);
     }
 }
