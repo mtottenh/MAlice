@@ -98,9 +98,6 @@ access.the.linux.kernel:
 %endmacro
 
 %macro output.int 1
-    push %1
-    call output_int
-    add rsp, 8
 %endmacro
 
 output_int:

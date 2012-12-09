@@ -302,15 +302,17 @@ void x86Visitor::visit(NInput *node) {
 		case TNUMBER:
 			data << scanfstring << ": " << "db \"%d\", 0x0 " << endl;
 			/* save registers */
-			text << "push rdi\n push rax\n";
+			text << "\tpush rdi\n\tpush rax\n";
 			/* mov params into rdi, rsi and rax, + zero out buffer
  			 * before calling scanf
 			 */	
 			text << "\tmov rdi, " << scanfstring << endl;
 			text << "\tlea rsi , [" << addr << "]\n";
 			text << "\tmov rax, 0\n";
-			text << "mov qword [" << addr << "], 0\n";
-			text << "call scanf" << endl;
+			text << "\tmov qword [" << addr << "], 0\n";
+			text << "\tcall scanf" << endl;
+            text << "\tmovsx rax, dword [" << addr << "]\n";
+            text << "\tmov [" << addr << "], rax\n";
 		//	text << "mov rax, [" << addr << "]\n";
 		//	text << "mov [" << addr << "], rax\n";
 			text << "\tpop rax" << endl;
@@ -414,7 +416,7 @@ void x86Visitor::visit(NPrint *node) {
     }
     if(nodeType == STRINGLIT) {
  	    node->getChild(0)->accept(this);   
-        text << "\tpush rax\nmov rax," <<node->getChild(0)->getLabel();
+        text << "\tpush rax\n\tmov rax," <<node->getChild(0)->getLabel();
         text << "\n\toutput.string rax" << endl;
         text << "\tpop rax";
 //        text << node->getChild(0)->getLabel();
@@ -644,7 +646,7 @@ void x86Visitor::pushRegs() {
 	std::deque<string>::iterator it;
 	for (it = allRegs.begin(); it != allRegs.end(); it++ ) {
 		if (find(freeRegs.begin(),freeRegs.end(),(*it)) == freeRegs.end())
-			text << "\tpush " << (*it) << endl;
+			text << ";\tpush " << (*it) << endl;
 	}
 
 }
