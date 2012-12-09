@@ -13,6 +13,8 @@ private:
     string getReg(int);
 	void comparePredicate(string, string, string);
 	void generateBinOpInstr(int, string, string);
+	void pushRegs();
+	void popRegs();
 protected:
     int offset;
     stringstream text; 
@@ -50,8 +52,6 @@ public:
     virtual void visit(NUnaryOp*);
     virtual void visit(NVariableDeclaration*);
     void createSubroutine(string);
-    void saveCalleeReg();
-    void restoreCalleeReg();
     void deallocVar();
     void ret();
     void init(Node*); 

@@ -515,7 +515,7 @@ int main(int argc, char* argv[]) {
          */
         cerr << "Assembling with nasm, output filename: " << outputFname << endl;
         if (fork() == 0) {
-            execl("/usr/bin/nasm","/usr/bin/nasm", "-f elf64",
+            execl("/usr/bin/nasm","/usr/bin/nasm", "-f elf64",  "-g -F stabs",
                     outputFname.c_str(),(char *) 0);
         } else {
             int status;
@@ -525,7 +525,7 @@ int main(int argc, char* argv[]) {
             string objFname = outputFname.substr(0,pos) + ".o";
             outputFname = "-o" + outputFname.substr(0,pos);
 		    cerr << "\nOutput filename:  " << outputFname << "\t" << objFname <<endl;
-            execl("/usr/bin/ld","/usr/bin/ld",objFname.c_str(),
+            execl("/usr/bin/gcc","/usr/bin/gcc","-g",objFname.c_str(),
                         outputFname.c_str(),(char*)0);
         }
     } else {

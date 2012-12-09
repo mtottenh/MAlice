@@ -164,7 +164,7 @@ void x86Visitor::comparePredicate(string setInstr, string resultReg,
 		text << "\tcmp " << resultReg << ", " << nxtReg << endl;
 		text << "\tpush rax" << endl;
 		text << "\t" << setInstr << " al" << endl;
-		text << "\tmovzx " << resultReg << ", al" << endl;
+		text << "\tmovsx " << resultReg << ", al" << endl;
 		text << "\tpop rax" << endl;
 }
 
@@ -292,7 +292,29 @@ void x86Visitor::visit(NDec *node) {
 }
 
 void x86Visitor::visit(NInput *node) {
+	cerr << "Node: Input -> WHAT IS THIS I DONT EVEN..\n";
+	Node* identifier = node->getChild(0);
+	Node *var = node->getTable()->lookup(identifier->getID());
+	string scanfstring = "scanf" + labelMaker.getNewLabel();
+	string addr = var->getLabel();
+	switch(var->getType()) {
 
+		case TNUMBER:
+			data << scanfstring << ": " << "db \"%d\", 0x0 " << endl;
+			/* save registers */
+			text << "push rdi\n push rax\n";
+			/* mov params into rdi, rsi and rax, + zero out buffer
+ 			 * before calling scanf
+			 */	
+			text << "\tmov rdi, " << scanfstring << endl;
+			text << "\tlea rsi , [" << addr << "]\n";
+			text << "\tmov rax, 0\n";
+			text << "mov qword [" << addr << "], 0\n";
+			text << "call scanf" << endl;
+		//	text << "mov rax, [" << addr << "]\n";
+		//	text << "mov [" << addr << "], rax\n";
+			break;
+	}
 }
 
 void x86Visitor::visit(NInteger *node) {
@@ -324,16 +346,23 @@ void x86Visitor::visit(NLoop *node) {
 }
 
 void x86Visitor::visit(NMethodCall *node) {
+	/* saveRegs */
+	pushRegs();
     if (node->getChildrenSize() > 0) {
         node->getChild(0)->accept(this);
     }
     cout << "Node: Function or Procedure Call" << endl;
     text << "\tcall _" << node->getTable()->
                 lookup(node->getID())->getLabel() << endl;
+	//string resultReg = freeRegs.front();
+//	freeRegs.pop();
+	popRegs();
+//	freeRegs.push(resultReg);
 }
 
 void x86Visitor::visit(NNullToken *node) {
     cout << "Node: NNullToken" << endl;
+	text << "\tnop" << endl;
 }
 
 void x86Visitor::visit(Node *node) {
@@ -404,6 +433,9 @@ void x86Visitor::visit(NReturn *node) {
     cerr << "Return Node" << endl;
 	Node *retVal = node->getChild(0);
 	retVal->accept(this);
+//	string resultReg = freeRegs.front();
+//	freeRegs.pop_front();
+	
 }
 
 void x86Visitor::visit(NStatementList *node) {
@@ -480,15 +512,6 @@ void x86Visitor::createSubroutine(string name) {
     /* Deallocate local variables */
     /* Restore EBP  and return */
 
-void x86Visitor::restoreCalleeReg() {
-    /** Return from subroutine**/
-    text << "pop rsi\n";
-    text << "pop rdi\n";
-    text << "pop rbx\n";
-}
-void x86Visitor::deallocVar() {
-
-}
 void x86Visitor::ret() {
     text << "\tmov rsp,rbp\n";
     text << "\tpop rbp\n";   
@@ -502,7 +525,7 @@ string x86Visitor::getAssembly() {
 
 void x86Visitor::generateFunctionDefinitions()
 {
-	text << "\tcall _hattalabel1\n \tsys.exit\n";	
+	text << "\tcall _hattalabel1\n \tcall exit\n";	
     while (!funcDecQueue.empty()) {
         cerr << "Generating Function Body for : " 
              << funcDecQueue.front()->getID();
@@ -559,8 +582,11 @@ void x86Visitor::init(Node* root) {
     }
  
     text << "section .text\n";
-    text << "global _start\n\n";
-    text << "_start:\n";
+    text << "global main\n";
+	text << "extern exit\n";
+	text << "extern scanf\n";
+	text << "extern printf\n";
+    text << "main:\n";
 }
 
 /* private helper functions */
@@ -599,3 +625,26 @@ void x86Visitor::restoreStore(string store) {
 /* list of avalible registers for GP computation 
  * rax, rbx rcx, rdx, rdi, rsi, r8, r9, r10, r11, r12, r13, r14, r15,
  */
+
+
+
+
+/* pushes registers that are 'in use' */
+void x86Visitor::pushRegs() {
+	std::deque<string>::iterator it;
+	for (it = allRegs.begin(); it != allRegs.end(); it++ ) {
+		if (find(freeRegs.begin(),freeRegs.end(),(*it)) == freeRegs.end())
+			text << "\tpush " << (*it) << endl;
+	}
+
+}
+
+/* Pops registers that are 'in use' */
+void x86Visitor::popRegs() {
+	std::deque<string>::iterator it;
+	for (it = allRegs.begin(); it != allRegs.end(); it++ ) {
+		if (find(freeRegs.begin(),freeRegs.end(),(*it)) == freeRegs.end())
+			text << "\tpop " << (*it) << endl;
+	}
+
+}

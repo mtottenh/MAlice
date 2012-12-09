@@ -81,16 +81,13 @@ access.the.linux.kernel:
 %macro output.string 1
 
 %%start:	
-	push rcx
-	mov rcx, [%1]
-	cmp  rcx ,0
-	je   %%end
-	output.char [%1]
-	pop rcx
-	inc %1
-	jmp %%start
-%%end:
-	pop rcx
+	push rdi
+	push rax
+	mov rdi, %1
+	mov rax, 0
+	call printf
+	pop rax
+	pop rdi
 %endmacro
 
 %macro output.minus 0			; void output_minus()
