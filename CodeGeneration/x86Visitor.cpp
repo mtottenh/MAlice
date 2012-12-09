@@ -164,7 +164,7 @@ void x86Visitor::comparePredicate(string setInstr, string resultReg,
 		text << "\tcmp " << resultReg << ", " << nxtReg << endl;
 		text << "\tpush rax" << endl;
 		text << "\t" << setInstr << " al" << endl;
-		text << "\tmovsx " << resultReg << ", al" << endl;
+		text << "\tmovzx " << resultReg << ", al" << endl;
 		text << "\tpop rax" << endl;
 }
 
@@ -313,6 +313,8 @@ void x86Visitor::visit(NInput *node) {
 			text << "call scanf" << endl;
 		//	text << "mov rax, [" << addr << "]\n";
 		//	text << "mov [" << addr << "], rax\n";
+			text << "\tpop rax" << endl;
+			text << "\tpop rdi" << endl;
 			break;
 	}
 }
@@ -404,6 +406,7 @@ void x86Visitor::visit(NPrint *node) {
     int type,nodeType;
     nodeType = node->getChild(0)->getNodeType();
     type = node->getChild(0)->getType();
+	string printlabel = "prnt" + labelMaker.getNewLabel() ;
     if(nodeType == CHARLIT) {
     /* We can use the macro defed in system.inc */
         text << "output.char ";
@@ -417,8 +420,15 @@ void x86Visitor::visit(NPrint *node) {
 //        text << node->getChild(0)->getLabel();
     } 
     if (type == TNUMBER) {
-           node->getChild(0)->accept(this);
-           text << "\toutput.int " << freeRegs.front() << endl;
+		node->getChild(0)->accept(this);
+		data << printlabel << ": db \"%d\" , 0x0 " << endl;
+		text << "\tpush rax\n\tpush rdi" << endl;
+		text << "\tpush rsi\n";
+		text << "\tmov rsi," << freeRegs.front() << endl;
+		text << "\tmov rdi, " << printlabel << endl;
+		text << "\tmov rax, 0" << endl;
+        text << "\tcall printf" << endl;
+		text << "\tpop rsi\n\tpop rdi\n\tpop rax\n";
     }
      if (type == TCHAR) {
            node->getChild(0)->accept(this);
