@@ -16,6 +16,8 @@ x86Visitor::x86Visitor() : labelMaker() {
     /* general purpose registers */
     /* We use rax to store return values, so it is not included here. */
     allRegs.clear();
+    regsToRestore.clear();
+    callStackRegs.clear();
     allRegs.push_back("r8");
     allRegs.push_back("r9");
     allRegs.push_back("r10");
@@ -33,6 +35,15 @@ x86Visitor::x86Visitor() : labelMaker() {
 }
 
 
+void x86Visitor::printRegDeq(std::deque<string> regs) {
+       
+    std::deque<string>::iterator it = regs.begin();
+    int i = 0;
+    for (; it != regs.end(); it++) {
+        cerr << "index[" << i << "]: " << *it << endl;
+        i++;
+    }
+}
 
 void x86Visitor::visit(NArrayAccess *node) {
 
@@ -128,28 +139,23 @@ void x86Visitor::generateBinOpInstr(int op, string resultReg, string nxtReg) {
 void x86Visitor::visit(NBinOp *node) {
     string resultReg, nxtReg;
     if (node->getChild(0)->getWeight() > node->getChild(1)->getWeight()) {
-        cerr << "\nBinOp: evaluating left first\n";
+        cerr << "\nBinOp: evaluating  left first\nFree Regsiters:\n";
+        printRegDeq(freeRegs);
         node->getChild(0)->accept(this);
-        resultReg = getNextReg();
         node->getChild(1)->accept(this);
-        nxtReg = getNextStore();
-        generateBinOpInstr(node->getOp(),resultReg,nxtReg);
-        restoreStore(nxtReg);
-        restoreStore(resultReg);
     } else {
-        cerr << "\nBinOp: evaluating right first\n";
+        cerr << "\nBinOp: evaluating right first\nFree Regsiters:\n";
+        printRegDeq(freeRegs);
         node->getChild(1)->accept(this);
-        nxtReg = getNextReg();
         node->getChild(0)->accept(this);
-        resultReg = getNextStore();
-        cerr << "Result Register: " << resultReg << "\t Next Register: " << nxtReg << endl;
-        generateBinOpInstr(node->getOp(), resultReg, nxtReg);
-        restoreStore(nxtReg);
-        restoreStore(resultReg);
+
 
     }
- 
-
+    generateBinOpInstr(node->getOp(), regsToRestore[0], regsToRestore[1]);   
+    string res =  regsToRestore.front();
+    regsToRestore.pop_front();
+    restoreStore(); 
+    regsToRestore.push_front(res);
 }
 
 void x86Visitor::comparePredicate(string setInstr, string resultReg,
@@ -173,7 +179,7 @@ void x86Visitor::comparePredicate(string setInstr, string resultReg,
  */
 void x86Visitor::visit(NCharLit *node) {
     cerr << "Node: Char Lit " << endl;
-    text << "\t mov " << freeRegs.front() << ", '" << node->getID() << "'\n"; 
+    text << "\t mov " << getNextReg() << ", '" << node->getID() << "'\n"; 
 }
 
 void x86Visitor::visit(NCodeBlock *node) {
@@ -191,12 +197,14 @@ void x86Visitor::visit(NConditional *node) {
     string elseLabel = this->labelMaker.getNewLabel();
 
     // Visit the predicate to print out condition
+    
     node->getChild(0)->accept(this);
+    text << "\n; has free regs broken?" << endl;
     string resultReg = this->getNextReg();
 
     // If condition is false, jump to next condition
 
-    text << "\tcmp " << resultReg << ", 1" << endl;
+    text << "\n\tcmp " << resultReg << ", 1" << endl;
     text << "\tjne " << elseLabel << endl;
     restoreStore(resultReg);
 
@@ -222,6 +230,8 @@ void x86Visitor::visit(NConditional *node) {
 }
 
 void x86Visitor::visit(NEndIf *node) {
+
+            text << "\t;endif\n" << endl;
 }
 
 /* NDeclarationBlock is our 'entry' point - its not exclusve though, ie every 
@@ -257,13 +267,13 @@ void x86Visitor::visit(NIdentifier *node) {
     Node *declarationNode = node->getTable()->lookup(node->getID());
     int nestingLevel = declarationNode->getLevel();
     int numJumps = nestingLevel - node->getLevel();
-
+    string storeage = getNextReg();
     /* check if in local or global scope */
     if (nestingLevel == node->getLevel() || nestingLevel == 1) {
         /* just use the label */
         /* move from label into freeRegs.front() */
 
-        text << "\tmov " << freeRegs.front() << ", " << declarationNode->getLabel() << endl;
+        text << "\tmov " <<  storeage << ", " << declarationNode->getLabel() << endl;
     } else {
         /* push rbp */
         text << "\tpush rbp" << endl;
@@ -274,13 +284,14 @@ void x86Visitor::visit(NIdentifier *node) {
             numJumps--;
         }
         /* mov from label into freeRegs.front() */
-            text << "\tmov " << freeRegs.front() << ", " << declarationNode->getLabel() << endl;
+            text << "\tmov " << storeage << ", " << declarationNode->getLabel() << endl;
         /* pop rbp */
             text << "\tpop rbp" << endl;
     }
-
+    regsToRestore.push_front(storeage);
 }
 
+/* DOUBLE CHECK RESTORING REGS*/
 void x86Visitor::visit(NInc *node) {
     /* Visit the node containing the expression to be incremented. */
     node->getChild(0)->accept(this);
@@ -339,9 +350,10 @@ void x86Visitor::visit(NInput *node) {
 }
 
 void x86Visitor::visit(NInteger *node) {
-    text << "\n\tmov " << freeRegs.front() << ", " << node->getValue();
+    string store = getNextReg();
+    text << "\n\tmov " << store << ", " << node->getValue();
     text << endl;
-
+    regsToRestore.push_front(store);
 }
 
 void x86Visitor::visit(NLoop *node) {
@@ -407,10 +419,16 @@ void x86Visitor::visit(NParamBlock *node) {
     string label;
     std::deque<string>::iterator it = allRegs.begin();
     unsigned int i = 0;
+
     /* start moving paramters into regsiters */
     for(it = allRegs.begin(); it != allRegs.end() && i < numChildren; it++) {
+
+//            cerr << "Paramater passed in : " << res << endl;
             node->getChild(i)->accept(this);
-            text << "\tmov " << *it << ", " << freeRegs.front() << endl;
+  //          string res = getNextReg();
+            text << ";Evil trumpet music!" << endl;
+//            text << "\tmov " << res << ", " << regsToRestore[i] << endl;
+            
             i++;
     }
     /* if we run out of register for paramaters (GOD WHY?) use the stack*/   
@@ -520,19 +538,19 @@ void x86Visitor::visit(NStringLit *node) {
 void x86Visitor::visit(NUnaryOp *node) {
     cerr << "Node: Unary Op" << endl;
     node->getChild(0)->accept(this);
-    string resultReg =  getNextReg();
+//    string resultReg =  getNextReg();
     switch(node->getOp()) {
         case DASH:
-            text << "\tneg " << resultReg << endl;           
+            text << "\tneg " << regsToRestore[0] << endl;           
             break;
         case LNOT:
         case NOT:
-            text << "\tnot " << resultReg << endl;           
+            text << "\tnot " << regsToRestore[0] << endl;           
             break;
         case PLUS:
             break;
     }
-    restoreStore(resultReg);
+    restoreStore();
 }
 /* Variables are allocated on the stack, and are given
  * an address as [rbp +/- offset] TODO: Replace 4 with offset
@@ -671,8 +689,9 @@ string x86Visitor::getNextReg() {
     } else {
         res = freeRegs.front();
         freeRegs.pop_front();
+        cerr << "\t Removing register from list: " << res << endl;
     }
-    cerr << "\t Using register: " << res << endl;
+//    cerr << "\t Using register: " << res << endl;
     return res;
 }
 
@@ -685,6 +704,15 @@ void x86Visitor::restoreStore(string store) {
 
 }
 
+void x86Visitor::restoreStore() {
+    for (unsigned int i = 0; i < regsToRestore.size(); i++) {
+        restoreStore(regsToRestore[i]);
+        
+    }
+    regsToRestore.clear();
+}
+
+
 /* list of avalible registers for GP computation 
  * rax, rbx rcx, rdx, rdi, rsi, r8, r9, r10, r11, r12, r13, r14, r15,
  */
@@ -692,9 +720,11 @@ void x86Visitor::restoreStore(string store) {
 
 /* pushes registers that are 'in use' */
 void x86Visitor::pushRegs() {
+
     std::deque<string>::iterator it;
     for (it = allRegs.begin(); it != allRegs.end(); it++ ) {
         if (find(freeRegs.begin(),freeRegs.end(),(*it)) == freeRegs.end())
+
             text << ";\tpush " << (*it) << endl;
     }
     callStackRegs.push_front(freeRegs);

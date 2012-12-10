@@ -10,19 +10,32 @@
 #include <sstream>
 class x86Visitor : public ASTVisitor {
 private:
+    void printRegDeq(std::deque<string>);
     string getReg(int);
 	void comparePredicate(string, string, string);
 	void generateBinOpInstr(int, string, string);
 	void pushRegs();
 	void popRegs();
+
+    void createSubroutine(string);
+    void deallocVar();
+    void ret();
+   	string getNextReg();
+	string getNextStore();
+	void unfoldedFunctionVisitor(NFunctionDeclaration*);
+	void restoreStore(string);
+	void restoreStore();
 protected:
     int offset;
     stringstream text; 
     stringstream data;
 	LabelMaker labelMaker;
+
 	std::deque< std::deque<string> > callStackRegs;
     std::deque<string> freeRegs;
     std::deque<string> allRegs;
+	std::deque<string> regsToRestore;
+
 	std::queue<NFunctionDeclaration*> funcDecQueue;
 public:
     x86Visitor();
@@ -52,16 +65,9 @@ public:
     virtual void visit(NStringLit*);
     virtual void visit(NUnaryOp*);
     virtual void visit(NVariableDeclaration*);
-    void createSubroutine(string);
-    void deallocVar();
-    void ret();
     void init(Node*); 
-    string getAssembly();
-	string getNextReg();
-	string getNextStore();
-	void unfoldedFunctionVisitor(NFunctionDeclaration*);
 	void generateFunctionDefinitions();
-	void restoreStore(string);
+	 string getAssembly();
 
 };
 
