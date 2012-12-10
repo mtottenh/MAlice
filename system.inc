@@ -80,7 +80,9 @@ access.the.linux.kernel:
 
 %macro output.string 1
 
-%%start:	
+%%start:
+    push r9	
+    push r8
 	push rdi
 	push rax
 	mov rdi, %1
@@ -88,6 +90,8 @@ access.the.linux.kernel:
 	call printf
 	pop rax
 	pop rdi
+    pop r8
+    pop r9
 %endmacro
 
 %macro output.minus 0			; void output_minus()

@@ -55,68 +55,70 @@ void x86Visitor::visit(NAssignment *node) {
     int lval = rval-1;
 
     node->getChild(rval)->accept(this);
+    string reg = getNextReg();
     if (node->getChildrenSize() > 1) {
        Node* leftChildID = node->getChild(lval);
        Node* declaredNode = node->getTable()->lookup(leftChildID->getID());
-       text << "\tmov " <<  declaredNode->getLabel() << endl;
-       text << ", " << freeRegs.front() <<  endl;
+       text << "\tmov " <<  declaredNode->getLabel();
+       text << ", " << reg <<  endl;
         //Assign the result to the variable
     }
+    restoreStore(reg);
+    cerr << "End: Assignment" << endl;
 }
 /* TODO: still need to implement a register saving mechanism 
  * maybe paramerterise visit with a list of reg's it can use
  * like the tutorial.
  */
-void x86Visitor::generateBinOpInstr(int op, string resultReg, string nxtReg) {
-    
+void x86Visitor::generateBinOpInstr(int op, string returnReg, string nxtReg) {
     switch(op) {
         case OR:
         case LOR:
-            text << "\tor " << resultReg << "," << nxtReg << endl;
+            text << "\tor " << returnReg << "," << nxtReg << endl;
             break;
         case AND:
         case LAND:
-            text << "\tand " << resultReg << "," << nxtReg << endl;
+            text << "\tand " << returnReg << "," << nxtReg << endl;
             break;
         case LEQU:
-            comparePredicate("sete", resultReg, nxtReg);    
+            comparePredicate("sete", returnReg, nxtReg);    
             break; 
         case LLTHAN:
-            comparePredicate("setl", resultReg, nxtReg);
+            comparePredicate("setl", returnReg, nxtReg);
             break;
         case LLTHANEQ:
-            comparePredicate("setle", resultReg, nxtReg);
+            comparePredicate("setle", returnReg, nxtReg);
             break;
         case LGTHAN:
-            comparePredicate("setg", resultReg, nxtReg);
+            comparePredicate("setg", returnReg, nxtReg);
             break;
         case LGTHANEQ:
-            comparePredicate("setge", resultReg, nxtReg);
+            comparePredicate("setge", returnReg, nxtReg);
             break;
         case LNOTEQU:
-            comparePredicate("setne", resultReg, nxtReg);
+            comparePredicate("setne", returnReg, nxtReg);
             break;
         case XOR:
-            text << "\txor " << resultReg << ", " << nxtReg << endl;
+            text << "\txor " << returnReg << ", " << nxtReg << endl;
             break;
         case PLUS:
-            text << "\tadd " << resultReg << ", " << nxtReg << endl;
+            text << "\tadd " << returnReg << ", " << nxtReg << endl;
             break;
         case DASH:
-            text << "\tsub " << resultReg << ", " << nxtReg << endl;
+            text << "\tsub " << returnReg << ", " << nxtReg << endl;
             break;
         case MULT:
-            text << "\timul " << resultReg << ", " << nxtReg << endl;
+            text << "\timul " << returnReg << ", " << nxtReg << endl;
             break;
         case DIV:
             text << "\tpush rax" << endl;
             text << "\tpush rdx" << endl;
             /* not sure if rax or rdx... see intel documentation */
-            text << "\tmov " << "rax, " << resultReg << endl;
+            text << "\tmov " << "rax, " << returnReg << endl;
             text << "\tcqo" << endl;
             text << "\tidiv " << nxtReg << endl;
             /* quotient lives in rax, move to resultReg */
-            text << "\tmov " << resultReg << ", rax" << endl;
+            text << "\tmov " << returnReg << ", rax" << endl;
             text << "\tpop rdx" << endl;
             text << "\tpop rax" << endl;
             break;
@@ -124,17 +126,15 @@ void x86Visitor::generateBinOpInstr(int op, string resultReg, string nxtReg) {
             text << "\tpush rax" << endl;
             text << "\tpush rdx" << endl;
             /* not sure if rax or rdx... see intel documentation */
-            text << "\tmov " << "rax, " << resultReg << endl;
+            text << "\tmov " << "rax, " << returnReg << endl;
             text << "\tcqo" << endl;
             text << "\tidiv " << nxtReg << endl;
             /* remainder lives in rdx, move to resultReg */
-            text << "\tmov " << resultReg << ", rdx" << endl;
+            text << "\tmov " << returnReg << ", rdx" << endl;
             text << "\tpop rdx" << endl;
             text << "\tpop rax" << endl;
             break;
     }
-
-
 }
 void x86Visitor::visit(NBinOp *node) {
     string resultReg, nxtReg;
@@ -142,20 +142,21 @@ void x86Visitor::visit(NBinOp *node) {
         cerr << "\nBinOp: evaluating  left first\nFree Regsiters:\n";
         printRegDeq(freeRegs);
         node->getChild(0)->accept(this);
+        resultReg = getNextReg();
         node->getChild(1)->accept(this);
+        nxtReg = getNextStore();
     } else {
         cerr << "\nBinOp: evaluating right first\nFree Regsiters:\n";
         printRegDeq(freeRegs);
         node->getChild(1)->accept(this);
+        nxtReg = getNextStore();
         node->getChild(0)->accept(this);
-
-
+        resultReg = getNextReg();
     }
-    generateBinOpInstr(node->getOp(), regsToRestore[0], regsToRestore[1]);   
-    string res =  regsToRestore.front();
-    regsToRestore.pop_front();
-    restoreStore(); 
-    regsToRestore.push_front(res);
+    generateBinOpInstr(node->getOp(), resultReg, nxtReg);   
+    restoreStore(nxtReg);
+    restoreStore(resultReg); 
+    cerr << "End: Bin Op " << endl;
 }
 
 void x86Visitor::comparePredicate(string setInstr, string resultReg,
@@ -180,6 +181,7 @@ void x86Visitor::comparePredicate(string setInstr, string resultReg,
 void x86Visitor::visit(NCharLit *node) {
     cerr << "Node: Char Lit " << endl;
     text << "\t mov " << getNextReg() << ", '" << node->getID() << "'\n"; 
+    cerr << "End: Char Lit " << endl;
 }
 
 void x86Visitor::visit(NCodeBlock *node) {
@@ -188,6 +190,7 @@ void x86Visitor::visit(NCodeBlock *node) {
     for(int i = 0; i < node->getChildrenSize(); ++i) {
         node->getChild(i)->accept(this);
     }
+    cerr << "End: CodeBlock" << endl;
 }
 
 void x86Visitor::visit(NConditional *node) {
@@ -197,7 +200,9 @@ void x86Visitor::visit(NConditional *node) {
     string elseLabel = this->labelMaker.getNewLabel();
 
     // Visit the predicate to print out condition
-    
+
+    text << "; doing the comparison" << endl;   
+ 
     node->getChild(0)->accept(this);
     text << "\n; has free regs broken?" << endl;
     string resultReg = this->getNextReg();
@@ -227,18 +232,20 @@ void x86Visitor::visit(NConditional *node) {
         text << endLabel << ":" << endl;
         this->labelMaker.resetEndCondLabel();
     }
+    cerr << "End: Coditional " << endl;
 }
 
 void x86Visitor::visit(NEndIf *node) {
-
-            text << "\t;endif\n" << endl;
+    cerr << "Node: Endif" << endl;
+    text << "\t;endif\n" << endl;
+    cerr << "End: Endif" << endl;
 }
 
 /* NDeclarationBlock is our 'entry' point - its not exclusve though, ie every 
  * function has one
  */
 void x86Visitor::visit(NDeclarationBlock *node) {
-
+    cerr << "Node: Declaration Block" << endl;
     /* if we have a delcaration block just visit every child*/
     offset = 0;
     if (!node->isRoot()) {
@@ -255,7 +262,7 @@ void x86Visitor::visit(NDeclarationBlock *node) {
         }
 
     }
-    
+     cerr << "End: Declaration Block" << endl;   
 }
 
 void x86Visitor::visit(NFunctionDeclaration *node) {
@@ -288,37 +295,42 @@ void x86Visitor::visit(NIdentifier *node) {
         /* pop rbp */
             text << "\tpop rbp" << endl;
     }
-    regsToRestore.push_front(storeage);
+    restoreStore(storeage);
+    cerr << "End: Identifier" << endl;
 }
 
 /* DOUBLE CHECK RESTORING REGS*/
 void x86Visitor::visit(NInc *node) {
+    cerr << "Node: Inc " << endl;
+
     /* Visit the node containing the expression to be incremented. */
     node->getChild(0)->accept(this);
     boost::shared_ptr<SymbolTable> table = node->getTable();
     string childID = node->getChild(0)->getID();
     Node *childDeclarationNode = table->lookup(childID);
     /* Increment the register containing the result of the expression */
-//  string store = getNextStore();
-    string store = freeRegs.front();
+    string store = getNextStore();
     text << "\tinc " << store << "\n";
     text << "\tmov " << childDeclarationNode->getLabel() << ", "
          << store << endl;
-//  restoreStore(
+    restoreStore(store);
+    cerr << "End: Inc " << endl;
 }
 
 void x86Visitor::visit(NDec *node) {
+    cerr << "Node: Decrement" << endl;
     /* Visit the node containing the expression to be decremented. */
     node->getChild(0)->accept(this);
     boost::shared_ptr<SymbolTable> table = node->getTable();
     string childID = node->getChild(0)->getID();
     Node *childDeclarationNode = table->lookup(childID);
     /* Increment the register containing the result of the expression */
-//  string store = getNextStore();
-    string store = freeRegs.front();
+    string store = getNextStore();
     text << "\tdec " << store << "\n";
     text << "\tmov " << childDeclarationNode->getLabel() << ", "
          << store << endl;
+    restoreStore(store);
+    cerr << "End: Decrement" << endl;
 }
 /* TODO : - add input cases for other valid input types */
 void x86Visitor::visit(NInput *node) {
@@ -347,16 +359,20 @@ void x86Visitor::visit(NInput *node) {
             text << "\tpop rdi" << endl;
             break;
     }
+    cerr << "End: Input" << endl;
 }
 
 void x86Visitor::visit(NInteger *node) {
+    cerr << "Node: Integer" << endl;
     string store = getNextReg();
     text << "\n\tmov " << store << ", " << node->getValue();
     text << endl;
-    regsToRestore.push_front(store);
+    restoreStore(store);
+    cerr << "End: Integer" << endl;
 }
 
 void x86Visitor::visit(NLoop *node) {
+    cerr << "Node: Loop " << endl;
     /* Get a label for the start and end of the while loop. Print start label.*/
     string startLabel = labelMaker.getNewLabel();
     string endLabel = labelMaker.getNewLabel();
@@ -375,17 +391,18 @@ void x86Visitor::visit(NLoop *node) {
 
     /* Print end label finish. */
     text << endLabel << ":\n";
-
+    cerr << "End: Loop" << endl;
 }
 
 void x86Visitor::visit(NMethodCall *node) {
-    /* Save registers currently in use */
-    pushRegs();
+     cerr << "Node: Function or Procedure Call" << endl;   
     /* Push paramaters onto the stack in reverse order */
+    pushRegs();
     if (node->getChildrenSize() > 0) {
         node->getChild(0)->accept(this);
     }
-    cerr << "Node: Function or Procedure Call" << endl;
+    /* Save registers currently in use */
+
     Node* MethodDec = node->getTable()->lookup(node->getID());
     /* Figure out if MethodDec is nested within current function */
     /* update the access link -> always resides at rbp + 16 */
@@ -400,12 +417,17 @@ void x86Visitor::visit(NMethodCall *node) {
     popRegs();
     /* TODO: - Procedure doesn't need to save return value */
     /*save return value from rax into freeRegisters.front()*/
-    text << "\tmov " << freeRegs.front() << ", rax" << endl; 
+    string reg = getNextReg();
+    text << "\tmov " << reg << ", rax" << endl;
+    restoreStore(reg);
+     
+     cerr << "End: Function or Procedure Call" << endl;   
 }
 
 void x86Visitor::visit(NNullToken *node) {
-    cout << "Node: NNullToken" << endl;
+    cerr << "Node: NNullToken" << endl;
     text << "\tnop" << endl;
+    cerr << "End: NullToken" << endl;
 }
 
 void x86Visitor::visit(Node *node) {
@@ -414,7 +436,7 @@ void x86Visitor::visit(Node *node) {
 
 /* puts paramtaters into registers or stack */
 void x86Visitor::visit(NParamBlock *node) {
-      
+    cerr << "Node: Param Block " << endl;      
     unsigned int numChildren =  node->getChildrenSize();
     string label;
     std::deque<string>::iterator it = allRegs.begin();
@@ -425,9 +447,7 @@ void x86Visitor::visit(NParamBlock *node) {
 
 //            cerr << "Paramater passed in : " << res << endl;
             node->getChild(i)->accept(this);
-  //          string res = getNextReg();
-            text << ";Evil trumpet music!" << endl;
-//            text << "\tmov " << res << ", " << regsToRestore[i] << endl;
+            string res = getNextReg();
             
             i++;
     }
@@ -435,11 +455,14 @@ void x86Visitor::visit(NParamBlock *node) {
     for (; i < numChildren; i++) {
           node->getChild(i)->accept(this);
           text << "\t; push child node" << endl;
-          text << "\tpush " << freeRegs.front() << endl;
+          text << "\tpush " << getNextReg() << endl;
     }
+    printRegDeq(freeRegs);
+    cerr << "End: Param Block " << endl;
 }
 /* labels paramaters as in registers or on stack */
 void x86Visitor::visit(NParamDeclarationBlock *node) {
+    cerr << "Node: Param Declaration block " << endl;
     /* offset to first param starts at 24:
      *      rbp         +  8
      *      ret         +  8
@@ -467,11 +490,11 @@ void x86Visitor::visit(NParamDeclarationBlock *node) {
         node->getChild(i)->setLabel(label);
         offset+=8;
     }
-    
+    cerr << "End: Param Declaration block " << endl;   
 }
 /*TODO: change this from output char to output string or something..*/
 void x86Visitor::visit(NPrint *node) {
-    cerr << "Node: Print";
+    cerr << "Node: Print" << endl;
     int type,nodeType;
     nodeType = node->getChild(0)->getNodeType();
     type = node->getChild(0)->getType();
@@ -483,37 +506,44 @@ void x86Visitor::visit(NPrint *node) {
     }
     if(nodeType == STRINGLIT) {
         node->getChild(0)->accept(this);   
-        text << "\tpush rax\n\tmov rax," <<node->getChild(0)->getLabel();
+        text << "\tpush rax\n\tmov rax," << node->getChild(0)->getLabel();
         text << "\n\toutput.string rax" << endl;
         text << "\tpop rax";
 //        text << node->getChild(0)->getLabel();
-    } 
+    }
     if (type == TNUMBER) {
         node->getChild(0)->accept(this);
+        string reg = getNextReg();
         data << printlabel << ": db \"%d\" , 0x0 " << endl;
         text << "\tpush rax\n\tpush rdi" << endl;
         text << "\tpush rsi\n";
-        text << "\tmov rsi," << freeRegs.front() << endl;
+        text << "\tmov rsi," << reg << endl;
         text << "\tmov rdi, " << printlabel << endl;
         text << "\tmov rax, 0" << endl;
         text << "\tcall printf" << endl;
         text << "\tpop rsi\n\tpop rdi\n\tpop rax\n";
+        restoreStore(reg);
     }
-     if (type == TCHAR) {
+    if (type == TCHAR) {
            node->getChild(0)->accept(this);
-           text << "\toutput.char " << freeRegs.front() << endl;
+           string reg = getNextReg();
+           text << "\toutput.char " << reg << endl;
+           restoreStore(reg);
     }
 
 
     text << "\n";
+    cerr << "Node: Print" << endl;
 }
 /* RAX is used as the 'return register' */
 void x86Visitor::visit(NReturn *node) {
-    cerr << "Return Node" << endl;
+    cerr << "Node: Return" << endl;
     Node *retVal = node->getChild(0);
     retVal->accept(this);
-    text << "mov rax, " << freeRegs.front() << endl;
-    
+    string reg = getNextReg();
+    text << "mov rax, " << reg << endl;
+    restoreStore(reg);
+    cerr << "End: Return" << endl;   
 }
 
 void x86Visitor::visit(NStatementList *node) {
@@ -529,33 +559,37 @@ void x86Visitor::visit(NStringLit *node) {
      * of labeling stringlits and their sizes
      *
      */
+    cerr << "Node: String Literal" << endl;
     string label = this->labelMaker.getNewLabel();
     data << label << ": db  " ;
     data << node->getID() <<",0x0" << endl; 
     node->setLabel(label);
+    cerr << "End: String Literal" << endl;
 }
 
 void x86Visitor::visit(NUnaryOp *node) {
     cerr << "Node: Unary Op" << endl;
     node->getChild(0)->accept(this);
-//    string resultReg =  getNextReg();
+    string resultReg =  getNextReg();
     switch(node->getOp()) {
         case DASH:
-            text << "\tneg " << regsToRestore[0] << endl;           
+            text << "\tneg " << resultReg << endl;           
             break;
         case LNOT:
         case NOT:
-            text << "\tnot " << regsToRestore[0] << endl;           
+            text << "\tnot " << resultReg << endl;           
             break;
         case PLUS:
             break;
     }
-    restoreStore();
+    restoreStore(resultReg);
+    cerr << "End: Unary Op" << endl;
 }
 /* Variables are allocated on the stack, and are given
  * an address as [rbp +/- offset] TODO: Replace 4 with offset
  */
 void x86Visitor::visit(NVariableDeclaration *node) {
+    cerr << "\nNode: VarDec" << endl;
     int type = node->getType();
     stringstream convert;
     switch(type) {
@@ -571,6 +605,7 @@ void x86Visitor::visit(NVariableDeclaration *node) {
         default:
             node->setLabel("broken :( ");
     }
+    cerr << "\n End: VarDec" << endl;
 }
 
 void x86Visitor::createSubroutine(string name) {
@@ -640,6 +675,8 @@ void x86Visitor::unfoldedFunctionVisitor(NFunctionDeclaration* node) {
     } 
     statlist->accept(this);    
     this->ret();
+    cerr << "\n*Unfolded: " << node->getID() << "*" << endl;
+    printRegDeq(freeRegs);
 }
 
 void x86Visitor::init(Node* root) {
@@ -676,7 +713,6 @@ string x86Visitor::getNextStore() {
     if (freeRegs.size() == 1) {
         res = "[rsp]";
     } else {
-
         res = getNextReg();
     }
     return res;
@@ -720,15 +756,16 @@ void x86Visitor::restoreStore() {
 
 /* pushes registers that are 'in use' */
 void x86Visitor::pushRegs() {
-
+    cerr << "\t\t**Pushing regsiters in use**" << endl;
     std::deque<string>::iterator it;
     for (it = allRegs.begin(); it != allRegs.end(); it++ ) {
         if (find(freeRegs.begin(),freeRegs.end(),(*it)) == freeRegs.end())
-
-            text << ";\tpush " << (*it) << endl;
+            text << "\tpush " << (*it) << endl;
     }
     callStackRegs.push_front(freeRegs);
     freeRegs = allRegs;
+    cerr << "\t\t**New freeRegs deque**" << endl;
+    printRegDeq(freeRegs);
 }
 
 /* Pops registers that are 'in use' */
