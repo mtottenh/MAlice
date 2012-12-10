@@ -20,6 +20,7 @@ protected:
     stringstream text; 
     stringstream data;
 	LabelMaker labelMaker;
+	std::deque< std::deque<string> > callStackRegs;
     std::deque<string> freeRegs;
     std::deque<string> allRegs;
 	std::queue<NFunctionDeclaration*> funcDecQueue;

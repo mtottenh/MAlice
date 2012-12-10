@@ -95,8 +95,6 @@ FileLocation* Node::getLocation() {
 	return loc;
 }
 
-/* TODO rename to setAsRoot()
- */
 int Node::setRoot() {
 	isRootNode = 1;
 	return isRootNode;
@@ -168,7 +166,7 @@ void Node::accept(ASTVisitor* v) {
     cerr << "Generic Node" << endl;
     v->visit(this);
 }
-
+/* TODO - do something with this.... it might nto be needed*/
 int Node::getSize() {
     switch(this->getType()) {
         case TNUMBER:
@@ -186,6 +184,14 @@ int Node::getWeight() {
 
 	return weight;
 }
+int Node::getLevel() {
+	if (table == NULL) {
+		return -1;
+	}
+	return table->getTableID();
+}
+
+
 
 /* Protected methods. */
 

@@ -176,6 +176,8 @@ public:
     /* get symbol table function*/
     boost::shared_ptr<SymbolTable> getTable();
     int getSize();
+	/* returns the 'nesting level' of the node */
+	int getLevel();
 };
 
 #endif
