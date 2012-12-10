@@ -537,7 +537,11 @@ string x86Visitor::getAssembly() {
 
 void x86Visitor::generateFunctionDefinitions()
 {
-	text << "\tcall _hattalabel1\n \tcall exit\n";	
+	text << "\tcall _hattalabel1" << endl;
+	/* Move EXIT_SUCCESS into rdi and call exit() */
+	text << "\tmov rdi, " << EXIT_SUCCESS << endl;
+	text << "\tcall exit" << endl;
+	
     while (!funcDecQueue.empty()) {
         cerr << "Generating Function Body for : " 
              << funcDecQueue.front()->getID();
