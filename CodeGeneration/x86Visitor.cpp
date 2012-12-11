@@ -187,9 +187,15 @@ void x86Visitor::visit(NCharLit *node) {
 void x86Visitor::visit(NCodeBlock *node) {
     /* Visit the statement list, and declaration list if it exists. */
     cerr << "Node: CodeBlock" << endl;
+    text << "\tpush rbp" << endl;
+    text << "\tpush rbp" << endl;
+    text << "\tmov rbp, rsp" << endl;
     for(int i = 0; i < node->getChildrenSize(); ++i) {
         node->getChild(i)->accept(this);
     }
+    text << "\tmov rsp, rbp" << endl;
+    text << "\tpop rbp" << endl;
+    text << "\tpop rbp" << endl;
     cerr << "End: CodeBlock" << endl;
 }
 
@@ -273,7 +279,7 @@ void x86Visitor::visit(NIdentifier *node) {
     cerr << "Node: Identifier" << endl;
     Node *declarationNode = node->getTable()->lookup(node->getID());
     int nestingLevel = declarationNode->getLevel();
-    int numJumps = nestingLevel - node->getLevel();
+    int numJumps = node->getLevel() - nestingLevel;
     string storeage = getNextReg();
     /* check if in local or global scope */
     if (nestingLevel == node->getLevel() || nestingLevel == 1) {
@@ -283,6 +289,7 @@ void x86Visitor::visit(NIdentifier *node) {
         text << "\tmov " <<  storeage << ", " << declarationNode->getLabel() << endl;
     } else {
         /* push rbp */
+        text << "\t\n;Nesting level: " << nestingLevel << "\tThis Level : " << node->getLevel() << endl;
         text << "\tpush rbp" << endl;
         /* TODO :- write an assembly loop to stop generated code being bad */
         while(numJumps > 0) {
@@ -383,7 +390,9 @@ void x86Visitor::visit(NLoop *node) {
      * jump to endLabel if the condition does not hold.
      */
     node->getChild(0)->accept(this);
-    text << "\tjz " << endLabel << "\n";
+    string reg = getNextReg();
+    text << "\tcmp " << reg << ", 1" << endl;
+    text << "\tjne " << endLabel << "\n";
     
     /* Visit the statement list of the loop node, then recheck condition. */
     node->getChild(1)->accept(this);
