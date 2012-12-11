@@ -3,20 +3,30 @@
 
 #include <sstream>
 #include <deque>
-#include <utility>
+#include <queue>
 
 #include "ASTVisitor.hpp"
 #include "LabelMaker.hpp"
 
 class ARMVisitor : public ASTVisitor {
 private:
-	void createGlobalVar(Node*, string);
+	void pushRegs();
+	void popRegs();
+	string getNextReg();
+	string getNextStore();
+	void restoreStore(string);
+	void restoreStore();
 protected:
+	int offset;
 	stringstream text;
 	stringstream data;
 	LabelMaker labelMaker;
+
 	deque<string> freeRegs;
 	deque<string> allRegs;
+	deque<string> regsToRestore;
+	deque< deque<string> > callStackRegs;
+	queue<NFunctionDeclaration*> funcDecQueue;
 public:
 	ARMVisitor();
 	void init(Node*); 

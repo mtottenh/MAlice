@@ -154,3 +154,62 @@ void ARMVisitor::init(Node* root) {
 	text << "\tb exit" << endl;
 }
 
+/* Pushes registers that are in use. */
+void ARMVisitor::pushRegs() {
+	deque<string>::iterator it;
+	for(it = allRegs.begin(); it != allRegs.end(); ++it) {
+		if(find(freeRegs.begin(), freeRegs.end(), (*it)) == freeRegs.end()) {
+			text << "\tpush " << (*it) << endl;
+		}
+	}
+	callStackRegs.push_front(freeRegs);
+	freeRegs = allRegs;
+}
+
+/* Pops registers that are (were) in use. */
+void ARMVisitor::popRegs() {
+	freeRegs = callStackRegs.front();
+	callStackRegs.pop_front();
+
+	deque<string>::iterator it;
+	for(it = allRegs.begin(); it != allRegs.end(); ++it) {
+		if(find(freeRegs.begin(), freeRegs.end(), (*it)) == freeRegs.end()) {
+			text << "\tpop " << (*it) << endl;
+		}
+	}
+}
+
+string ARMVisitor::getNextReg() {
+	string res;
+	if(freeRegs.size() == 1) {
+		res = freeRegs.front();
+	} else {
+		res = freeRegs.front();
+		freeRegs.pop_front();
+	}
+
+	return res;
+}
+
+string ARMVisitor::getNextStore() {
+	string res;
+	if (freeRegs.size() == 1) {
+		res = "[sp]"; /* r13 = sp. this might need to be r13. */
+	} else {
+		res = getNextReg();
+	}
+	return res;
+}
+
+void ARMVisitor::restoreStore(string store) {
+	if(find(allRegs.begin(), allRegs.end(), store) != allRegs.end()) {
+		freeRegs.push_front(store);
+	}
+}
+
+void ARMVisitor::restoreStore() {
+	for(unsigned int i = 0; i < regsToRestore.size(); ++i) {
+		restoreStore(regsToRestore[i]);
+	}
+	regsToRestore.clear();
+}
