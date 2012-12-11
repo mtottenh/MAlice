@@ -412,7 +412,7 @@ void x86Visitor::visit(NMethodCall *node) {
     /* call the method */
     text << "\tcall _" << MethodDec->getLabel() << endl;
     /* Remove the access link from the stack */
-    text << "\tsub rsp, 8" << endl;
+    text << "\tadd rsp, 8" << endl;
     /* Restore registers we were using */
     popRegs();
     /* TODO: - Procedure doesn't need to save return value */
@@ -480,9 +480,15 @@ void x86Visitor::visit(NParamDeclarationBlock *node) {
     unsigned int i = 0;
     /* start labeling paramters as using regsiters */
     for(it = allRegs.begin(); it != allRegs.end() && i < numChildren; it++) {
-            node->getChild(i)->setLabel(*it);
-            i++;
+        node->getChild(i)->setLabel(*it);
+        i++;
+        std::deque<string>::iterator element =  find(freeRegs.begin(),freeRegs.end(),*it);
+        if (element != freeRegs.end()) {
+            freeRegs.erase(element);
+        }
+        
     }
+    printRegDeq(freeRegs);
     /* if we run out of registers to put params in start using the stack */
     for (; i < numChildren; i++) {
         label = "[rbp+";
@@ -515,6 +521,7 @@ void x86Visitor::visit(NPrint *node) {
         node->getChild(0)->accept(this);
         string reg = getNextReg();
         data << printlabel << ": db \"%d\" , 0x0 " << endl;
+	text << "\tpush r8" << endl;
         text << "\tpush rax\n\tpush rdi" << endl;
         text << "\tpush rsi\n";
         text << "\tmov rsi," << reg << endl;
@@ -522,6 +529,7 @@ void x86Visitor::visit(NPrint *node) {
         text << "\tmov rax, 0" << endl;
         text << "\tcall printf" << endl;
         text << "\tpop rsi\n\tpop rdi\n\tpop rax\n";
+	text << "\tpop r8" << endl;
         restoreStore(reg);
     }
     if (type == TCHAR) {
@@ -544,6 +552,7 @@ void x86Visitor::visit(NReturn *node) {
     text << "mov rax, " << reg << endl;
     restoreStore(reg);
     cerr << "End: Return" << endl;   
+    ret();
 }
 
 void x86Visitor::visit(NStatementList *node) {
@@ -626,6 +635,7 @@ void x86Visitor::createSubroutine(string name) {
 void x86Visitor::ret() {
     text << "\tmov rsp,rbp\n";
     text << "\tpop rbp\n";   
+//    text << "\tmov rax, " << freeRegs.front() << endl;
     text << "\tret\n";
 }
 
@@ -674,7 +684,9 @@ void x86Visitor::unfoldedFunctionVisitor(NFunctionDeclaration* node) {
         decblock->accept(this);
     } 
     statlist->accept(this);    
-    this->ret();
+    freeRegs = allRegs;
+    if (node->getNodeType() == PROCEDURE) 
+	    this->ret();
     cerr << "\n*Unfolded: " << node->getID() << "*" << endl;
     printRegDeq(freeRegs);
 }
