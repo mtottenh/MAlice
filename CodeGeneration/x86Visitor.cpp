@@ -53,9 +53,12 @@ void x86Visitor::visit(NArrayAccess *node) {
     string offset = getNextReg();
     string addrReg = getNextReg();
     string result = getNextReg();
+
     text << "\tlea " << addrReg <<  ", " << arrName->getLabel() << endl;
+    text <<"\timul " << offset << ", 8" << endl;
+    text <<"\tsub " << addrReg << ", " << offset << endl;
     restoreStore(addrReg);
-    text << "\tlea " << result << ", [" << addrReg << "+" << offset << "*8]" << endl;
+    text << "\tlea " << result << ", [" << addrReg << "]" << endl;
     restoreStore(offset);
     restoreStore(result);
     cerr << "End: Array Access" << endl;   
@@ -636,7 +639,10 @@ void x86Visitor::visit(NPrint *node) {
         node->getChild(0)->accept(this);   
 	Node* decnode = node->getTable()->lookup(node->getChild(0)->getID());
 	if (decnode != NULL) {
-	        text << "\tpush rax\n\tmov rax," << decnode->getLabel();
+            if (decnode->getLevel() == 1)
+    	        text << "\tpush rax\n\tmov rax, [" << decnode->getLabel() << "]";
+            else
+	            text << "\tpush rax\n\tmov rax," << decnode->getLabel();
 	        text << "\n\toutput.string rax" << endl;
 	        text << "\tpop rax" << endl;
 	}
