@@ -189,11 +189,13 @@ void x86Visitor::visit(NCodeBlock *node) {
     cerr << "Node: CodeBlock" << endl;
     text << "\tpush rbp" << endl;
     text << "\tpush rbp" << endl;
+    text << "\tpush rbp" << endl;
     text << "\tmov rbp, rsp" << endl;
     for(int i = 0; i < node->getChildrenSize(); ++i) {
         node->getChild(i)->accept(this);
     }
     text << "\tmov rsp, rbp" << endl;
+    text << "\tpop rbp" << endl;
     text << "\tpop rbp" << endl;
     text << "\tpop rbp" << endl;
     cerr << "End: CodeBlock" << endl;
@@ -392,7 +394,7 @@ void x86Visitor::visit(NLoop *node) {
     node->getChild(0)->accept(this);
     string reg = getNextReg();
     text << "\tcmp " << reg << ", 1" << endl;
-    text << "\tjne " << endLabel << "\n";
+    text << "\tje " << endLabel << "\n";
     
     /* Visit the statement list of the loop node, then recheck condition. */
     node->getChild(1)->accept(this);
@@ -414,7 +416,7 @@ void x86Visitor::visit(NMethodCall *node) {
 
     Node* MethodDec = node->getTable()->lookup(node->getID());
     /* Figure out if MethodDec is nested within current function */
-    /* update the access link -> always resides at rbp + 16 */
+    /* update the access link -> always resides at rbp + 24 */
     /* and pass as a paramter to the function */
     text << "\tpush rbp" << endl;
  
