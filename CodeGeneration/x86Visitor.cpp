@@ -158,6 +158,7 @@ void x86Visitor::generateBinOpInstr(int op, string returnReg, string nxtReg) {
             text << "\tpush rax" << endl;
             text << "\tpush rdx" << endl;
             /* not sure if rax or rdx... see intel documentation */
+			text << "\txor rdx, rdx" << endl;
             text << "\tmov " << "rax, " << returnReg << endl;
             text << "\tcqo" << endl;
             text << "\tidiv " << nxtReg << endl;
@@ -170,6 +171,7 @@ void x86Visitor::generateBinOpInstr(int op, string returnReg, string nxtReg) {
             text << "\tpush rax" << endl;
             text << "\tpush rdx" << endl;
             /* not sure if rax or rdx... see intel documentation */
+			text << "\txor rdx, rdx" << endl;
             text << "\tmov " << "rax, " << returnReg << endl;
             text << "\tcqo" << endl;
             text << "\tidiv " << nxtReg << endl;
@@ -513,8 +515,6 @@ void x86Visitor::visit(NParamBlock *node) {
     unsigned int numChildren =  node->getChildrenSize();
     string label;
     std::deque<string>::iterator it = allRegs.begin();
-    unsigned int i = 0;
-
     /* start moving paramters into regsiters 
     for(it = allRegs.begin(); it != allRegs.end() && i < numChildren; it++) {
             //            cerr << "Paramater passed in : " << res << endl;
@@ -526,7 +526,7 @@ void x86Visitor::visit(NParamBlock *node) {
             i++;
     }*/
     /* if we run out of register for paramaters (GOD WHY?) use the stack*/   
-    for (; i < numChildren; i++) {
+    for (int i = numChildren - 1; i >= 0; i--) {
           node->getChild(i)->accept(this);
           text << "\t; push child node" << endl;
           text << "\tpush " << getNextReg() << endl;
