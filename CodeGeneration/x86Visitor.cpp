@@ -46,6 +46,22 @@ void x86Visitor::printRegDeq(std::deque<string> regs) {
 }
 
 void x86Visitor::visit(NArrayAccess *node) {
+    cerr << "Node: Array Access" << endl;
+    Node* offsetExp = node->getChild(1);
+    Node* arrName = node->getTable()->lookup(node->getChild(0)->getID());
+    offsetExp->accept(this);
+    string offset = getNextReg();
+    string addrReg = getNextReg();
+    string result = getNextReg();
+
+    text << "\tlea " << addrReg <<  ", " << arrName->getLabel() << endl;
+    text <<"\timul " << offset << ", 8" << endl;
+    text <<"\tsub " << addrReg << ", " << offset << endl;
+    restoreStore(addrReg);
+    text << "\tlea " << result << ", [" << addrReg << "]" << endl;
+    restoreStore(offset);
+    restoreStore(result);
+    cerr << "End: Array Access" << endl;   
 
 }
 
@@ -55,38 +71,45 @@ void x86Visitor::visit(NAssignment *node) {
     int lval = rval-1;
 
     node->getChild(rval)->accept(this);
-    string reg = getNextReg();
+    string value = getNextReg();
     if (node->getChildrenSize() > 1) {
-      Node* leftChildID = node->getChild(lval);
-      Node* declarationNode = node->getTable()->lookup(leftChildID->getID());
-      int nestingLevel = declarationNode->getLevel();
-      int numJumps = node->getLevel() - nestingLevel;
-   		string storeage = getNextReg();
+        Node* leftChildID = node->getChild(lval);
+        Node* declarationNode = node->getTable()->lookup(leftChildID->getID());
+        int nestingLevel = declarationNode->getLevel();
+        int numJumps = node->getLevel() - nestingLevel;
+        string label = declarationNode->getLabel();
+
    	 	/* check if in local or global scope */
     	if (nestingLevel == node->getLevel() || nestingLevel == 1) {
-        /* just use the label */
-        /* move from label into freeRegs.front() */
-		if (nestingLevel == 1)
-			text << "\tmov [" <<  declarationNode->getLabel() << "], " << reg << endl;      	
-		else
-        		text << "\tmov " << declarationNode->getLabel() << ", " << reg << endl;
+            /* just use the label */
+            /* move from label into freeRegs.front() */
+            if (declarationNode->getType() == REFNUMBER) {
+                leftChildID->accept(this);
+                string storeAddr =  getNextReg();
+                text << "\tmov [" << storeAddr << "] , " << value << endl; 
+//                text << "\tSOME ARRAY SHIT GOING DOWN\n";
+            } else {
+		        if (nestingLevel == 1)
+                    label = "[" + label + "]";
+               	text << "\tmov " << label << ", " << value << endl;
+            }
     	} else {
-        /* push rbp */
-        text << "\t\n;Nesting level: " << nestingLevel << "\tThis Level : " << node->getLevel() << endl;
-        text << "\tpush rbp" << endl;
-        /* TODO :- write an assembly loop to stop generated code being bad */
-        while(numJumps > 0) {
-            /* follow the access link back overwriting rbp */
-            text << "\tmov rbp, [rbp+16]" << endl;
-            numJumps--;
-        }
-        /* mov from label into freeRegs.front() */
-            text << "\tmov " << declarationNode->getLabel() << ", " << reg << endl;
-        /* pop rbp */
+            /* push rbp */
+            text << "\t\n;Nesting level: " << nestingLevel << "\tThis Level : " << node->getLevel() << endl;
+            text << "\tpush rbp" << endl;
+            /* TODO :- write an assembly loop to stop generated code being bad */
+            while(numJumps > 0) {
+                /* follow the access link back overwriting rbp */
+                text << "\tmov rbp, [rbp+16]" << endl;
+                numJumps--;
+            }
+            /* mov from label into freeRegs.front() */
+            text << "\tmov " << label << ", " << value << endl;
+            /* pop rbp */
             text << "\tpop rbp" << endl;
-    }
+        }
 	}
-    restoreStore(reg);
+    restoreStore(value);
 
     cerr << "End: Assignment" << endl;
 }
@@ -138,6 +161,7 @@ void x86Visitor::generateBinOpInstr(int op, string returnReg, string nxtReg) {
             text << "\tpush rax" << endl;
             text << "\tpush rdx" << endl;
             /* not sure if rax or rdx... see intel documentation */
+			text << "\txor rdx, rdx" << endl;
             text << "\tmov " << "rax, " << returnReg << endl;
             text << "\tcqo" << endl;
             text << "\tidiv " << nxtReg << endl;
@@ -150,6 +174,7 @@ void x86Visitor::generateBinOpInstr(int op, string returnReg, string nxtReg) {
             text << "\tpush rax" << endl;
             text << "\tpush rdx" << endl;
             /* not sure if rax or rdx... see intel documentation */
+			text << "\txor rdx, rdx" << endl;
             text << "\tmov " << "rax, " << returnReg << endl;
             text << "\tcqo" << endl;
             text << "\tidiv " << nxtReg << endl;
@@ -493,8 +518,6 @@ void x86Visitor::visit(NParamBlock *node) {
     unsigned int numChildren =  node->getChildrenSize();
     string label;
     std::deque<string>::iterator it = allRegs.begin();
-    unsigned int i = 0;
-
     /* start moving paramters into regsiters 
     for(it = allRegs.begin(); it != allRegs.end() && i < numChildren; it++) {
             //            cerr << "Paramater passed in : " << res << endl;
@@ -506,7 +529,7 @@ void x86Visitor::visit(NParamBlock *node) {
             i++;
     }*/
     /* if we run out of register for paramaters (GOD WHY?) use the stack*/   
-    for (; i < numChildren; i++) {
+    for (int i = numChildren - 1; i >= 0; i--) {
           node->getChild(i)->accept(this);
           text << "\t; push child node" << endl;
           text << "\tpush " << getNextReg() << endl;
@@ -558,6 +581,10 @@ void x86Visitor::visit(NPrint *node) {
     int type,nodeType;
     nodeType = node->getChild(0)->getNodeType();
     type = node->getChild(0)->getType();
+    Node* decNode = node->getTable()->lookup(node->getChild(0)->getID());
+    int decType = 0;
+    if (decNode != NULL)
+        decType = decNode->getType();
     string printlabel = "prnt" + labelMaker.getNewLabel() ;
     if(nodeType == CHARLIT) {
     /* We can use the macro defed in system.inc */
@@ -571,7 +598,7 @@ void x86Visitor::visit(NPrint *node) {
         text << "\tpop rax" << endl;
 //        text << node->getChild(0)->getLabel();
     }
-    if (type == TNUMBER) {
+    if (type == TNUMBER && decType != REFNUMBER) {
         node->getChild(0)->accept(this);
         string reg = getNextReg();
         data << printlabel << ": db \"%d\" , 0x0 " << endl;
@@ -592,11 +619,30 @@ void x86Visitor::visit(NPrint *node) {
            text << "\toutput.char " << reg << endl;
            restoreStore(reg);
     }
+    if (decType == REFNUMBER) {
+        node->getChild(0)->accept(this);
+        string reg = getNextReg();
+        data << printlabel << ": db \"%d\" , 0x0 " << endl;
+    	text << "\tpush r8" << endl;
+        text << "\tpush rax\n\tpush rdi" << endl;
+        text << "\tpush rsi\n";
+        text << "\tmov rsi, [" << reg <<"]"<< endl;
+        text << "\tmov rdi, " << printlabel << endl;
+        text << "\tmov rax, 0" << endl;
+        text << "\tcall printf" << endl;
+        text << "\tpop rsi\n\tpop rdi\n\tpop rax\n";
+    
+         text << "\tpop r8" << endl;
+        restoreStore(reg);    
+       }
     if(type == TSTRING) {
         node->getChild(0)->accept(this);   
 	Node* decnode = node->getTable()->lookup(node->getChild(0)->getID());
 	if (decnode != NULL) {
-	        text << "\tpush rax\n\tmov rax," << decnode->getLabel();
+            if (decnode->getLevel() == 1)
+    	        text << "\tpush rax\n\tmov rax, [" << decnode->getLabel() << "]";
+            else
+	            text << "\tpush rax\n\tmov rax," << decnode->getLabel();
 	        text << "\n\toutput.string rax" << endl;
 	        text << "\tpop rax" << endl;
 	}
@@ -667,10 +713,13 @@ void x86Visitor::visit(NUnaryOp *node) {
 void x86Visitor::visit(NVariableDeclaration *node) {
     cerr << "\nNode: VarDec" << endl;
     int type = node->getType();
+   stringstream debuglabel ;
+   debuglabel << ";Type: ";
+    int numElements; 
     stringstream convert;
     switch(type) {
         case TNUMBER:
-            /* reserve 4 bytes for an integer */
+            /* reserve 8 bytes for an integer */
 
         case TCHAR:
             offset += 8; 
@@ -678,11 +727,25 @@ void x86Visitor::visit(NVariableDeclaration *node) {
             convert << "[rbp-" << offset << "]";
 	    if (node->getLevel() != 1)
 	        node->setLabel(convert.str());           
-
-	    	
-            break;
+		break;
+    	case REFCHAR:
+    	case REFNUMBER:
+	        numElements = ((NInteger *)(node->getChild(0)))->getValue();
+    		text << "\tsub rsp, " << numElements * 8;
+            /* reserve numelements * 8 bytes worth of space on the stack */
+    		text << "\t; WE GOT AN ARRAY SON!" << endl;
+            /* set the label to be a pointer to the offest of the 1st element */
+            convert << "[rbp-" << offset+8 << "]";
+            /* set the offest to take into account the entire array */
+            offset += numElements*8;
+            node->setLabel(convert.str());
+        break;
+        case TSTRING:
+            
+        break;
         default:
-            node->setLabel(";broken :( ");
+            debuglabel << type;
+            node->setLabel(debuglabel.str());
     }
     cerr << "\n End: VarDec" << endl;
 }
