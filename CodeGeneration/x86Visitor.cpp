@@ -57,16 +57,37 @@ void x86Visitor::visit(NAssignment *node) {
     node->getChild(rval)->accept(this);
     string reg = getNextReg();
     if (node->getChildrenSize() > 1) {
-        Node* leftChildID = node->getChild(lval);
-        Node* declaredNode = node->getTable()->lookup(leftChildID->getID());
-        if (declaredNode->getLevel() == 1)
-	       text << "\tmov [" <<  declaredNode->getLabel() << "]" ;      	
-        else
-	       text << "\tmov " <<  declaredNode->getLabel();
-        text << ", " << reg <<  endl;
-         //Assign the result to the variable
+      Node* leftChildID = node->getChild(lval);
+      Node* declarationNode = node->getTable()->lookup(leftChildID->getID());
+      int nestingLevel = declarationNode->getLevel();
+      int numJumps = node->getLevel() - nestingLevel;
+   		string storeage = getNextReg();
+   	 	/* check if in local or global scope */
+    	if (nestingLevel == node->getLevel() || nestingLevel == 1) {
+        /* just use the label */
+        /* move from label into freeRegs.front() */
+		if (nestingLevel == 1)
+			text << "\tmov [" <<  declarationNode->getLabel() << "], " << reg << endl;      	
+		else
+        		text << "\tmov " << declarationNode->getLabel() << ", " << reg << endl;
+    	} else {
+        /* push rbp */
+        text << "\t\n;Nesting level: " << nestingLevel << "\tThis Level : " << node->getLevel() << endl;
+        text << "\tpush rbp" << endl;
+        /* TODO :- write an assembly loop to stop generated code being bad */
+        while(numJumps > 0) {
+            /* follow the access link back overwriting rbp */
+            text << "\tmov rbp, [rbp+16]" << endl;
+            numJumps--;
+        }
+        /* mov from label into freeRegs.front() */
+            text << "\tmov " << declarationNode->getLabel() << ", " << reg << endl;
+        /* pop rbp */
+            text << "\tpop rbp" << endl;
     }
+	}
     restoreStore(reg);
+
     cerr << "End: Assignment" << endl;
 }
 /* TODO: still need to implement a register saving mechanism 
@@ -194,11 +215,13 @@ void x86Visitor::visit(NCodeBlock *node) {
     cerr << "Node: CodeBlock" << endl;
     text << "\tpush rbp" << endl;
     text << "\tpush rbp" << endl;
+    text << "\tpush rbp" << endl;
     text << "\tmov rbp, rsp" << endl;
     for(int i = 0; i < node->getChildrenSize(); ++i) {
         node->getChild(i)->accept(this);
     }
     text << "\tmov rsp, rbp" << endl;
+    text << "\tpop rbp" << endl;
     text << "\tpop rbp" << endl;
     text << "\tpop rbp" << endl;
     cerr << "End: CodeBlock" << endl;
@@ -357,7 +380,11 @@ void x86Visitor::visit(NInput *node) {
     Node* identifier = node->getChild(0);
     Node *var = node->getTable()->lookup(identifier->getID());
     string scanfstring = "scanf" + labelMaker.getNewLabel();
-    string addr = var->getLabel();
+    string addr; 
+    if (var->getLevel() == 1)
+	    addr = "[" + var->getLabel() + "]" ;
+    else
+    	 addr = var->getLabel();
     switch(var->getType()) {
 
         case TNUMBER:
@@ -404,7 +431,7 @@ void x86Visitor::visit(NLoop *node) {
     node->getChild(0)->accept(this);
     string reg = getNextReg();
     text << "\tcmp " << reg << ", 1" << endl;
-    text << "\tjne " << endLabel << "\n";
+    text << "\tje " << endLabel << "\n";
     
     /* Visit the statement list of the loop node, then recheck condition. */
     node->getChild(1)->accept(this);
@@ -426,7 +453,7 @@ void x86Visitor::visit(NMethodCall *node) {
 
     Node* MethodDec = node->getTable()->lookup(node->getID());
     /* Figure out if MethodDec is nested within current function */
-    /* update the access link -> always resides at rbp + 16 */
+    /* update the access link -> always resides at rbp + 24 */
     /* and pass as a paramter to the function */
     text << "\tpush rbp" << endl;
  
@@ -649,10 +676,13 @@ void x86Visitor::visit(NVariableDeclaration *node) {
             offset += 8; 
             text << "\tsub rsp, " << 8 << endl;
             convert << "[rbp-" << offset << "]";
-            node->setLabel(convert.str());           
+	    if (node->getLevel() != 1)
+	        node->setLabel(convert.str());           
+
+	    	
             break;
         default:
-            node->setLabel("broken :( ");
+            node->setLabel(";broken :( ");
     }
     cerr << "\n End: VarDec" << endl;
 }
