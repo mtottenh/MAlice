@@ -170,7 +170,7 @@ void Node::accept(ASTVisitor* v) {
 int Node::getSize() {
     switch(this->getType()) {
         case TNUMBER:
-            return 4;
+            return 8;
         case PROCEDURE:
         case  FUNC:
             return 90001;
