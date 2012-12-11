@@ -126,3 +126,49 @@ void ARMVisitor::visit(NUnaryOp* node) {
 void ARMVisitor::visit(NVariableDeclaration* node) {
 
 }
+
+void ARMVisitor::init(Node* root) {
+	/* Jump to main. */
+	data << "\tb main" << endl;
+
+	/* Set up data section. */
+	data << "\t.data" << endl;
+	data << "import exit" << endl;
+
+	/* Get all global variables and string literals. */
+	boost::shared_ptr<SymbolTable> t = root->getTable();
+	table_t::iterator it;
+
+	string labelSuffix = labelMaker.getNewLabel();
+	string label;
+
+	for(it = t->start(); it != t->end(); ++it) {
+		label = it->first + labelSuffix;
+		it->second->setLabel(label);
+	}
+
+	/* Set up text and main. */
+	text << "\t.text" << endl;
+	text << "main:" << endl;
+	text << "\tbl _hattalabel1" << endl;
+	text << "mov r0, " << EXIT_SUCCESS << endl;
+	text << "b exit" << endl;
+}
+
+void ARMVisitor::createGlobalVar(Node* node, string label) {
+	int type = node->getType();
+
+	switch(type) {
+	case TNUMBER:
+		data << "GBLA " << label << endl;
+	case TCHAR:
+	case TSTRING:
+		data << "GLBS " << label << endl;
+		break;
+	default:
+		cerr << "Tried to declare global var of invalid type!" << endl;
+		break;
+	}
+
+
+}

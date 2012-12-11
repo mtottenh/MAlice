@@ -3,11 +3,14 @@
 
 #include <sstream>
 #include <deque>
+#include <utility>
 
 #include "ASTVisitor.hpp"
 #include "LabelMaker.hpp"
 
 class ARMVisitor : public ASTVisitor {
+private:
+	void createGlobalVar(Node*, string);
 protected:
 	stringstream text;
 	stringstream data;
@@ -15,7 +18,8 @@ protected:
 	deque<string> freeRegs;
 	deque<string> allRegs;
 public:
-	ARMVisitor(); 
+	ARMVisitor();
+	void init(Node*); 
     virtual void visit(NArrayAccess*) = 0;
     virtual void visit(NAssignment*) = 0;
     virtual void visit(NBinOp*) = 0;
