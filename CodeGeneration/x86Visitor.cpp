@@ -58,12 +58,33 @@ void x86Visitor::visit(NAssignment *node) {
     string reg = getNextReg();
     if (node->getChildrenSize() > 1) {
        Node* leftChildID = node->getChild(lval);
-       Node* declaredNode = node->getTable()->lookup(leftChildID->getID());
-       text << "\tmov " <<  declaredNode->getLabel();
-       text << ", " << reg <<  endl;
-        //Assign the result to the variable
+       Node* declarationNode = node->getTable()->lookup(leftChildID->getID());
+	    int nestingLevel = declarationNode->getLevel();
+    	int numJumps = node->getLevel() - nestingLevel;
+   		string storeage = getNextReg();
+   	 	/* check if in local or global scope */
+    	if (nestingLevel == node->getLevel() || nestingLevel == 1) {
+        /* just use the label */
+        /* move from label into freeRegs.front() */
+        text << "\tmov " << declarationNode->getLabel() << ", " << reg << endl;
+    	} else {
+        /* push rbp */
+        text << "\t\n;Nesting level: " << nestingLevel << "\tThis Level : " << node->getLevel() << endl;
+        text << "\tpush rbp" << endl;
+        /* TODO :- write an assembly loop to stop generated code being bad */
+        while(numJumps > 0) {
+            /* follow the access link back overwriting rbp */
+            text << "\tmov rbp, [rbp+16]" << endl;
+            numJumps--;
+        }
+        /* mov from label into freeRegs.front() */
+            text << "\tmov " << declarationNode->getLabel() << ", " << reg << endl;
+        /* pop rbp */
+            text << "\tpop rbp" << endl;
     }
+	}
     restoreStore(reg);
+
     cerr << "End: Assignment" << endl;
 }
 /* TODO: still need to implement a register saving mechanism 
