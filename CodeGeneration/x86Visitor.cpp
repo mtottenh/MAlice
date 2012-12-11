@@ -400,7 +400,7 @@ void x86Visitor::visit(NMethodCall *node) {
     pushRegs();
     if (node->getChildrenSize() > 0) {
         node->getChild(0)->accept(this);
-    }
+    } 
     /* Save registers currently in use */
 
     Node* MethodDec = node->getTable()->lookup(node->getID());
@@ -413,6 +413,11 @@ void x86Visitor::visit(NMethodCall *node) {
     text << "\tcall _" << MethodDec->getLabel() << endl;
     /* Remove the access link from the stack */
     text << "\tadd rsp, 8" << endl;
+    if (node->getChildrenSize() > 0 ) {
+    	    int numParams = node->getChild(0)->getChildrenSize();
+	    text << "\tadd rsp, " << numParams * 8 << endl;
+    }
+
     /* Restore registers we were using */
     popRegs();
     /* TODO: - Procedure doesn't need to save return value */
@@ -442,15 +447,16 @@ void x86Visitor::visit(NParamBlock *node) {
     std::deque<string>::iterator it = allRegs.begin();
     unsigned int i = 0;
 
-    /* start moving paramters into regsiters */
+    /* start moving paramters into regsiters 
     for(it = allRegs.begin(); it != allRegs.end() && i < numChildren; it++) {
-
-//            cerr << "Paramater passed in : " << res << endl;
-            node->getChild(i)->accept(this);
-            string res = getNextReg();
+            //            cerr << "Paramater passed in : " << res << endl;
+	
+        node->getChild(i)->accept(this);
+	string res = getNextReg();
+	text << "mov  " << (*it) <<  ", " << res;
             
             i++;
-    }
+    }*/
     /* if we run out of register for paramaters (GOD WHY?) use the stack*/   
     for (; i < numChildren; i++) {
           node->getChild(i)->accept(this);
@@ -478,7 +484,7 @@ void x86Visitor::visit(NParamDeclarationBlock *node) {
     string label;
     std::deque<string>::iterator it = allRegs.begin();
     unsigned int i = 0;
-    /* start labeling paramters as using regsiters */
+    /* start labeling paramters as using regsiters 
     for(it = allRegs.begin(); it != allRegs.end() && i < numChildren; it++) {
         node->getChild(i)->setLabel(*it);
         i++;
@@ -487,7 +493,7 @@ void x86Visitor::visit(NParamDeclarationBlock *node) {
             freeRegs.erase(element);
         }
         
-    }
+    }*/
     printRegDeq(freeRegs);
     /* if we run out of registers to put params in start using the stack */
     for (; i < numChildren; i++) {
@@ -607,7 +613,7 @@ void x86Visitor::visit(NVariableDeclaration *node) {
 
         case TCHAR:
             offset += 8; 
-            text << "\tsub rsp, " << offset << endl;
+            text << "\tsub rsp, " << 8 << endl;
             convert << "[rbp-" << offset << "]";
             node->setLabel(convert.str());           
             break;
@@ -685,7 +691,6 @@ void x86Visitor::unfoldedFunctionVisitor(NFunctionDeclaration* node) {
     } 
     statlist->accept(this);    
     freeRegs = allRegs;
-    if (node->getNodeType() == PROCEDURE) 
 	    this->ret();
     cerr << "\n*Unfolded: " << node->getID() << "*" << endl;
     printRegDeq(freeRegs);
