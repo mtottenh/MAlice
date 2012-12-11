@@ -138,8 +138,10 @@ void ARMVisitor::init(Node* root) {
 	string labelSuffix = labelMaker.getNewLabel();
 	string label;
 
+	/* Reserve space for global vars */
 	for(it = t->start(); it != t->end(); ++it) {
 		label = it->first + labelSuffix;
+		data << ".comm " << label << " " << it->second->getSize() << endl;
 		it->second->setLabel(label);
 	}
 
@@ -152,20 +154,3 @@ void ARMVisitor::init(Node* root) {
 	text << "\tb exit" << endl;
 }
 
-void ARMVisitor::createGlobalVar(Node* node, string label) {
-	int type = node->getType();
-	
-	data << label << ":" << endl;
-
-	switch(type) {
-	case TNUMBER:
-		data << "\t.int " << node->getValue() << endl;
-	case TCHAR:
-	case TSTRING:
-		data << "\t.asciz " << node->getID() << endl;
-		break;
-	default:
-		cerr << "Tried to declare global var of invalid type!" << endl;
-		break;
-	}
-}
