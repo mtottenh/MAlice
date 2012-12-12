@@ -52,6 +52,8 @@ recommended in the specification), but decided that the benefits of speed and
 low level operations outweighed Java's advantages (e.g. garbage collection) in
 this instance.
 
+\newpage
+
 \subsection{Flex and Bison}
 
 When implementation began during Milestone 2, the group carefully considered
@@ -65,9 +67,24 @@ aiding in the creation of a compiler front end.
 
 \subsection{Code Generation - Visitor Pattern}
 
+For the code generation stage of the project, the visitor pattern was used, 
+seperating the logic of code generation from the nodes contained within the
+abstract syntax tree. For the generation of x86-64 code, the \texttt{x86Visitor}
+class calls \texttt{accept} on the root node of the abstract syntax tree, which
+in turn calls the the visitor's \texttt{visit} on its children, and so on, 
+generating code for each node in order. 
 
+To support future development, \texttt{x86Visitor} implements an interface,
+\texttt{ASTVisitor}. As part of the extension, the \texttt{ARMVisitor} class was
+created that also implements this interface. The use of the visitor pattern
+made creating this additional visitor quick and easy - and due to the lessons
+learnt from \texttt{x86Visitor}, the \texttt{ARMVisitor} becamse mostly a
+matter of translating syntax from x86-64 to ARM. Additional visitors, for other
+assembly languages, would also be made easier through this design pattern.
 
 \subsection{Future Work}
+
+
 
 \section{Beyond the Specification}
 
