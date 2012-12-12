@@ -511,18 +511,28 @@ void x86Visitor::visit(NMethodCall *node) {
 
     /* Figure out if MethodDec is nested within current function */
     /* update the access link -> always resides at rbp + 24 */
+    int numJumps = node->getLevel() - MethodDec->getLevel();
+    string freeReg = getNextReg();
+    text << "\t;Num Jumps: " << numJumps << endl;
+        
+    text << "mov " <<  freeReg << ", rbp" << endl;
+    while(numJumps > 0) {
+        text << "mov " << freeReg << ", [" << freeReg <<  "+ 16]" << endl;
+        numJumps--;
+    }
     /* and pass as a paramter to the function */
-    text << "\tpush rbp" << endl;
+    text << "\tpush " << freeReg  << endl;
  
     /* call the method */
     text << "\tcall _" << MethodDec->getLabel() << endl;
+    restoreStore(freeReg);
     /* Remove the access link from the stack */
     text << "\tadd rsp, 8" << endl;
     if (node->getChildrenSize() > 0 ) {
     	    int numParams = node->getChild(0)->getChildrenSize();
 	    text << "\tadd rsp, " << numParams * 8 << endl;
     }
-
+ 
     /* Restore registers we were using */
     popRegs();
     /* TODO: - Procedure doesn't need to save return value */
@@ -608,6 +618,7 @@ void x86Visitor::visit(NParamDeclarationBlock *node) {
         label = label + boost::lexical_cast<string>(offset) + "]";
         node->getChild(i)->setLabel(label);
         offset+=8;
+        cerr << "Name: " << node->getChild(i)->getID() << "\tlabel: " << node->getChild(i)->getLabel() << endl;
     }
     cerr << "End: Param Declaration block " << endl;   
 }
