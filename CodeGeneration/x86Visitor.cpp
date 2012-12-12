@@ -54,10 +54,11 @@ void x86Visitor::visit(NArrayAccess *node) {
     string addrReg = getNextReg();
     string result = getNextReg();
 
-    text << "\tlea " << addrReg <<  ", " << arrName->getLabel() << endl;
+    text << "\tmov " << addrReg <<  ", " << arrName->getLabel() << endl;
     text <<"\timul " << offset << ", 8" << endl;
-    text <<"\tsub " << addrReg << ", " << offset << endl;
+    text <<"\tadd " << addrReg << ", " << offset << endl;
     restoreStore(addrReg);
+    /* figure out a fix...  for mov / lea here, some things need binops need mov*/
     text << "\tlea " << result << ", [" << addrReg << "]" << endl;
     restoreStore(offset);
     restoreStore(result);
@@ -72,45 +73,49 @@ void x86Visitor::visit(NAssignment *node) {
 
     node->getChild(rval)->accept(this);
     string value = getNextReg();
+    string storeAddr;
     if (node->getChildrenSize() > 1) {
         Node* leftChildID = node->getChild(lval);
         Node* declarationNode = node->getTable()->lookup(leftChildID->getID());
         int nestingLevel = declarationNode->getLevel();
         int numJumps = node->getLevel() - nestingLevel;
         string label = declarationNode->getLabel();
-
+        text << "\t;A MILD DISCONFORT SIR\n" ;
+        if (declarationNode->getType() == REFNUMBER || declarationNode->getType() == REFCHAR) {
+            leftChildID->accept(this);
+            storeAddr =  getNextReg();
+            text << "\t;drop it like its hot" << endl;
+            text << "\tmov [" << storeAddr << "] , " << value << endl; 
+//          text << "\tSOME ARRAY SHIT GOING DOWN\n";
+        } else {
    	 	/* check if in local or global scope */
-    	if (nestingLevel == node->getLevel() || nestingLevel == 1) {
+         	if (nestingLevel == node->getLevel() || nestingLevel == 1) {
             /* just use the label */
             /* move from label into freeRegs.front() */
-            if (declarationNode->getType() == REFNUMBER) {
-                leftChildID->accept(this);
-                string storeAddr =  getNextReg();
-                text << "\tmov [" << storeAddr << "] , " << value << endl; 
-//                text << "\tSOME ARRAY SHIT GOING DOWN\n";
-            } else {
-		        if (nestingLevel == 1)
-                    label = "[" + label + "]";
+//          text << "\tSOME ARRAY SHIT GOING DOWN\n";
+		         if (nestingLevel == 1)
+                     label = "[" + label + "]";
                	text << "\tmov " << label << ", " << value << endl;
+    	    } else {
+                /* push rbp */
+                text << "\t\n;Nesting level: " << nestingLevel << "\tThis Level : " << node->getLevel() << endl;
+                text << "\tpush rbp" << endl;
+                /* TODO :- write an assembly loop to stop generated code being bad */
+                while(numJumps > 0) {
+                    /* follow the access link back overwriting rbp */
+                    text << "\tmov rbp, [rbp+16]" << endl;
+                    numJumps--;
+                }
+                /* mov from label into freeRegs.front() */
+               	text << "\tmov " << label << ", " << value << endl;
+                /* pop rbp */
+                text << "\tpop rbp" << endl;
             }
-    	} else {
-            /* push rbp */
-            text << "\t\n;Nesting level: " << nestingLevel << "\tThis Level : " << node->getLevel() << endl;
-            text << "\tpush rbp" << endl;
-            /* TODO :- write an assembly loop to stop generated code being bad */
-            while(numJumps > 0) {
-                /* follow the access link back overwriting rbp */
-                text << "\tmov rbp, [rbp+16]" << endl;
-                numJumps--;
-            }
-            /* mov from label into freeRegs.front() */
-            text << "\tmov " << label << ", " << value << endl;
-            /* pop rbp */
-            text << "\tpop rbp" << endl;
-        }
-	}
+	    }
+   }
+    restoreStore(storeAddr);
     restoreStore(value);
-
+    
     cerr << "End: Assignment" << endl;
 }
 /* TODO: still need to implement a register saving mechanism 
@@ -187,6 +192,7 @@ void x86Visitor::generateBinOpInstr(int op, string returnReg, string nxtReg) {
 }
 void x86Visitor::visit(NBinOp *node) {
     string resultReg, nxtReg;
+    string nxtregbodge, resultregbodge;
     if (node->getChild(0)->getWeight() > node->getChild(1)->getWeight()) {
         cerr << "\nBinOp: evaluating  left first\nFree Regsiters:\n";
         printRegDeq(freeRegs);
@@ -202,9 +208,24 @@ void x86Visitor::visit(NBinOp *node) {
         node->getChild(0)->accept(this);
         resultReg = getNextReg();
     }
-    generateBinOpInstr(node->getOp(), resultReg, nxtReg);   
-    restoreStore(nxtReg);
-    restoreStore(resultReg); 
+    nxtregbodge = nxtReg;
+    resultregbodge = resultReg;
+    if (node->getChild(1)->getNodeType() == ARRAYACCESS) {
+        nxtregbodge = getNextReg();
+        text << "mov " << nxtregbodge << ", [" << nxtReg << "]" << endl;
+  //      nxtregbodge = "[" + nxtReg + "]";
+    }
+    if (node->getChild(0)->getNodeType() == ARRAYACCESS) {
+        resultregbodge = getNextReg();
+        text << "mov " << resultregbodge << ", [" << resultReg << "]" << endl;
+//        resultregbodge = "[" + resultReg + "]" ;
+    }
+    generateBinOpInstr(node->getOp(), resultregbodge, nxtregbodge);   
+    
+//    restoreStore(nxtReg);
+//    restoreStore(resultReg); 
+    restoreStore(nxtregbodge);
+    restoreStore(resultregbodge);
     cerr << "End: Bin Op " << endl;
 }
 
@@ -214,7 +235,15 @@ void x86Visitor::comparePredicate(string setInstr, string resultReg,
          * SETX instructions check EFLAGS for equality, less than etc.. and
          * set a BYTE if the condition matches X. We use MOVZX to put it in
          * the 64 bit register.
-         */ 
+         */
+        if (resultReg.c_str()[0] == '[' ) {
+            text << ";BROKEN COMPARISON" << endl;
+           resultReg = resultReg.substr(1,resultReg.length()-1);
+        }
+        if (nxtReg.c_str()[0] == '[' ) {
+            text << ";DOUBLE BROKEN COMPARISON" << endl;
+            nxtReg = nxtReg.substr(1,nxtReg.length()-1);
+        }
         text << "\tcmp " << resultReg << ", " << nxtReg << endl;
         text << "\tpush rax" << endl;
         text << "\t" << setInstr << " al" << endl;
@@ -342,9 +371,9 @@ void x86Visitor::visit(NIdentifier *node) {
     if (nestingLevel == node->getLevel() || nestingLevel == 1) {
         /* just use the label */
         /* move from label into freeRegs.front() */
-	if (nestingLevel == 1)
+	if (nestingLevel == 1  ) 
 	        text << "\tmov " <<  storeage << ", [" << declarationNode->getLabel() <<"]" << endl;
-	else
+	else 
 		text << "\tmov " <<  storeage << ", " << declarationNode->getLabel() << endl;
 
     } else {
@@ -469,28 +498,41 @@ void x86Visitor::visit(NLoop *node) {
 
 void x86Visitor::visit(NMethodCall *node) {
      cerr << "Node: Function or Procedure Call" << endl;   
+    Node* MethodDec = node->getTable()->lookup(node->getID());
     /* Push paramaters onto the stack in reverse order */
     pushRegs();
     if (node->getChildrenSize() > 0) {
         node->getChild(0)->accept(this);
+        
     } 
     /* Save registers currently in use */
 
-    Node* MethodDec = node->getTable()->lookup(node->getID());
+
+
     /* Figure out if MethodDec is nested within current function */
     /* update the access link -> always resides at rbp + 24 */
+    int numJumps = node->getLevel() - MethodDec->getLevel();
+    string freeReg = getNextReg();
+    text << "\t;Num Jumps: " << numJumps << endl;
+        
+    text << "mov " <<  freeReg << ", rbp" << endl;
+    while(numJumps > 0) {
+        text << "mov " << freeReg << ", [" << freeReg <<  "+ 16]" << endl;
+        numJumps--;
+    }
     /* and pass as a paramter to the function */
-    text << "\tpush rbp" << endl;
+    text << "\tpush " << freeReg  << endl;
  
     /* call the method */
     text << "\tcall _" << MethodDec->getLabel() << endl;
+    restoreStore(freeReg);
     /* Remove the access link from the stack */
     text << "\tadd rsp, 8" << endl;
     if (node->getChildrenSize() > 0 ) {
     	    int numParams = node->getChild(0)->getChildrenSize();
 	    text << "\tadd rsp, " << numParams * 8 << endl;
     }
-
+ 
     /* Restore registers we were using */
     popRegs();
     /* TODO: - Procedure doesn't need to save return value */
@@ -531,8 +573,12 @@ void x86Visitor::visit(NParamBlock *node) {
     /* if we run out of register for paramaters (GOD WHY?) use the stack*/   
     for (int i = numChildren - 1; i >= 0; i--) {
           node->getChild(i)->accept(this);
+            string reg = getNextReg();
+  /* if child(i) has type array access and Metods ith param is  not a ref type */
+            if (node->getChild(i)->getNodeType() == ARRAYACCESS) 
+                text << "mov " << reg << ", [" << reg << "]" << endl;
           text << "\t; push child node" << endl;
-          text << "\tpush " << getNextReg() << endl;
+          text << "\tpush " << reg << endl;
     }
     printRegDeq(freeRegs);
     cerr << "End: Param Block " << endl;
@@ -572,6 +618,7 @@ void x86Visitor::visit(NParamDeclarationBlock *node) {
         label = label + boost::lexical_cast<string>(offset) + "]";
         node->getChild(i)->setLabel(label);
         offset+=8;
+        cerr << "Name: " << node->getChild(i)->getID() << "\tlabel: " << node->getChild(i)->getLabel() << endl;
     }
     cerr << "End: Param Declaration block " << endl;   
 }
@@ -613,11 +660,24 @@ void x86Visitor::visit(NPrint *node) {
 	text << "\tpop r8" << endl;
         restoreStore(reg);
     }
-    if (type == TCHAR) {
+    if (type == TCHAR && decType != REFCHAR) {
            node->getChild(0)->accept(this);
            string reg = getNextReg();
            text << "\toutput.char " << reg << endl;
            restoreStore(reg);
+    }
+    if (decType == REFCHAR) {
+           node->getChild(0)->accept(this);
+           string reg = getNextReg();
+           data << printlabel << ": db \"%c\", 0x0 " << endl;
+           text << "\tpush rax\n\tpush rdi\n\tpush rsi" << endl;
+           text << "\tmov rsi, [" << reg << "]" << endl;
+           text << "\tmov rdi, " << printlabel << endl;
+           text << "\tmov rax, 0" << endl;
+           text << "\tcall printf" << endl;
+           text << "\tpop rsi\n\tpop rdi\n\tpop rax\n";
+           restoreStore(reg);
+
     }
     if (decType == REFNUMBER) {
         node->getChild(0)->accept(this);
@@ -716,7 +776,10 @@ void x86Visitor::visit(NVariableDeclaration *node) {
    stringstream debuglabel ;
    debuglabel << ";Type: ";
     int numElements; 
+    stringstream numElementsStr;
+    Node *lengthNode;
     stringstream convert;
+    string label;
     switch(type) {
         case TNUMBER:
             /* reserve 8 bytes for an integer */
@@ -730,14 +793,34 @@ void x86Visitor::visit(NVariableDeclaration *node) {
 		break;
     	case REFCHAR:
     	case REFNUMBER:
-	        numElements = ((NInteger *)(node->getChild(0)))->getValue();
-    		text << "\tsub rsp, " << numElements * 8;
+	        lengthNode = node->getChild(0);
+            if (lengthNode->getNodeType() == INTEGER) {
+                numElements = ((NInteger *)(lengthNode))->getValue();
+        	    numElements = numElements * 8;
+                numElementsStr << numElements;
+            } else {
+                numElementsStr.clear();
+                numElementsStr << node->getTable()->lookup(lengthNode->getID())->getLabel();
+            }
+                text << "\tpush rdi\n\tpush rax\n";
+                text << "\tmov rdi," << numElementsStr.str() << endl;
+                text << "\txor rax,rax\n";
+                text << "\tcall malloc" << endl;
+
+                label = "arr" + this->labelMaker.getNewLabel();
+                text << "\tmov [" << label << "], rax" << endl;
+                text << "\tpop rax\n";
+                text << "\tpop rdi\n";
+                data << "common " << label << " 8" << endl;
+                convert << "[" << label << "]";
+             
             /* reserve numelements * 8 bytes worth of space on the stack */
     		text << "\t; WE GOT AN ARRAY SON!" << endl;
-            /* set the label to be a pointer to the offest of the 1st element */
-            convert << "[rbp-" << offset+8 << "]";
             /* set the offest to take into account the entire array */
-            offset += numElements*8;
+            if (lengthNode->getNodeType() == INTEGER) {
+                /* set the label to be a pointer to the offest of the 1st element */
+                offset += numElements;
+            }
             node->setLabel(convert.str());
         break;
         case TSTRING:
@@ -847,6 +930,7 @@ void x86Visitor::init(Node* root) {
     text << "extern exit\n";
     text << "extern scanf\n";
     text << "extern printf\n";
+    text << "extern malloc\n";
     text << "main:\n";
 }
 
