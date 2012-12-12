@@ -1,6 +1,7 @@
 \documentclass[a4wide, 11pt]{article}
 \usepackage{a4, fullpage}
 \usepackage{graphicx}
+\usepackage{verbatim}
 \setlength{\parskip}{0.3cm}
 \setlength{\parindent}{0cm}
 \newcommand{\tab}{\hspace*{2em}}
@@ -15,10 +16,31 @@
 
 \maketitle            % generates the title from the data above
 
+% TODO - Not sure if needed; spec doesn't mention an intro, and we're somewhat
+% constrained on page length (max of 4!) 
+\begin{comment}
+\section{Introduction}
+ 
+This report outlines the development of the group's compiler for the MAlice
+language into x86-64 and ARM assembly code, from the design stages to 
+implementation and extension. Throughout the project, careful attention was
+given to design, the tools and language used and ensuring functional
+correctness.
+\end{comment}
+
 % sections as given in the spec.
 \section{The Product}
 
 \section{The Design Choices}
+
+When implementation began during Milestone 2, the group carefully considered
+many options for lexical analysis and parser generation. The choice for making 
+use of tools for this milestone was made due to the difficulty associated with
+creating a parser generator for an LALR grammar. After looking at the
+pros and cons of many packages, {\bf\emph{Flex}} was chosen for lexical analysis
+and {\bf\emph{Bison}} chosen as the parser generator. This decision was made as 
+these two packages are arguably the most stable and well documented tools for 
+aiding in the creation of a compiler front end.
 
 \section{Beyond the Specification}
 
