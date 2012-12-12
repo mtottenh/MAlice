@@ -10,6 +10,7 @@
  * stack in reverse order
  */
 
+string convertInt(int);
 
 
 x86Visitor::x86Visitor() : labelMaker() {
@@ -54,124 +55,104 @@ void x86Visitor::visit(NArrayAccess *node) {
 }
 
 void x86Visitor::visit(NAssignment *node) {
-    cerr << "Node: Assignment" << endl;
-    int rval = node->getChildrenSize() - 1;
-    int lval = rval-1;
+			cerr << "Node: Assignment" << endl;
+			int rval = node->getChildrenSize() - 1;
+			int lval = rval-1;
 
-    node->getChild(rval)->accept(this);
-    string value = getNextReg();
-    if (node->getChildrenSize() > 1) {
-        Node* leftChildID = node->getChild(lval);
-        Node* declarationNode = node->getTable()->lookup(leftChildID->getID());
-        int nestingLevel = declarationNode->getLevel();
-        int numJumps = node->getLevel() - nestingLevel;
-        string label = declarationNode->getLabel();
+			node->getChild(rval)->accept(this);
+			string value = getNextReg();
+			if (node->getChildrenSize() > 1) {
+				Node* leftChildID = node->getChild(lval);
+				Node* declarationNode = node->getTable()->lookup(leftChildID->getID());
+				int nestingLevel = declarationNode->getLevel();
+				int numJumps = node->getLevel() - nestingLevel;
+				string label = declarationNode->getLabel();
 
-   	 	/* check if in local or global scope */
-    	if (nestingLevel == node->getLevel() || nestingLevel == 1) {
-            /* just use the label */
-            /* move from label into freeRegs.front() */
-            if (declarationNode->getType() == REFNUMBER) {
-                leftChildID->accept(this);
-                string storeAddr =  getNextReg();
-                text << "\tmov [" << storeAddr << "] , " << value << endl; 
-//                text << "\tSOME ARRAY SHIT GOING DOWN\n";
-            } else {
-		        if (nestingLevel == 1)
-                    label = "[" + label + "]";
-               	text << "\tmov " << label << ", " << value << endl;
-            }
-    	} else {
-            /* push rbp */
-            text << "\t\n;Nesting level: " << nestingLevel << "\tThis Level : " << node->getLevel() << endl;
-            text << "\tpush rbp" << endl;
-            /* TODO :- write an assembly loop to stop generated code being bad */
-            while(numJumps > 0) {
-                /* follow the access link back overwriting rbp */
-                text << "\tmov rbp, [rbp+16]" << endl;
-                numJumps--;
-            }
-            /* mov from label into freeRegs.front() */
-            text << "\tmov " << label << ", " << value << endl;
-            /* pop rbp */
-            text << "\tpop rbp" << endl;
-        }
-	}
-    restoreStore(value);
+				/* check if in local or global scope */
+				if (nestingLevel == node->getLevel() || nestingLevel == 1) {
+					/* just use the label */
+					/* move from label into freeRegs.front() */
+					if (declarationNode->getType() == REFNUMBER) {
+						leftChildID->accept(this);
+						string storeAddr =  getNextReg();
+						generator.printInstruction(AMOVE, 
+								"[" + storeAddr + "]", value);
+		//                text << "\tSOME ARRAY SHIT GOING DOWN\n";
+					} else {
+						if (nestingLevel == 1)
+							label = "[" + label + "]";
+						generator.printInstruction(AMOVE, label, value);
+					}
+				} else {
+					/* push rbp */
+					generator.printInstruction(APUSH, generator.getBasePointer());
+					/* TODO :- write an assembly loop to stop generated code being bad */
+					while(numJumps > 0) {
+						/* follow the access link back overwriting rbp */
+						string bp = generator.getBasePointer();
+						generator.printInstruction(AMOVE, bp, "[" + bp + "16" + "]");
+						numJumps--;
+					}
+					/* mov from label into freeRegs.front() */
+					generator.printInstruction(AMOVE, label, value);
+					/* pop rbp */
+					generator.printInstruction(APOP, generator.getBasePointer());
+				}
+			}
+			restoreStore(value);
 
-    cerr << "End: Assignment" << endl;
-}
-/* TODO: still need to implement a register saving mechanism 
- * maybe paramerterise visit with a list of reg's it can use
- * like the tutorial.
- */
-void x86Visitor::generateBinOpInstr(int op, string returnReg, string nxtReg) {
-    switch(op) {
-        case OR:
-        case LOR:
-			generator.printInstruction(AOR, returnReg, nxtReg);
-            break;
-        case AND:
-        case LAND:
-			generator.printInstruction(AAND, returnReg, nxtReg);
-            break;
-        case LEQU:
-            comparePredicate("sete", returnReg, nxtReg);    
-            break; 
-        case LLTHAN:
-            comparePredicate("setl", returnReg, nxtReg);
-            break;
-        case LLTHANEQ:
-            comparePredicate("setle", returnReg, nxtReg);
-            break;
-        case LGTHAN:
-            comparePredicate("setg", returnReg, nxtReg);
-            break;
-        case LGTHANEQ:
-            comparePredicate("setge", returnReg, nxtReg);
-            break;
-        case LNOTEQU:
-            comparePredicate("setne", returnReg, nxtReg);
-            break;
-        case XOR:
-			generator.printInstruction(AXOR, returnReg, nxtReg);
-            break;
-        case PLUS:
-			generator.printInstruction(AADD, returnReg, nxtReg);
-            break;
-        case DASH:
-			generator.printInstruction(ASUB, returnReg, nxtReg);
-            break;
-        case MULT:
-			generator.printInstruction(AIMUL, returnReg, nxtReg);
-            break;
-        case DIV:
-			//We need to make this more general - refactor!
-            text << "\tpush rax" << endl;
-            text << "\tpush rdx" << endl;
-            /* not sure if rax or rdx... see intel documentation */
-			text << "\txor rdx, rdx" << endl;
-            text << "\tmov " << "rax, " << returnReg << endl;
-            text << "\tcqo" << endl;
-            text << "\tidiv " << nxtReg << endl;
-            /* quotient lives in rax, move to resultReg */
-            text << "\tmov " << returnReg << ", rax" << endl;
-            text << "\tpop rdx" << endl;
-            text << "\tpop rax" << endl;
-            break;
-        case MOD:
-            text << "\tpush rax" << endl;
-            text << "\tpush rdx" << endl;
-            /* not sure if rax or rdx... see intel documentation */
-			text << "\txor rdx, rdx" << endl;
-            text << "\tmov " << "rax, " << returnReg << endl;
-            text << "\tcqo" << endl;
-            text << "\tidiv " << nxtReg << endl;
-            /* remainder lives in rdx, move to resultReg */
-            text << "\tmov " << returnReg << ", rdx" << endl;
-            text << "\tpop rdx" << endl;
-            text << "\tpop rax" << endl;
-            break;
+			cerr << "End: Assignment" << endl;
+		}
+		/* TODO: still need to implement a register saving mechanism 
+		 * maybe paramerterise visit with a list of reg's it can use
+		 * like the tutorial.
+		 */
+		void x86Visitor::generateBinOpInstr(int op, string returnReg, string nxtReg) {
+			switch(op) {
+				case OR:
+				case LOR:
+					generator.printInstruction(AOR, returnReg, nxtReg);
+					break;
+				case AND:
+				case LAND:
+					generator.printInstruction(AAND, returnReg, nxtReg);
+					break;
+				case LEQU:
+					comparePredicate("sete", returnReg, nxtReg);    
+					break; 
+				case LLTHAN:
+					comparePredicate("setl", returnReg, nxtReg);
+					break;
+				case LLTHANEQ:
+					comparePredicate("setle", returnReg, nxtReg);
+					break;
+				case LGTHAN:
+					comparePredicate("setg", returnReg, nxtReg);
+					break;
+				case LGTHANEQ:
+					comparePredicate("setge", returnReg, nxtReg);
+					break;
+				case LNOTEQU:
+					comparePredicate("setne", returnReg, nxtReg);
+					break;
+				case XOR:
+					generator.printInstruction(AXOR, returnReg, nxtReg);
+					break;
+				case PLUS:
+					generator.printInstruction(AADD, returnReg, nxtReg);
+					break;
+				case DASH:
+					generator.printInstruction(ASUB, returnReg, nxtReg);
+					break;
+				case MULT:
+					generator.printInstruction(AIMUL, returnReg, nxtReg);
+					break;
+				case DIV:
+					generator.printInstruction(ADIV, returnReg, nxtReg);
+					break;
+				case MOD:
+					generator.printInstruction(AMOD, returnReg, nxtReg);
+			break;
     }
 }
 void x86Visitor::visit(NBinOp *node) {
@@ -227,17 +208,22 @@ void x86Visitor::visit(NCharLit *node) {
 void x86Visitor::visit(NCodeBlock *node) {
     /* Visit the statement list, and declaration list if it exists. */
     cerr << "Node: CodeBlock" << endl;
-    text << "\tpush rbp" << endl;
-    text << "\tpush rbp" << endl;
-    text << "\tpush rbp" << endl;
-    text << "\tmov rbp, rsp" << endl;
-    for(int i = 0; i < node->getChildrenSize(); ++i) {
+	generator.printInstruction(APUSH, generator.getBasePointer());
+	generator.printInstruction(APUSH, generator.getBasePointer());
+	generator.printInstruction(APUSH, generator.getBasePointer());
+
+	generator.printInstruction(AMOVE, generator.getBasePointer(),
+										generator.getStackPointer());
+    
+	for(int i = 0; i < node->getChildrenSize(); ++i) {
         node->getChild(i)->accept(this);
     }
-    text << "\tmov rsp, rbp" << endl;
-    text << "\tpop rbp" << endl;
-    text << "\tpop rbp" << endl;
-    text << "\tpop rbp" << endl;
+	generator.printInstruction(AMOVE, generator.getStackPointer(),
+										generator.getBasePointer());
+	
+	generator.printInstruction(APOP, generator.getBasePointer());
+	generator.printInstruction(APOP, generator.getBasePointer());
+	generator.printInstruction(APOP, generator.getBasePointer());
     cerr << "End: CodeBlock" << endl;
 }
 
@@ -320,32 +306,35 @@ void x86Visitor::visit(NIdentifier *node) {
     Node *declarationNode = node->getTable()->lookup(node->getID());
     int nestingLevel = declarationNode->getLevel();
     int numJumps = node->getLevel() - nestingLevel;
-    string storeage = getNextReg();
+    string storage = getNextReg();
     /* check if in local or global scope */
     if (nestingLevel == node->getLevel() || nestingLevel == 1) {
         /* just use the label */
         /* move from label into freeRegs.front() */
 	if (nestingLevel == 1)
-	        text << "\tmov " <<  storeage << ", [" << declarationNode->getLabel() <<"]" << endl;
+			generator.printInstruction(AMOVE, 
+					storage, "[" + declarationNode->getLabel() + "]");
 	else
-		text << "\tmov " <<  storeage << ", " << declarationNode->getLabel() << endl;
-
+			generator.printInstruction(AMOVE, storage,
+					declarationNode->getLabel());
     } else {
         /* push rbp */
         text << "\t\n;Nesting level: " << nestingLevel << "\tThis Level : " << node->getLevel() << endl;
-        text << "\tpush rbp" << endl;
+        generator.printInstruction(APUSH, generator.getBasePointer());
         /* TODO :- write an assembly loop to stop generated code being bad */
         while(numJumps > 0) {
             /* follow the access link back overwriting rbp */
-            text << "\tmov rbp, [rbp+16]" << endl;
+			string bp = generator.getBasePointer();
+            generator.printInstruction(AMOVE, bp, "[" + bp + "16" + "]");
             numJumps--;
         }
         /* mov from label into freeRegs.front() */
-            text << "\tmov " << storeage << ", " << declarationNode->getLabel() << endl;
+			generator.printInstruction(AMOVE, storage,
+				declarationNode->getLabel());
         /* pop rbp */
-            text << "\tpop rbp" << endl;
+			generator.printInstruction(APOP, generator.getBasePointer());
     }
-    restoreStore(storeage);
+    restoreStore(storage);
     cerr << "End: Identifier" << endl;
 }
 
@@ -360,9 +349,8 @@ void x86Visitor::visit(NInc *node) {
     Node *childDeclarationNode = table->lookup(childID);
     /* Increment the register containing the result of the expression */
     string store = getNextStore();
-    text << "\tinc " << store << "\n";
-    text << "\tmov " << childDeclarationNode->getLabel() << ", "
-         << store << endl;
+	generator.printInstruction(AINC, store);
+    generator.printInstruction(AMOVE, childDeclarationNode->getLabel(), store);
     restoreStore(store);
     cerr << "End: Inc " << endl;
 }
@@ -376,9 +364,8 @@ void x86Visitor::visit(NDec *node) {
     Node *childDeclarationNode = table->lookup(childID);
     /* Increment the register containing the result of the expression */
     string store = getNextStore();
-    text << "\tdec " << store << "\n";
-    text << "\tmov " << childDeclarationNode->getLabel() << ", "
-         << store << endl;
+	generator.printInstruction(ADEC, store);
+    generator.printInstruction(AMOVE, childDeclarationNode->getLabel(), store);
     restoreStore(store);
     cerr << "End: Decrement" << endl;
 }
@@ -419,8 +406,7 @@ void x86Visitor::visit(NInput *node) {
 void x86Visitor::visit(NInteger *node) {
     cerr << "Node: Integer" << endl;
     string store = getNextReg();
-    text << "\n\tmov " << store << ", " << node->getValue();
-    text << endl;
+	generator.printInstruction(AMOVE, store, convertInt(node->getValue()));
     restoreStore(store);
     cerr << "End: Integer" << endl;
 }
@@ -430,7 +416,7 @@ void x86Visitor::visit(NLoop *node) {
     /* Get a label for the start and end of the while loop. Print start label.*/
     string startLabel = labelMaker.getNewLabel();
     string endLabel = labelMaker.getNewLabel();
-    text << startLabel << ":" << endl;
+    generator.printLabel(startLabel);
 
     /* 
      * Visit condition. Assuming that 0 is stored in flags register if false,
@@ -438,15 +424,14 @@ void x86Visitor::visit(NLoop *node) {
      */
     node->getChild(0)->accept(this);
     string reg = getNextReg();
-    text << "\tcmp " << reg << ", 1" << endl;
-    text << "\tje " << endLabel << "\n";
+	generator.printInstruction(ACMP, reg, "1");
+    generator.printInstruction(AJE, endLabel);
     
     /* Visit the statement list of the loop node, then recheck condition. */
     node->getChild(1)->accept(this);
-    text << "\tjmp " << startLabel << "\n";
-
+   	generator.printInstruction(AJMP, startLabel);
     /* Print end label finish. */
-    text << endLabel << ":\n";
+    generator.printLabel(endLabel);
     cerr << "End: Loop" << endl;
 }
 
@@ -463,15 +448,16 @@ void x86Visitor::visit(NMethodCall *node) {
     /* Figure out if MethodDec is nested within current function */
     /* update the access link -> always resides at rbp + 24 */
     /* and pass as a paramter to the function */
-    text << "\tpush rbp" << endl;
+    generator.printInstruction(APUSH, generator.getBasePointer());
  
     /* call the method */
-    text << "\tcall _" << MethodDec->getLabel() << endl;
+	generator.printInstruction(ACALL, MethodDec->getLabel());
     /* Remove the access link from the stack */
-    text << "\tadd rsp, 8" << endl;
+	generator.printInstruction(AADD, generator.getStackPointer(), "8");    
     if (node->getChildrenSize() > 0 ) {
     	    int numParams = node->getChild(0)->getChildrenSize();
-	    text << "\tadd rsp, " << numParams * 8 << endl;
+		generator.printInstruction(AADD, generator.getStackPointer(),
+							convertInt(numParams * 8));	
     }
 
     /* Restore registers we were using */
@@ -479,16 +465,12 @@ void x86Visitor::visit(NMethodCall *node) {
     /* TODO: - Procedure doesn't need to save return value */
     /*save return value from rax into freeRegisters.front()*/
     string reg = getNextReg();
-    text << "\tmov " << reg << ", rax" << endl;
+    generator.printInstruction(AMOVE, reg, generator.getReturnRegister());
     restoreStore(reg);
-     
      cerr << "End: Function or Procedure Call" << endl;   
 }
 
 void x86Visitor::visit(NNullToken *node) {
-    cerr << "Node: NNullToken" << endl;
-    text << "\tnop" << endl;
-    cerr << "End: NullToken" << endl;
 }
 
 void x86Visitor::visit(Node *node) {
@@ -501,21 +483,10 @@ void x86Visitor::visit(NParamBlock *node) {
     unsigned int numChildren =  node->getChildrenSize();
     string label;
     std::deque<string>::iterator it = allRegs.begin();
-    /* start moving paramters into regsiters 
-    for(it = allRegs.begin(); it != allRegs.end() && i < numChildren; it++) {
-            //            cerr << "Paramater passed in : " << res << endl;
-	
-        node->getChild(i)->accept(this);
-	string res = getNextReg();
-	text << "mov  " << (*it) <<  ", " << res;
-            
-            i++;
-    }*/
-    /* if we run out of register for paramaters (GOD WHY?) use the stack*/   
+    /* push params onto the stack*/   
     for (int i = numChildren - 1; i >= 0; i--) {
-          node->getChild(i)->accept(this);
-          text << "\t; push child node" << endl;
-          text << "\tpush " << getNextReg() << endl;
+        node->getChild(i)->accept(this);
+        generator.printInstruction(APUSH, getNextReg());  
     }
     printRegDeq(freeRegs);
     cerr << "End: Param Block " << endl;
@@ -538,18 +509,8 @@ void x86Visitor::visit(NParamDeclarationBlock *node) {
     string label;
     std::deque<string>::iterator it = allRegs.begin();
     unsigned int i = 0;
-    /* start labeling paramters as using regsiters 
-    for(it = allRegs.begin(); it != allRegs.end() && i < numChildren; it++) {
-        node->getChild(i)->setLabel(*it);
-        i++;
-        std::deque<string>::iterator element =  find(freeRegs.begin(),freeRegs.end(),*it);
-        if (element != freeRegs.end()) {
-            freeRegs.erase(element);
-        }
-        
-    }*/
     printRegDeq(freeRegs);
-    /* if we run out of registers to put params in start using the stack */
+    /* put params onto the stack */
     for (; i < numChildren; i++) {
         label = "[rbp+";
         label = label + boost::lexical_cast<string>(offset) + "]";
@@ -584,17 +545,8 @@ void x86Visitor::visit(NPrint *node) {
     if (type == TNUMBER && decType != REFNUMBER) {
         node->getChild(0)->accept(this);
         string reg = getNextReg();
-        data << printlabel << ": db \"%d\" , 0x0 " << endl;
-	text << "\tpush r8" << endl;
-        text << "\tpush rax\n\tpush rdi" << endl;
-        text << "\tpush rsi\n";
-        text << "\tmov rsi," << reg << endl;
-        text << "\tmov rdi, " << printlabel << endl;
-        text << "\tmov rax, 0" << endl;
-        text << "\tcall printf" << endl;
-        text << "\tpop rsi\n\tpop rdi\n\tpop rax\n";
-	text << "\tpop r8" << endl;
-        restoreStore(reg);
+        generator.generatePrintInstruction(reg, printlabel, false, type);
+		restoreStore(reg);
     }
     if (type == TCHAR) {
            node->getChild(0)->accept(this);
@@ -605,18 +557,8 @@ void x86Visitor::visit(NPrint *node) {
     if (decType == REFNUMBER) {
         node->getChild(0)->accept(this);
         string reg = getNextReg();
-        data << printlabel << ": db \"%d\" , 0x0 " << endl;
-    	text << "\tpush r8" << endl;
-        text << "\tpush rax\n\tpush rdi" << endl;
-        text << "\tpush rsi\n";
-        text << "\tmov rsi, [" << reg <<"]"<< endl;
-        text << "\tmov rdi, " << printlabel << endl;
-        text << "\tmov rax, 0" << endl;
-        text << "\tcall printf" << endl;
-        text << "\tpop rsi\n\tpop rdi\n\tpop rax\n";
-    
-         text << "\tpop r8" << endl;
-        restoreStore(reg);    
+        generator.generatePrintInstruction(reg, printlabel, true, type);
+		restoreStore(reg);    
        }
     if(type == TSTRING) {
         node->getChild(0)->accept(this);   
@@ -642,7 +584,7 @@ void x86Visitor::visit(NReturn *node) {
     Node *retVal = node->getChild(0);
     retVal->accept(this);
     string reg = getNextReg();
-    text << "mov rax, " << reg << endl;
+	generator.printInstruction(AMOVE, generator.getReturnRegister());
     restoreStore(reg);
     cerr << "End: Return" << endl;   
     ret();
@@ -663,11 +605,12 @@ void x86Visitor::visit(NStringLit *node) {
      */
     cerr << "Node: String Literal" << endl;
     string label = this->labelMaker.getNewLabel();
+	//TODO: Add generator code!	
     data << label << ": db  " ;
     data << node->getID() <<",0x0" << endl; 
     node->setLabel(label);
     string reg = getNextReg();
-    text << "\tmov " << reg << ", " << label << endl;
+	generator.printInstruction(AMOVE, reg, label);
     restoreStore(reg);
     cerr << "End: String Literal" << endl;
 }
@@ -678,11 +621,11 @@ void x86Visitor::visit(NUnaryOp *node) {
     string resultReg =  getNextReg();
     switch(node->getOp()) {
         case DASH:
-            text << "\tneg " << resultReg << endl;           
+			generator.printInstruction(ANEG, resultReg);
             break;
         case LNOT:
         case NOT:
-            text << "\tnot " << resultReg << endl;           
+			generator.printInstruction(ANOT, resultReg);
             break;
         case PLUS:
             break;
@@ -705,8 +648,9 @@ void x86Visitor::visit(NVariableDeclaration *node) {
             /* reserve 8 bytes for an integer */
 
         case TCHAR:
-            offset += 8; 
-            text << "\tsub rsp, " << 8 << endl;
+            offset += 8;
+			generator.printInstruction(ASUB, 
+							generator.getStackPointer(), "8"); 
             convert << "[rbp-" << offset << "]";
 	    if (node->getLevel() != 1)
 	        node->setLabel(convert.str());           
@@ -714,7 +658,8 @@ void x86Visitor::visit(NVariableDeclaration *node) {
     	case REFCHAR:
     	case REFNUMBER:
 	        numElements = ((NInteger *)(node->getChild(0)))->getValue();
-    		text << "\tsub rsp, " << numElements * 8;
+    		generator.printInstruction(ASUB, generator.getStackPointer(),
+								convertInt(numElements * 8));
             /* reserve numelements * 8 bytes worth of space on the stack */
     		text << "\t; WE GOT AN ARRAY SON!" << endl;
             /* set the label to be a pointer to the offest of the 1st element */
@@ -734,9 +679,10 @@ void x86Visitor::visit(NVariableDeclaration *node) {
 }
 
 void x86Visitor::createSubroutine(string name) {
-    text << "_" << name << ":\n";    
-    text << "\tpush rbp\n";
-    text << "\tmov rbp, rsp\n";
+	generator.printLabel("_" + name);
+	generator.printInstruction(APUSH, generator.getBasePointer());
+	generator.printInstruction(AMOVE, generator.getBasePointer(),
+								generator.getStackPointer());    
 }
     /* Create label and save ebp/esp */
     /* Allocate space on stack for local variables */
@@ -749,10 +695,10 @@ void x86Visitor::createSubroutine(string name) {
     /* Restore EBP  and return */
 
 void x86Visitor::ret() {
-    text << "\tmov rsp,rbp\n";
-    text << "\tpop rbp\n";   
-//    text << "\tmov rax, " << freeRegs.front() << endl;
-    text << "\tret\n";
+	generator.printInstruction(AMOVE, generator.getStackPointer(), 
+										generator.getBasePointer());
+	generator.printInstruction(APOP, generator.getBasePointer());
+	generator.printInstruction(ARET);
 }
 
 string x86Visitor::getAssembly() {
@@ -763,10 +709,9 @@ string x86Visitor::getAssembly() {
 
 void x86Visitor::generateFunctionDefinitions()
 {
-    text << "\tcall _hattalabel1" << endl;
+	generator.printInstruction(ACALL, "_hattalabel1");
     /* Move EXIT_SUCCESS into rdi and call exit() */
-    text << "\tmov rdi, " << EXIT_SUCCESS << endl;
-    text << "\tcall exit" << endl;
+	generator.printReturnFromProgram();
     
     while (!funcDecQueue.empty()) {
         cerr << "Generating Function Body for : " 
@@ -820,7 +765,7 @@ void x86Visitor::init(Node* root) {
     /* global vars, reserve space for em init" */
     for(it = t->start(); it != t->end(); it++) {
         string label = it->first + labelSuffix;
-		generator.printData(label, it->second->getSize());
+		generator.printData(label, convertInt(it->second->getSize()));
         it->second->setLabel(label);
     }
 
@@ -832,7 +777,7 @@ void x86Visitor::init(Node* root) {
 string x86Visitor::getNextStore() {
     string res;
     if (freeRegs.size() == 1) {
-        res = "[rsp]";
+		res = "[" + generator.getStackPointer() + "]";
     } else {
         res = getNextReg();
     }
@@ -848,7 +793,6 @@ string x86Visitor::getNextReg() {
         freeRegs.pop_front();
         cerr << "\t Removing register from list: " << res << endl;
     }
-//    cerr << "\t Using register: " << res << endl;
     return res;
 }
 
@@ -881,7 +825,7 @@ void x86Visitor::pushRegs() {
     std::deque<string>::iterator it;
     for (it = allRegs.begin(); it != allRegs.end(); it++ ) {
         if (find(freeRegs.begin(),freeRegs.end(),(*it)) == freeRegs.end())
-            text << "\tpush " << (*it) << endl;
+            generator.printInstruction(APUSH, (*it));
     }
     callStackRegs.push_front(freeRegs);
     freeRegs = allRegs;
@@ -897,7 +841,14 @@ void x86Visitor::popRegs() {
     std::deque<string>::iterator it;
     for (it = allRegs.begin(); it != allRegs.end(); it++ ) {
         if (find(freeRegs.begin(),freeRegs.end(),(*it)) == freeRegs.end())
-            text << "\tpop " << (*it) << endl;
+    		generator.printInstruction(APOP, (*it));
     }
 
+}
+
+string convertInt(int number)
+{
+   stringstream ss;//create a stringstream
+   ss << number;//add number to the stream
+   return ss.str();//return a string with the contents of the stream
 }
