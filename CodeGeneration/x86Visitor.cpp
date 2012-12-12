@@ -2,6 +2,8 @@
 #include <boost/shared_ptr.hpp>
 #include <boost/lexical_cast.hpp>
 #include "../Node/NodeIncludes.hpp"
+#include "x86CodeGenerator.hpp"
+
 /* Register conventions -
  * RAX stores the result of any procedure or function
  * a function can have an arbitrary number of paramters which are stored on the
@@ -12,25 +14,11 @@
 
 x86Visitor::x86Visitor() : labelMaker() {
     offset = 0;
-    freeRegs.clear();
-    /* general purpose registers */
-    /* We use rax to store return values, so it is not included here. */
+    
+	freeRegs.clear();
     allRegs.clear();
-    regsToRestore.clear();
     callStackRegs.clear();
-    allRegs.push_back("r8");
-    allRegs.push_back("r9");
-    allRegs.push_back("r10");
-    allRegs.push_back("r11");
-    allRegs.push_back("r12");
-    allRegs.push_back("r13");
-    allRegs.push_back("r14");
-    allRegs.push_back("r15");
-    allRegs.push_back("rbx");
-    allRegs.push_back("rcx");
-    allRegs.push_back("rdx");
-    allRegs.push_back("rsi");
-    allRegs.push_back("rdi");
+	allRegs = this->generator.getAllGeneralRegs();
     freeRegs = allRegs;
 }
 
@@ -121,11 +109,11 @@ void x86Visitor::generateBinOpInstr(int op, string returnReg, string nxtReg) {
     switch(op) {
         case OR:
         case LOR:
-            text << "\tor " << returnReg << "," << nxtReg << endl;
+			generator.printInstruction(AOR, returnReg, nxtReg);
             break;
         case AND:
         case LAND:
-            text << "\tand " << returnReg << "," << nxtReg << endl;
+			generator.printInstruction(AAND, returnReg, nxtReg);
             break;
         case LEQU:
             comparePredicate("sete", returnReg, nxtReg);    
@@ -146,18 +134,19 @@ void x86Visitor::generateBinOpInstr(int op, string returnReg, string nxtReg) {
             comparePredicate("setne", returnReg, nxtReg);
             break;
         case XOR:
-            text << "\txor " << returnReg << ", " << nxtReg << endl;
+			generator.printInstruction(AXOR, returnReg, nxtReg);
             break;
         case PLUS:
-            text << "\tadd " << returnReg << ", " << nxtReg << endl;
+			generator.printInstruction(AADD, returnReg, nxtReg);
             break;
         case DASH:
-            text << "\tsub " << returnReg << ", " << nxtReg << endl;
+			generator.printInstruction(ASUB, returnReg, nxtReg);
             break;
         case MULT:
-            text << "\timul " << returnReg << ", " << nxtReg << endl;
+			generator.printInstruction(AIMUL, returnReg, nxtReg);
             break;
         case DIV:
+			//We need to make this more general - refactor!
             text << "\tpush rax" << endl;
             text << "\tpush rdx" << endl;
             /* not sure if rax or rdx... see intel documentation */
@@ -230,7 +219,7 @@ void x86Visitor::comparePredicate(string setInstr, string resultReg,
 void x86Visitor::visit(NCharLit *node) {
     cerr << "Node: Char Lit " << endl;
     string reg = getNextReg();
-    text << "\t mov " << reg << ", '" << node->getID() << "'\n"; 
+	generator.printInstruction(AMOVE, reg, node->getID());
     cerr << "End: Char Lit " << endl;
     restoreStore(reg);
 }
@@ -260,16 +249,13 @@ void x86Visitor::visit(NConditional *node) {
 
     // Visit the predicate to print out condition
 
-    text << "; doing the comparison" << endl;   
- 
     node->getChild(0)->accept(this);
-    text << "\n; has free regs broken?" << endl;
     string resultReg = this->getNextReg();
 
     // If condition is false, jump to next condition
 
-    text << "\n\tcmp " << resultReg << ", 1" << endl;
-    text << "\tjne " << elseLabel << endl;
+	generator.printInstruction(ACMP, resultReg, "1");
+	generator.printInstruction(AJNE, elseLabel);    
     restoreStore(resultReg);
 
     // Otherwise, execute the statement list, first pushing
@@ -280,24 +266,21 @@ void x86Visitor::visit(NConditional *node) {
     this->labelMaker.popEndCondLabel();
 
     // Return to end of conditional
-    text << "\tjmp " << endLabel << endl;
+    generator.printInstruction(AJMP, endLabel);
 
     // Print out code for rest of cases
-    text << elseLabel << ":" << endl;
+	generator.printLabel(elseLabel);
     node->getChild(2)->accept(this);
 
 
     if (startConditional)  {
-        text << endLabel << ":" << endl;
+		generator.printLabel(endLabel);
         this->labelMaker.resetEndCondLabel();
     }
     cerr << "End: Coditional " << endl;
 }
 
 void x86Visitor::visit(NEndIf *node) {
-    cerr << "Node: Endif" << endl;
-    text << "\t;endif\n" << endl;
-    cerr << "End: Endif" << endl;
 }
 
 /* NDeclarationBlock is our 'entry' point - its not exclusve though, ie every 
@@ -773,8 +756,9 @@ void x86Visitor::ret() {
 }
 
 string x86Visitor::getAssembly() {
-    data << text.str();
-    return data.str();
+    //data << text.str();
+    //return data.str();
+	return generator.getAssembly();
 }
 
 void x86Visitor::generateFunctionDefinitions()
@@ -825,8 +809,7 @@ void x86Visitor::unfoldedFunctionVisitor(NFunctionDeclaration* node) {
 
 void x86Visitor::init(Node* root) {
     /* initial call to set up our .data section*/
-    data << "%include\t\'system.inc\'\n\n";
-    data << "section .data\n\n";
+	generator.printInitial();
 
     /* get all global variables and string literals used in text...*/
     boost::shared_ptr<SymbolTable> t = root->getTable();
@@ -837,17 +820,11 @@ void x86Visitor::init(Node* root) {
     /* global vars, reserve space for em init" */
     for(it = t->start(); it != t->end(); it++) {
         string label = it->first + labelSuffix;
-        data << "common\t" << label << "  " 
-                << it->second->getSize() << endl;
+		generator.printData(label, it->second->getSize());
         it->second->setLabel(label);
     }
- 
-    text << "section .text\n";
-    text << "global main\n";
-    text << "extern exit\n";
-    text << "extern scanf\n";
-    text << "extern printf\n";
-    text << "main:\n";
+
+	generator.printExtern(); 
 }
 
 /* private helper functions */
