@@ -118,22 +118,22 @@ void x86Visitor::visit(NAssignment *node) {
 					generator.printInstruction(AAND, returnReg, nxtReg);
 					break;
 				case LEQU:
-					comparePredicate("sete", returnReg, nxtReg);    
+					generator.comparePredicate(SETE, returnReg, nxtReg); 
 					break; 
 				case LLTHAN:
-					comparePredicate("setl", returnReg, nxtReg);
+					generator.comparePredicate(SETL, returnReg, nxtReg); 
 					break;
 				case LLTHANEQ:
-					comparePredicate("setle", returnReg, nxtReg);
+					generator.comparePredicate(SETLE, returnReg, nxtReg); 
 					break;
 				case LGTHAN:
-					comparePredicate("setg", returnReg, nxtReg);
+					generator.comparePredicate(SETG, returnReg, nxtReg); 
 					break;
 				case LGTHANEQ:
-					comparePredicate("setge", returnReg, nxtReg);
+					generator.comparePredicate(SETGE, returnReg, nxtReg); 
 					break;
 				case LNOTEQU:
-					comparePredicate("setne", returnReg, nxtReg);
+					generator.comparePredicate(SETNE, returnReg, nxtReg); 
 					break;
 				case XOR:
 					generator.printInstruction(AXOR, returnReg, nxtReg);
@@ -176,20 +176,6 @@ void x86Visitor::visit(NBinOp *node) {
     restoreStore(nxtReg);
     restoreStore(resultReg); 
     cerr << "End: Bin Op " << endl;
-}
-
-void x86Visitor::comparePredicate(string setInstr, string resultReg,
-                                    string nxtReg) {
-        /* 
-         * SETX instructions check EFLAGS for equality, less than etc.. and
-         * set a BYTE if the condition matches X. We use MOVZX to put it in
-         * the 64 bit register.
-         */ 
-        text << "\tcmp " << resultReg << ", " << nxtReg << endl;
-        text << "\tpush rax" << endl;
-        text << "\t" << setInstr << " al" << endl;
-        text << "\tmovzx " << resultReg << ", al" << endl;
-        text << "\tpop rax" << endl;
 }
 
 /* TODO: As we have an output charlit macro I'm sure that we
@@ -537,7 +523,8 @@ void x86Visitor::visit(NPrint *node) {
     }
     if(nodeType == STRINGLIT) {
         node->getChild(0)->accept(this);   
-		generator.generatePrintInstruction("", printlabel, false, nodeType);
+		generator.generatePrintInstruction("", node->getChild(0)->getLabel(),
+										 false, nodeType);
     }
     if (type == TNUMBER && decType != REFNUMBER) {
         node->getChild(0)->accept(this);
