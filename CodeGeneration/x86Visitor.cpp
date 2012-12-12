@@ -479,14 +479,17 @@ void x86Visitor::visit(NLoop *node) {
 
 void x86Visitor::visit(NMethodCall *node) {
      cerr << "Node: Function or Procedure Call" << endl;   
+    Node* MethodDec = node->getTable()->lookup(node->getID());
     /* Push paramaters onto the stack in reverse order */
     pushRegs();
     if (node->getChildrenSize() > 0) {
         node->getChild(0)->accept(this);
+        
     } 
     /* Save registers currently in use */
 
-    Node* MethodDec = node->getTable()->lookup(node->getID());
+
+
     /* Figure out if MethodDec is nested within current function */
     /* update the access link -> always resides at rbp + 24 */
     /* and pass as a paramter to the function */
@@ -541,8 +544,12 @@ void x86Visitor::visit(NParamBlock *node) {
     /* if we run out of register for paramaters (GOD WHY?) use the stack*/   
     for (int i = numChildren - 1; i >= 0; i--) {
           node->getChild(i)->accept(this);
+            string reg = getNextReg();
+  /* if child(i) has type array access and Metods ith param is  not a ref type */
+            if (node->getChild(i)->getNodeType() == ARRAYACCESS) 
+                text << "mov " << reg << ", [" << reg << "]" << endl;
           text << "\t; push child node" << endl;
-          text << "\tpush " << getNextReg() << endl;
+          text << "\tpush " << reg << endl;
     }
     printRegDeq(freeRegs);
     cerr << "End: Param Block " << endl;
