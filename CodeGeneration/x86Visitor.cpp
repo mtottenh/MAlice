@@ -54,9 +54,9 @@ void x86Visitor::visit(NArrayAccess *node) {
     string addrReg = getNextReg();
     string result = getNextReg();
 
-    text << "\tlea " << addrReg <<  ", " << arrName->getLabel() << endl;
+    text << "\tmov " << addrReg <<  ", " << arrName->getLabel() << endl;
     text <<"\timul " << offset << ", 8" << endl;
-    text <<"\tsub " << addrReg << ", " << offset << endl;
+    text <<"\tadd " << addrReg << ", " << offset << endl;
     restoreStore(addrReg);
     text << "\tlea " << result << ", [" << addrReg << "]" << endl;
     restoreStore(offset);
@@ -613,11 +613,24 @@ void x86Visitor::visit(NPrint *node) {
 	text << "\tpop r8" << endl;
         restoreStore(reg);
     }
-    if (type == TCHAR) {
+    if (type == TCHAR && decType != REFCHAR) {
            node->getChild(0)->accept(this);
            string reg = getNextReg();
            text << "\toutput.char " << reg << endl;
            restoreStore(reg);
+    }
+    if (decType == REFCHAR) {
+           node->getChild(0)->accept(this);
+           string reg = getNextReg();
+           data << printlabel << ": db \"%c\", 0x0 " << endl;
+           text << "\tpush rax\n\tpush rdi\n\tpush rsi" << endl;
+           text << "\tmov rsi, [" << reg << "]" << endl;
+           text << "\tmov rdi, " << printlabel << endl;
+           text << "\tmov rax, 0" << endl;
+           text << "\tcall printf" << endl;
+           text << "\tpop rsi\n\tpop rdi\n\tpop rax\n";
+           restoreStore(reg);
+
     }
     if (decType == REFNUMBER) {
         node->getChild(0)->accept(this);
@@ -716,7 +729,10 @@ void x86Visitor::visit(NVariableDeclaration *node) {
    stringstream debuglabel ;
    debuglabel << ";Type: ";
     int numElements; 
+    stringstream numElementsStr;
+    Node *lengthNode;
     stringstream convert;
+    string label;
     switch(type) {
         case TNUMBER:
             /* reserve 8 bytes for an integer */
@@ -730,14 +746,34 @@ void x86Visitor::visit(NVariableDeclaration *node) {
 		break;
     	case REFCHAR:
     	case REFNUMBER:
-	        numElements = ((NInteger *)(node->getChild(0)))->getValue();
-    		text << "\tsub rsp, " << numElements * 8;
+	        lengthNode = node->getChild(0);
+            if (lengthNode->getNodeType() == INTEGER) {
+                numElements = ((NInteger *)(lengthNode))->getValue();
+        	    numElements = numElements * 8;
+                numElementsStr << numElements;
+            } else {
+                numElementsStr.clear();
+                numElementsStr << node->getTable()->lookup(lengthNode->getID())->getLabel();
+            }
+                text << "\tpush rdi\n\tpush rax\n";
+                text << "\tmov rdi," << numElementsStr.str() << endl;
+                text << "\txor rax,rax\n";
+                text << "\tcall malloc" << endl;
+
+                label = "arr" + this->labelMaker.getNewLabel();
+                text << "\tmov [" << label << "], rax" << endl;
+                text << "\tpop rax\n";
+                text << "\tpop rdi\n";
+                data << label << ": dq  0" << endl;
+                convert << "[" << label << "]";
+             
             /* reserve numelements * 8 bytes worth of space on the stack */
     		text << "\t; WE GOT AN ARRAY SON!" << endl;
-            /* set the label to be a pointer to the offest of the 1st element */
-            convert << "[rbp-" << offset+8 << "]";
             /* set the offest to take into account the entire array */
-            offset += numElements*8;
+            if (lengthNode->getNodeType() == INTEGER) {
+                /* set the label to be a pointer to the offest of the 1st element */
+                offset += numElements;
+            }
             node->setLabel(convert.str());
         break;
         case TSTRING:
@@ -847,6 +883,7 @@ void x86Visitor::init(Node* root) {
     text << "extern exit\n";
     text << "extern scanf\n";
     text << "extern printf\n";
+    text << "extern malloc\n";
     text << "main:\n";
 }
 
