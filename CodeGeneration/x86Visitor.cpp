@@ -73,45 +73,49 @@ void x86Visitor::visit(NAssignment *node) {
 
     node->getChild(rval)->accept(this);
     string value = getNextReg();
+    string storeAddr;
     if (node->getChildrenSize() > 1) {
         Node* leftChildID = node->getChild(lval);
         Node* declarationNode = node->getTable()->lookup(leftChildID->getID());
         int nestingLevel = declarationNode->getLevel();
         int numJumps = node->getLevel() - nestingLevel;
         string label = declarationNode->getLabel();
+        text << "\t;A MILD DISCONFORT SIR\n" ;
         if (declarationNode->getType() == REFNUMBER || declarationNode->getType() == REFCHAR) {
             leftChildID->accept(this);
-            string storeAddr =  getNextReg();
+            storeAddr =  getNextReg();
+            text << "\t;drop it like its hot" << endl;
             text << "\tmov [" << storeAddr << "] , " << value << endl; 
 //          text << "\tSOME ARRAY SHIT GOING DOWN\n";
         } else {
    	 	/* check if in local or global scope */
-    	if (nestingLevel == node->getLevel() || nestingLevel == 1) {
+         	if (nestingLevel == node->getLevel() || nestingLevel == 1) {
             /* just use the label */
             /* move from label into freeRegs.front() */
-//                text << "\tSOME ARRAY SHIT GOING DOWN\n";
-		        if (nestingLevel == 1)
-                    label = "[" + label + "]";
+//          text << "\tSOME ARRAY SHIT GOING DOWN\n";
+		         if (nestingLevel == 1)
+                     label = "[" + label + "]";
                	text << "\tmov " << label << ", " << value << endl;
-    	} else {
-            /* push rbp */
-            text << "\t\n;Nesting level: " << nestingLevel << "\tThis Level : " << node->getLevel() << endl;
-            text << "\tpush rbp" << endl;
-            /* TODO :- write an assembly loop to stop generated code being bad */
-            while(numJumps > 0) {
-                /* follow the access link back overwriting rbp */
-                text << "\tmov rbp, [rbp+16]" << endl;
-                numJumps--;
+    	    } else {
+                /* push rbp */
+                text << "\t\n;Nesting level: " << nestingLevel << "\tThis Level : " << node->getLevel() << endl;
+                text << "\tpush rbp" << endl;
+                /* TODO :- write an assembly loop to stop generated code being bad */
+                while(numJumps > 0) {
+                    /* follow the access link back overwriting rbp */
+                    text << "\tmov rbp, [rbp+16]" << endl;
+                    numJumps--;
+                }
+                /* mov from label into freeRegs.front() */
+               	text << "\tmov " << label << ", " << value << endl;
+                /* pop rbp */
+                text << "\tpop rbp" << endl;
             }
-            /* mov from label into freeRegs.front() */
-               	text << "\tmov " << label << ", " << value << endl;
-            /* pop rbp */
-            text << "\tpop rbp" << endl;
-        }
-	}
+	    }
    }
+    restoreStore(storeAddr);
     restoreStore(value);
-
+    
     cerr << "End: Assignment" << endl;
 }
 /* TODO: still need to implement a register saving mechanism 
@@ -207,14 +211,21 @@ void x86Visitor::visit(NBinOp *node) {
     nxtregbodge = nxtReg;
     resultregbodge = resultReg;
     if (node->getChild(1)->getNodeType() == ARRAYACCESS) {
-        nxtregbodge = "[" + nxtReg + "]";
+        nxtregbodge = getNextReg();
+        text << "mov " << nxtregbodge << ", [" << nxtReg << "]" << endl;
+  //      nxtregbodge = "[" + nxtReg + "]";
     }
     if (node->getChild(0)->getNodeType() == ARRAYACCESS) {
-        resultregbodge = "[" + resultReg + "]" ;
+        resultregbodge = getNextReg();
+        text << "mov " << resultregbodge << ", [" << resultReg << "]" << endl;
+//        resultregbodge = "[" + resultReg + "]" ;
     }
     generateBinOpInstr(node->getOp(), resultregbodge, nxtregbodge);   
-    restoreStore(nxtReg);
-    restoreStore(resultReg); 
+    
+//    restoreStore(nxtReg);
+//    restoreStore(resultReg); 
+    restoreStore(nxtregbodge);
+    restoreStore(resultregbodge);
     cerr << "End: Bin Op " << endl;
 }
 
@@ -224,7 +235,15 @@ void x86Visitor::comparePredicate(string setInstr, string resultReg,
          * SETX instructions check EFLAGS for equality, less than etc.. and
          * set a BYTE if the condition matches X. We use MOVZX to put it in
          * the 64 bit register.
-         */ 
+         */
+        if (resultReg.c_str()[0] == '[' ) {
+            text << ";BROKEN COMPARISON" << endl;
+           resultReg = resultReg.substr(1,resultReg.length()-1);
+        }
+        if (nxtReg.c_str()[0] == '[' ) {
+            text << ";DOUBLE BROKEN COMPARISON" << endl;
+            nxtReg = nxtReg.substr(1,nxtReg.length()-1);
+        }
         text << "\tcmp " << resultReg << ", " << nxtReg << endl;
         text << "\tpush rax" << endl;
         text << "\t" << setInstr << " al" << endl;
