@@ -174,6 +174,8 @@ int Node::getSize() {
         case PROCEDURE:
         case  FUNC:
             return 90001;
+        case REFNUMBER:
+            return ((NInteger * )this->getChild(0))->getValue()*8;
     } 
 }
 

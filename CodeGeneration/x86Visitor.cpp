@@ -83,7 +83,7 @@ void x86Visitor::visit(NAssignment *node) {
     	if (nestingLevel == node->getLevel() || nestingLevel == 1) {
             /* just use the label */
             /* move from label into freeRegs.front() */
-            if (declarationNode->getType() == REFNUMBER) {
+            if (declarationNode->getType() == REFNUMBER || declarationNode->getType() == REFCHAR) {
                 leftChildID->accept(this);
                 string storeAddr =  getNextReg();
                 text << "\tmov [" << storeAddr << "] , " << value << endl; 
@@ -764,7 +764,7 @@ void x86Visitor::visit(NVariableDeclaration *node) {
                 text << "\tmov [" << label << "], rax" << endl;
                 text << "\tpop rax\n";
                 text << "\tpop rdi\n";
-                data << label << ": dq  0" << endl;
+                data << "common " << label << " 8" << endl;
                 convert << "[" << label << "]";
              
             /* reserve numelements * 8 bytes worth of space on the stack */
