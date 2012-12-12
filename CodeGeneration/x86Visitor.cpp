@@ -529,7 +529,7 @@ void x86Visitor::visit(NPrint *node) {
     int decType = 0;
     if (decNode != NULL)
         decType = decNode->getType();
-    string printlabel = "prnt" + labelMaker.getNewLabel() ;
+    string printlabel = "prnt" + labelMaker.getNewLabel();
     if(nodeType == CHARLIT) {
     /* We can use the macro defed in system.inc */
         text << "output.char ";
@@ -537,10 +537,7 @@ void x86Visitor::visit(NPrint *node) {
     }
     if(nodeType == STRINGLIT) {
         node->getChild(0)->accept(this);   
-        text << "\tpush rax\n\tmov rax," << node->getChild(0)->getLabel();
-        text << "\n\toutput.string rax" << endl;
-        text << "\tpop rax" << endl;
-//        text << node->getChild(0)->getLabel();
+		generator.generatePrintInstruction("", printlabel, false, nodeType);
     }
     if (type == TNUMBER && decType != REFNUMBER) {
         node->getChild(0)->accept(this);
@@ -574,8 +571,6 @@ void x86Visitor::visit(NPrint *node) {
 //        text << node->getChild(0)->getLabel();
     }
     cerr << "Node Type: " << nodeType << "\tType: " << type << endl;
-
-    text << "\n";
     cerr << "End Print" << endl;
 }
 /* RAX is used as the 'return register' */
@@ -605,9 +600,7 @@ void x86Visitor::visit(NStringLit *node) {
      */
     cerr << "Node: String Literal" << endl;
     string label = this->labelMaker.getNewLabel();
-	//TODO: Add generator code!	
-    data << label << ": db  " ;
-    data << node->getID() <<",0x0" << endl; 
+	generator.printStringLitData(label, node->getID()); 
     node->setLabel(label);
     string reg = getNextReg();
 	generator.printInstruction(AMOVE, reg, label);
