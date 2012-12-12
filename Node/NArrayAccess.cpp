@@ -12,6 +12,7 @@ NArrayAccess::NArrayAccess(NIdentifier* id, Node* indexNode)
 	this->weight = -1;
 	children.push_back(id);
 	children.push_back(indexNode);
+    this->nodeType = ARRAYACCESS;
 }
 
 /* Public methods. */

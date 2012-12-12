@@ -58,6 +58,7 @@ void x86Visitor::visit(NArrayAccess *node) {
     text <<"\timul " << offset << ", 8" << endl;
     text <<"\tadd " << addrReg << ", " << offset << endl;
     restoreStore(addrReg);
+    /* figure out a fix...  for mov / lea here, some things need binops need mov*/
     text << "\tlea " << result << ", [" << addrReg << "]" << endl;
     restoreStore(offset);
     restoreStore(result);
@@ -78,21 +79,20 @@ void x86Visitor::visit(NAssignment *node) {
         int nestingLevel = declarationNode->getLevel();
         int numJumps = node->getLevel() - nestingLevel;
         string label = declarationNode->getLabel();
-
+        if (declarationNode->getType() == REFNUMBER || declarationNode->getType() == REFCHAR) {
+            leftChildID->accept(this);
+            string storeAddr =  getNextReg();
+            text << "\tmov [" << storeAddr << "] , " << value << endl; 
+//          text << "\tSOME ARRAY SHIT GOING DOWN\n";
+        } else {
    	 	/* check if in local or global scope */
     	if (nestingLevel == node->getLevel() || nestingLevel == 1) {
             /* just use the label */
             /* move from label into freeRegs.front() */
-            if (declarationNode->getType() == REFNUMBER || declarationNode->getType() == REFCHAR) {
-                leftChildID->accept(this);
-                string storeAddr =  getNextReg();
-                text << "\tmov [" << storeAddr << "] , " << value << endl; 
 //                text << "\tSOME ARRAY SHIT GOING DOWN\n";
-            } else {
 		        if (nestingLevel == 1)
                     label = "[" + label + "]";
                	text << "\tmov " << label << ", " << value << endl;
-            }
     	} else {
             /* push rbp */
             text << "\t\n;Nesting level: " << nestingLevel << "\tThis Level : " << node->getLevel() << endl;
@@ -104,11 +104,12 @@ void x86Visitor::visit(NAssignment *node) {
                 numJumps--;
             }
             /* mov from label into freeRegs.front() */
-            text << "\tmov " << label << ", " << value << endl;
+               	text << "\tmov " << label << ", " << value << endl;
             /* pop rbp */
             text << "\tpop rbp" << endl;
         }
 	}
+   }
     restoreStore(value);
 
     cerr << "End: Assignment" << endl;
@@ -187,6 +188,7 @@ void x86Visitor::generateBinOpInstr(int op, string returnReg, string nxtReg) {
 }
 void x86Visitor::visit(NBinOp *node) {
     string resultReg, nxtReg;
+    string nxtregbodge, resultregbodge;
     if (node->getChild(0)->getWeight() > node->getChild(1)->getWeight()) {
         cerr << "\nBinOp: evaluating  left first\nFree Regsiters:\n";
         printRegDeq(freeRegs);
@@ -202,7 +204,15 @@ void x86Visitor::visit(NBinOp *node) {
         node->getChild(0)->accept(this);
         resultReg = getNextReg();
     }
-    generateBinOpInstr(node->getOp(), resultReg, nxtReg);   
+    nxtregbodge = nxtReg;
+    resultregbodge = resultReg;
+    if (node->getChild(1)->getNodeType() == ARRAYACCESS) {
+        nxtregbodge = "[" + nxtReg + "]";
+    }
+    if (node->getChild(0)->getNodeType() == ARRAYACCESS) {
+        resultregbodge = "[" + resultReg + "]" ;
+    }
+    generateBinOpInstr(node->getOp(), resultregbodge, nxtregbodge);   
     restoreStore(nxtReg);
     restoreStore(resultReg); 
     cerr << "End: Bin Op " << endl;
@@ -342,9 +352,9 @@ void x86Visitor::visit(NIdentifier *node) {
     if (nestingLevel == node->getLevel() || nestingLevel == 1) {
         /* just use the label */
         /* move from label into freeRegs.front() */
-	if (nestingLevel == 1)
+	if (nestingLevel == 1  ) 
 	        text << "\tmov " <<  storeage << ", [" << declarationNode->getLabel() <<"]" << endl;
-	else
+	else 
 		text << "\tmov " <<  storeage << ", " << declarationNode->getLabel() << endl;
 
     } else {
