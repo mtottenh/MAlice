@@ -7,7 +7,7 @@
  * Construct a node with no children; set to unknown data type and set as a 
  * generic node.
  */
-Node::Node() : loc() {
+Node::Node() : loc(), label("") {
 	name = "Node";
 	type = INVALIDTYPE;
 	nodeType = GENERIC_NODE;
@@ -95,13 +95,13 @@ FileLocation* Node::getLocation() {
 	return loc;
 }
 
-/* TODO rename to setAsRoot()
- */
-int Node::isRoot() {
+int Node::setRoot() {
 	isRootNode = 1;
 	return isRootNode;
 }
-
+int Node::isRoot() {
+    return isRootNode;
+}
 int Node::hasTable() {
 	return table == NULL;
 }
@@ -163,13 +163,36 @@ int Node::compareTypes(int t1, int t2) const {
 }
 
 void Node::accept(ASTVisitor* v) {
-    cerr << "Node: " << name << endl;
+    cerr << "Generic Node" << endl;
     v->visit(this);
-    unsigned int numChildren = this->getChildrenSize();
-    for (unsigned int i = 0; i < numChildren; i++) {
-        this->getChild(i)->accept(v);
-    }
 }
+/* TODO - do something with this.... it might nto be needed*/
+int Node::getSize() {
+    switch(this->getType()) {
+        case TNUMBER:
+            return 8;
+        case PROCEDURE:
+        case  FUNC:
+            return 90001;
+        case REFNUMBER:
+            return ((NInteger * )this->getChild(0))->getValue()*8;
+    } 
+}
+
+int Node::getWeight() {
+	if(weight == -1 ) {
+		return calculateWeight();
+	}
+
+	return weight;
+}
+int Node::getLevel() {
+	if (table == NULL) {
+		return -1;
+	}
+	return table->getTableID();
+}
+
 
 
 /* Protected methods. */
@@ -183,13 +206,22 @@ boost::shared_ptr<SymbolTable> Node::getTable() {
     return table;
 }
 
+int Node::calculateWeight() {
+	/* 
+	 * Base implementation - the weight of the node is the sum of the weights of
+	 * its children.
+	 */
+	for(int i = 0; i < this->getChildrenSize(); ++i) {
+		weight += this->getChild(i)->getWeight();
+	}
 
-int Node::getSize() {
-    switch(this->getType()) {
-        case TNUMBER:
-            return 4;
-        case PROCEDURE:
-        case  FUNC:
-            return 90001;
-    } 
+	return weight;
+}
+
+string Node::getLabel() {
+	return this->label;
+}
+
+void Node::setLabel(string label) {
+	this->label = label;
 }

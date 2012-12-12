@@ -1,3 +1,4 @@
+#include "../CodeGeneration/ASTVisitor.hpp"
 #include "NCodeBlock.hpp"
 #include "TypeDefs.hpp"
 
@@ -22,4 +23,9 @@ NCodeBlock::NCodeBlock(Node *stat) {
 
 NCodeBlock::NCodeBlock() {
 	this->name = "CodeBlock";
+}
+
+
+void NCodeBlock::accept(ASTVisitor *v) {
+    v->visit(this);
 }

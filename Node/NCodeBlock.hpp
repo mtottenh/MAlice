@@ -19,6 +19,7 @@ public:
 	 */
 	NCodeBlock(Node*);
 	NCodeBlock();
+    virtual void accept(ASTVisitor*);
 };
 
 #endif

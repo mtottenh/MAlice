@@ -6,8 +6,6 @@
 #include <string>
 class ASTVisitor;
 class NVariableDeclaration : public Node {
-//private:
-//	int type;
 public:
 	/* args are identifier & type */
 	NVariableDeclaration(NIdentifier*, int);

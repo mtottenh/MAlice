@@ -61,9 +61,5 @@ int NDeclarationBlock::checkRoot() {
 void NDeclarationBlock::accept(ASTVisitor* v) {
     cerr << "Node: " << name << endl;
     v->visit(this);
-    unsigned int numChildren = this->getChildrenSize();
-    for (unsigned int i = 0; i < numChildren; i++) {
-        this->getChild(i)->accept(v);
-    }
 }
 

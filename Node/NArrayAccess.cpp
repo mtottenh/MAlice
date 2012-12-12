@@ -1,3 +1,4 @@
+#include "../CodeGeneration/ASTVisitor.hpp"
 #include "NArrayAccess.hpp"
 #include "TypeDefs.hpp"
 
@@ -8,8 +9,10 @@ NArrayAccess::NArrayAccess(NIdentifier* id, Node* indexNode)
 	this->name = id->getID();
 	this->id = id;
 	this->indexNode = indexNode;
+	this->weight = -1;
 	children.push_back(id);
 	children.push_back(indexNode);
+    this->nodeType = ARRAYACCESS;
 }
 
 /* Public methods. */
@@ -75,4 +78,15 @@ int NArrayAccess::resolveType() {
 		return INVALIDTYPE;
 		break;
 	}
+}
+
+int NArrayAccess::calculateWeight() {
+	/* Weight of the index expression, plus a register to store it in. */
+	return children[1]->getWeight() + 1;
+}
+
+
+void NArrayAccess::accept(ASTVisitor *v) {
+    v->visit(this);
+    
 }

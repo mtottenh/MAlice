@@ -1,3 +1,4 @@
+#include "../CodeGeneration/ASTVisitor.hpp"
 #include "NDec.hpp"
 #include "TypeDefs.hpp"
 
@@ -45,4 +46,9 @@ int NDec::resolveType() {
 	else {
 		return INVALIDTYPE;
 	}
+}
+
+
+void NDec::accept(ASTVisitor *v) {
+    v->visit(this);
 }

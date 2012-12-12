@@ -22,7 +22,8 @@ public:
  	 * Checks that the node is semantically valid. Returns 1 if this is the      
  	 * case, 0 otherwise.                                                        
  	 */
-	virtual int check(); 
+	virtual int check();
+	void accept(ASTVisitor*);
 }; 
 
 #endif

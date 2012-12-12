@@ -12,6 +12,9 @@ private:
 protected:
 	/* Resolves the type of the node and returns it's int representation */
 	virtual int resolveType();
+
+	/* Returns the weight of the Node. */
+	virtual int calculateWeight();
 public:
 	/* Empty constructor. */
     NInteger();
@@ -24,6 +27,8 @@ public:
  	 * case, 0 otherwise.                                                        
 	 */
 	virtual int check();
+    virtual void accept(ASTVisitor*);
+    int getValue();
 };
 
 #endif

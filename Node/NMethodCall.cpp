@@ -3,6 +3,7 @@
 
 #include "NMethodCall.hpp"
 #include "TypeDefs.hpp"
+#include "../CodeGeneration/ASTVisitor.hpp"
 
 NMethodCall::NMethodCall() 
 { 
@@ -111,4 +112,8 @@ int NMethodCall::checkParams(Node* funcParams) {
 	return isValid;
 }
 
+void NMethodCall::accept(ASTVisitor *v)
+{
+	v->visit(this);
+}
 #endif

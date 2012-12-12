@@ -1,3 +1,4 @@
+#include "../CodeGeneration/ASTVisitor.hpp"
 #include "NBinOp.hpp"
 #include "TypeDefs.hpp"
 
@@ -6,6 +7,7 @@ NBinOp::NBinOp(Node* left, Node* right, int op) {
 	this->op = op;
 	this->name = "Binary Operator";
 	this->nodeType = BINOP;
+	this->weight = -1;
 	children.push_back(left);
 	children.push_back(right);
 }
@@ -15,7 +17,9 @@ NBinOp::NBinOp(Node* left, Node* right, int op) {
 int NBinOp::getType() {
 	return resolveType();
 }
-
+int NBinOp::getOp() {
+    return op;
+}
 int NBinOp::check() {
 	int isValid = 1;
 
@@ -88,6 +92,23 @@ int NBinOp::resolveType()  {
 	else {
 		return t1;
 	}
+}
+
+int NBinOp::calculateWeight() {
+	/* 
+	 * The weight of the binary operator is the minimum weight of evaluating
+	 * the LHS or RHS.
+	 */
+	int lhsWeight = children[0]->getWeight();
+	int rhsWeight = children[1]->getWeight();
+
+	/* Cost of evaluating rhs first, plus 1 to store the value of rhs. */
+	int cost1 = max(lhsWeight, rhsWeight + 1);
+
+	/* Cost of evaluating rhs lirst, plus 1 to store the value of lhs. */
+	int cost2 = max(lhsWeight + 1, rhsWeight);
+
+	return min(cost1, cost2);
 }
 
 /* Private methods. */
@@ -172,4 +193,9 @@ int NBinOp::isBoolean() {
 	return (op == LEQU || op == LAND || op == LOR || op == LNOTEQU 
 			|| op == LGTHAN || op == LGTHANEQ || op == LLTHAN 
 			|| op == LLTHANEQ);
+}
+
+
+void NBinOp::accept(ASTVisitor *v) {
+    v->visit(this);
 }

@@ -1,3 +1,4 @@
+#include "../CodeGeneration/ASTVisitor.hpp"
 #include "NInput.hpp"
 #include "TypeDefs.hpp"
 
@@ -48,4 +49,9 @@ int NInput::check() {
 	isValid &= Node::check();
 
 	return isValid;
+}
+
+
+void NInput::accept(ASTVisitor *v) {
+    v->visit(this);
 }

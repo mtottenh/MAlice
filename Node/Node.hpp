@@ -9,6 +9,7 @@
 #include <iostream>
 #include <deque>
 #include <string>
+#include <algorithm>
 #include "../Errors/SemanticErrors.hpp"
 #include "../SymbolTable/SymbolTable.hpp"
 
@@ -56,7 +57,16 @@ protected:
 	node_children_t children; 
 
 	/* String representing the name of the node - usually its identifier. */
-	string name; 
+	string name;
+	
+	/* String representing the label of a declared variable */
+	string label;
+
+	/* Field for the weight of the node (number of registers required). */
+	int weight; 
+
+	/* Calculate the weight of the node. */
+	virtual int calculateWeight();
 
 	/* 
 	 * Virtual method that determines the type of the node. Returns an 
@@ -101,9 +111,13 @@ public:
 	/* Returns a FileLocation pointer giving the node's location. */
 	FileLocation* getLocation();
 
+	/* Returns the weight of the node. */
+	int getWeight();
+
 	/* Returns SUCCESS if the node is the root node, FAILURE otherwise. */
 	int isRoot();
-
+    /* sets the node to be the root node */
+    int setRoot();
 	/*
 	 * Checks whether the node has an associated symbol table. Returns
 	 * SUCCESS if one exists, FAILURE otherwise.
@@ -113,6 +127,13 @@ public:
 	/* Sets the location class of the node to a given FileLocation. */
 	void setLocation(FileLocation);
 	void setLocation(FileLocation *);
+
+	/* Sets the label in assembly code of a declaration for reference */
+	void setLabel(string);
+
+	/* Get the label associated with the declared variable */
+	string getLabel();
+
 	/* Prints the contents of the node. Returns SUCCESS or FAILURE. */
 	virtual int print() const;
 
@@ -155,6 +176,8 @@ public:
     /* get symbol table function*/
     boost::shared_ptr<SymbolTable> getTable();
     int getSize();
+	/* returns the 'nesting level' of the node */
+	int getLevel();
 };
 
 #endif

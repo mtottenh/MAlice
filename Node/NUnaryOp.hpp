@@ -7,9 +7,14 @@ private:
 	int op;
 	virtual int resolveType();
 	int checkBoolean();
+protected:
+	/* Calculate the weight of the node. */
+	virtual int calculateWeight();
 public:
 	NUnaryOp(int, Node*);
 	virtual int check();
+    virtual void accept(ASTVisitor*);
+    int getOp();
 };
 
 #endif

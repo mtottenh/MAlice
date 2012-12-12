@@ -14,6 +14,7 @@ public:
 	NMethodCall(NIdentifier*);
 	virtual int check();
 	int getType() ;
+	void accept(ASTVisitor *);
 }; 
 
 #endif

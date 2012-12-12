@@ -9,6 +9,7 @@ class NEndIf : public Node
 {
 public:
 	NEndIf();
+    virtual void accept(ASTVisitor*);
 };
 
 #endif

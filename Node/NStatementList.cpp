@@ -29,8 +29,5 @@ int NStatementList::check() {
 	return isValid;
 }
 void NStatementList::accept(ASTVisitor *v) {
-    unsigned int numChildren = this->getChildrenSize();
-    for(unsigned int i =0; i < numChildren; i++) {
-        this->getChild(i)->accept(v);
-    }
+	v->visit(this);
 }

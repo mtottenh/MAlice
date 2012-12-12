@@ -1,5 +1,6 @@
 #include "NLoop.hpp"
 #include "TypeDefs.hpp"
+#include "../CodeGeneration/ASTVisitor.hpp"
 
 /* Constructors. */
 NLoop::NLoop(Node* predicate, Node* statementList) {
@@ -28,3 +29,7 @@ int NLoop::check() {
 	return isValid;
 }
 
+void NLoop::accept(ASTVisitor *v)
+{
+	v->visit(this);
+}

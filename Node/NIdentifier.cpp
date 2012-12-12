@@ -1,3 +1,4 @@
+#include "../CodeGeneration/ASTVisitor.hpp"
 #include "NIdentifier.hpp"
 #include <string.h>
 #include "TypeDefs.hpp"
@@ -55,3 +56,8 @@ int NIdentifier::getType() {
 	}
 }
 
+
+
+void NIdentifier::accept(ASTVisitor *v) {
+    v->visit(this);
+}

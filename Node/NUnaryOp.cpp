@@ -1,3 +1,5 @@
+#include "../CodeGeneration/ASTVisitor.hpp"
+
 #include "NUnaryOp.hpp"
 #include "TypeDefs.hpp"
 
@@ -6,6 +8,7 @@ NUnaryOp::NUnaryOp(int op, Node* exp) {
 	this->op = op;
 	children.push_back(exp);
 	nodeType = UNARYOP;
+	this->weight = -1;
 }
 
 int NUnaryOp::resolveType() {
@@ -27,8 +30,6 @@ int NUnaryOp::resolveType() {
 	}
 }
 
-/* TODO refactor to make the code clearer,
- */
 int NUnaryOp::check() {
 	int isValid = 1;
 
@@ -60,4 +61,18 @@ int NUnaryOp::checkBoolean() {
 	}
 
 	return 1;
+}
+
+int NUnaryOp::calculateWeight() {
+	/* The weight of applying a unary operator is the weight of the operand. */
+	return children[0]->getWeight();
+}
+
+
+void NUnaryOp::accept(ASTVisitor *v) {
+    v->visit(this);
+}
+
+int NUnaryOp::getOp() {
+    return op;
 }
