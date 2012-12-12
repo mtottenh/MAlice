@@ -186,7 +186,7 @@ void x86Visitor::visit(NBinOp *node) {
 void x86Visitor::visit(NCharLit *node) {
     cerr << "Node: Char Lit " << endl;
     string reg = getNextReg();
-	generator.printInstruction(AMOVE, reg, node->getID());
+	generator.printInstruction(AMOVE, reg, "'" + node->getID() + "'");
     cerr << "End: Char Lit " << endl;
     restoreStore(reg);
 }
@@ -304,8 +304,6 @@ void x86Visitor::visit(NIdentifier *node) {
 			generator.printInstruction(AMOVE, storage,
 					declarationNode->getLabel());
     } else {
-        /* push rbp */
-        text << "\t\n;Nesting level: " << nestingLevel << "\tThis Level : " << node->getLevel() << endl;
         generator.printInstruction(APUSH, generator.getBasePointer());
         /* TODO :- write an assembly loop to stop generated code being bad */
         while(numJumps > 0) {
@@ -516,11 +514,6 @@ void x86Visitor::visit(NPrint *node) {
     if (decNode != NULL)
         decType = decNode->getType();
     string printlabel = "prnt" + labelMaker.getNewLabel();
-    if(nodeType == CHARLIT) {
-    /* We can use the macro defed in system.inc */
-        text << "output.char ";
-        node->getChild(0)->accept(this);   
-    }
     if(nodeType == STRINGLIT) {
         node->getChild(0)->accept(this);   
 		generator.generatePrintInstruction("", node->getChild(0)->getLabel(),
@@ -535,8 +528,8 @@ void x86Visitor::visit(NPrint *node) {
     if (type == TCHAR) {
            node->getChild(0)->accept(this);
            string reg = getNextReg();
-           text << "\toutput.char " << reg << endl;
-           restoreStore(reg);
+		   generator.generatePrintInstruction(reg, printlabel, false, type);
+		   restoreStore(reg);
     }
     if (decType == REFNUMBER) {
         node->getChild(0)->accept(this);
@@ -545,17 +538,16 @@ void x86Visitor::visit(NPrint *node) {
 		restoreStore(reg);    
        }
     if(type == TSTRING) {
-        node->getChild(0)->accept(this);   
+      	node->getChild(0)->accept(this);   
 	Node* decnode = node->getTable()->lookup(node->getChild(0)->getID());
 	if (decnode != NULL) {
             if (decnode->getLevel() == 1)
-    	        text << "\tpush rax\n\tmov rax, [" << decnode->getLabel() << "]";
+				generator.generatePrintInstruction(decnode->getLabel(),
+										printlabel, true, type);
             else
-	            text << "\tpush rax\n\tmov rax," << decnode->getLabel();
-	        text << "\n\toutput.string rax" << endl;
-	        text << "\tpop rax" << endl;
+				generator.generatePrintInstruction(decnode->getLabel(),
+										printlabel, false, type);
 	}
-//        text << node->getChild(0)->getLabel();
     }
     cerr << "Node Type: " << nodeType << "\tType: " << type << endl;
     cerr << "End Print" << endl;
