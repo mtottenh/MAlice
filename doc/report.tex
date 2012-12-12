@@ -81,7 +81,17 @@ matter of translating syntax from x86-64 to ARM. Additional visitors, for other
 assembly languages, would also be made easier through this design pattern.
 
 \subsection{Linking with the C Standard Library}
-%TODO
+%TODO - Are we using malloc() for arrays?
+In order to simplify the process of accepting user input and to print data to
+\texttt{stdout}, the MAlice compiler links to the C standard library to make 
+use of the \texttt{printf} and \texttt{scanf} functions. This decision was made
+to reduce implementation time for these functions and avoid using 
+platform-specific system calls, which would reduce code portability. 
+
+Additionally, at the end of a MAlice assembly program, the C \texttt{exit} 
+method is called rather than an exit system call. This ensures that 
+\texttt{stdout} and \texttt{stderr} correctly have their buffers cleared at the
+end of execution of the MAlice program.
 
 \subsection{Future Work}
 
@@ -131,6 +141,17 @@ of the group installed the \texttt{arm-linux-gnueabihf} (providing versions of
 ARM emulator) packages on their local machines. Using these tools, it was
 verified that the ARM code produced was functionally correct and passed all
 test cases.
+
+\subsection{Future Work: C Library Functions}
+
+One extension that would make MAlice a much more powerful language for 
+developers would be to introduce a language construct that allows a developer 
+to call C library methods. For example, this would allow developers to use 
+things such as file I/O, which are not supported natively in MAlice. Since 
+MAlice code is already linked with the C standard library upon compilation
+(as mentioned earlier, for \texttt{printf}, \texttt{scanf} and \texttt{exit}),
+it would be relatively easy to implement this extension if additional time
+were available.
 
 \subsection{Future Work: Other Target Languages}
 %TODO
