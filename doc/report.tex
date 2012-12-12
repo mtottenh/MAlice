@@ -19,9 +19,9 @@
 %TODO - Probably needs expanding, it's not even 1 page long...
 The compiler the group has produced takes code written in the MAlice language
 and produces x86-64 assembly code, as well as calling \emph{nasm} and \emph{gcc}
-to produce an executable binary. Additionally, as part of the extension, an
-assembly file with extension \texttt{.arm} is produced that can be assembled
-to run on an ARM processor.
+to produce an executable binary. If the compiler is ran with the \texttt{-arm} 
+flag then, as part of the extension, an assembly file with extension 
+\texttt{.arm} is produced that can be assembled to run on an ARM processor.
 
 The group ensured at every stage of development that the product produced
 was functionally correct and matched the specification. After completion of
@@ -50,9 +50,12 @@ effeciency of the C language with the addition of useful data structures such
 as \emph{std::deque}s. The group did consider other languages, such as Java (as
 recommended in the specification), but decided that the benefits of speed and
 low level operations outweighed Java's advantages (e.g. garbage collection) in
-this instance.
+this instance. A small amount of C is also used in order to better interface
+with the Flex and Bison tools we used, described below.
 
-\subsection{Flex and Bison}
+\newpage
+
+\subsection{Parser - Flex and Bison}
 
 When implementation began during Milestone 2, the group carefully considered
 many options for lexical analysis and parser generation. The choice for making 
@@ -69,8 +72,9 @@ For the code generation stage of the project, the visitor pattern was used,
 seperating the logic of code generation from the nodes contained within the
 abstract syntax tree. For the generation of x86-64 code, the \texttt{x86Visitor}
 class calls \texttt{accept} on the root node of the abstract syntax tree, which
-in turn calls the the visitor's \texttt{visit} on its children, and so on, 
-generating code for each node in order. 
+in turn calls the the visitor's \texttt{visit} function on itself (to match
+the required specialisation of the node type). From there, the visitor decides
+which nodes to visit next, generating code for each node in the correct order. 
 
 To support future development, \texttt{x86Visitor} implements an interface,
 \texttt{ASTVisitor}. As part of the extension, the \texttt{ARMVisitor} class was
@@ -81,17 +85,23 @@ matter of translating syntax from x86-64 to ARM. Additional visitors, for other
 assembly languages, would also be made easier through this design pattern.
 
 \subsection{Linking with the C Standard Library}
-%TODO - Are we using malloc() for arrays?
-In order to simplify the process of accepting user input and to print data to
-\texttt{stdout}, the MAlice compiler links to the C standard library to make 
-use of the \texttt{printf} and \texttt{scanf} functions. This decision was made
-to reduce implementation time for these functions and avoid using 
-platform-specific system calls, which would reduce code portability. 
+Initially, the group made use of native Linux system calls for functions such
+as printing to \texttt{stdout} and taking user input from \texttt{stdin}. 
+However, this proved difficult and was prone to errors and bugs, and also
+the group realised that this was detrimental to portability - the system calls
+would be different on other platforms, such as Windows. Due to this, the 
+decision was made to make use of C library functions. The MAlice compiler links,
+via \emph{gcc}, with the C library and makes use of \texttt{printf} for output
+and \texttt{scanf} for input. \texttt{malloc} is also used to allocate memory
+on the heap for dynamically-allocated arrays, where the size of the array
+cannot be known at compile time. 
 
 Additionally, at the end of a MAlice assembly program, the C \texttt{exit} 
 method is called rather than an exit system call. This ensures that 
 \texttt{stdout} and \texttt{stderr} correctly have their buffers cleared at the
 end of execution of the MAlice program.
+
+\newpage
 
 \subsection{Future Work}
 
@@ -131,16 +141,17 @@ devices, such as Android smartphones and tablets. As discussed previously,
 a new class, \texttt{ARMVisitor}, was created that implements the interface
 \texttt{ASTVisitor}.
 
-After the x86-64 code has been generated and assembled, the same abstract syntax
-tree will be used with the \texttt{ARMVisitor} class, resulting in ARM assembly
-code. However, unlike as with the x86-64 code generation step, the ARM code is
-not assembled or linked with the C standard library, due to the lack of tools
-available for this on the standard lab machine install. Despite this, members
-of the group installed the \texttt{arm-linux-gnueabihf} (providing versions of
-\emph{gcc} and \emph{as} for ARM) and \texttt{qemu-user} (providing a user mode
-ARM emulator) packages on their local machines. Using these tools, it was
-verified that the ARM code produced was functionally correct and passed all
-test cases.
+Running the MAlice compiler with the \texttt{-arm} flag uses the abstract syntax
+tree and the \texttt{ARMVisitor} class to generate ARM code. However, unlike 
+as with the x86-64 code generation step, the ARM code is not assembled or linked
+with the C standard library, due to the lack of tools available for this on the
+standard lab machine install. Despite this, members of the group installed the 
+\texttt{arm-linux-gnueabihf} (providing versions of \emph{gcc} and \emph{as} for 
+ARM) and \texttt{qemu-user} (providing a user mode ARM emulator) packages on 
+their local machines. Using these tools, it was verified that the ARM code 
+produced was functionally correct and passed all test cases.
+
+\newpage
 
 \subsection{Future Work: C Library Functions}
 
@@ -154,6 +165,14 @@ it would be relatively easy to implement this extension if additional time
 were available.
 
 \subsection{Future Work: Other Target Languages}
-%TODO
+In a similar fashion to how the ARM extension was implemented, it would be 
+possible to extend the compiler to produce machine code for other target 
+languages using the visitor pattern and a class extending \texttt{ASTVisitor} -
+for example, MIPS, Java bytecode or .NET CIL. 
+
+One particularly interesting potential target language would be IMPS - a subset
+of MIPS for which the group created an assembler and emulator for as part of the
+first year C lab. This would mean the group had a complete set of tools for
+each stage of compilation and execution of a MAlice program.
 
 \enddocument
