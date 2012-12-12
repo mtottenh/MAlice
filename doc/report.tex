@@ -84,7 +84,27 @@ assembly languages, would also be made easier through this design pattern.
 
 \subsection{Future Work}
 
+Although the group considered very heavily the design and how classes would
+interact throughout Milestone 3, more could have been done during Milestone 2.
+The group was perhaps a little too quick to begin writing code without 
+considering how classes and objects would interact, and this led to the team 
+running into problems that cost time. A future improvement to increase 
+productivity would be to draw UML diagrams or class diagrams and to write
+pseudocode in order to identify design issues before they occur in code.
 
+Moreover, further consideration could be given to how MAlice stores data. 
+Currently, for ease of code generation in x86-64, all variables are given
+64 bits of storage, regardless of whether the variable contains a character,
+number, or string. This is wasteful of memory at runtime. Additionally, in the
+ARM extension (again, for ease of code generation), all variables are given
+32 bits of storage. This introduces inconsistencies that may hinder a MAlice
+developer who chose to use our compiler.
+
+Finally, a potential area for future improvement could be to make use o
+\emph{LLVM}. The use of this tool would allow the group to produce highly
+optimised assembly code beyond the simple optimisations completed in the time
+available. The use of LLVM would also give the group experience in a tool that
+would likely be used in industry in compiler creation.
 
 \section{Beyond the Specification}
 
