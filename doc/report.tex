@@ -16,12 +16,12 @@
 
 % sections as given in the spec.
 \section{The Product}
-
+%TODO - Probably needs expanding, it's not even 1 page long...
 The compiler the group has produced takes code written in the MAlice language
 and produces x86-64 assembly code, as well as calling \emph{nasm} and \emph{gcc}
 to produce an executable binary. Additionally, as part of the extension, an
 assembly file with extension \texttt{.arm} is produced that can be assembled
-to run on an ARM chip.
+to run on an ARM processor.
 
 The group ensured at every stage of development that the product produced
 was functionally correct and matched the specification. After completion of
@@ -52,8 +52,6 @@ recommended in the specification), but decided that the benefits of speed and
 low level operations outweighed Java's advantages (e.g. garbage collection) in
 this instance.
 
-\newpage
-
 \subsection{Flex and Bison}
 
 When implementation began during Milestone 2, the group carefully considered
@@ -82,6 +80,9 @@ learnt from \texttt{x86Visitor}, the \texttt{ARMVisitor} becamse mostly a
 matter of translating syntax from x86-64 to ARM. Additional visitors, for other
 assembly languages, would also be made easier through this design pattern.
 
+\subsection{Linking with the C Standard Library}
+%TODO
+
 \subsection{Future Work}
 
 Although the group considered very heavily the design and how classes would
@@ -100,12 +101,38 @@ ARM extension (again, for ease of code generation), all variables are given
 32 bits of storage. This introduces inconsistencies that may hinder a MAlice
 developer who chose to use our compiler.
 
-Finally, a potential area for future improvement could be to make use o
+Finally, a potential area for future improvement could be to make use of
 \emph{LLVM}. The use of this tool would allow the group to produce highly
 optimised assembly code beyond the simple optimisations completed in the time
 available. The use of LLVM would also give the group experience in a tool that
 would likely be used in industry in compiler creation.
 
 \section{Beyond the Specification}
+
+\subsection{Optimisations}
+%TODO - What optimisations did we implement? For those we didn't, why not?
+
+\subsection{ARM Code Generation}
+
+For the extension, the group decided to compile MAlice programs into ARM
+assembly code in addition to x86-64 code. This would allow MAlice developers
+to theoretically write code that would run on a wide variety of additional
+devices, such as Android smartphones and tablets. As discussed previously, 
+a new class, \texttt{ARMVisitor}, was created that implements the interface
+\texttt{ASTVisitor}.
+
+After the x86-64 code has been generated and assembled, the same abstract syntax
+tree will be used with the \texttt{ARMVisitor} class, resulting in ARM assembly
+code. However, unlike as with the x86-64 code generation step, the ARM code is
+not assembled or linked with the C standard library, due to the lack of tools
+available for this on the standard lab machine install. Despite this, members
+of the group installed the \texttt{arm-linux-gnueabihf} (providing versions of
+\emph{gcc} and \emph{as} for ARM) and \texttt{qemu-user} (providing a user mode
+ARM emulator) packages on their local machines. Using these tools, it was
+verified that the ARM code produced was functionally correct and passed all
+test cases.
+
+\subsection{Future Work: Other Target Languages}
+%TODO
 
 \enddocument
