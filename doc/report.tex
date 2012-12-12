@@ -8,39 +8,66 @@
 
 \begin{document}
 
-\title{MAlice Report}
-
-\author{Sean Allan \and Mitchell Allison \and Max Tottenham}
-
-\date{\today}         % inserts today's date
-
-\maketitle            % generates the title from the data above
-
-% TODO - Not sure if needed; spec doesn't mention an intro, and we're somewhat
-% constrained on page length (max of 4!) 
-\begin{comment}
-\section{Introduction}
- 
-This report outlines the development of the group's compiler for the MAlice
-language into x86-64 and ARM assembly code, from the design stages to 
-implementation and extension. Throughout the project, careful attention was
-given to design, the tools and language used and ensuring functional
-correctness.
-\end{comment}
+\begin{center}
+{\huge MAlice Report} \\ [0.4cm]
+{\large Sean Allan, Max Tottenham and Mitchell Allison} \\ [0.2cm]
+\vspace{1cm}
+\end{center}
 
 % sections as given in the spec.
 \section{The Product}
 
+The compiler the group has produced takes code written in the MAlice language
+and produces x86-64 assembly code, as well as calling \emph{nasm} and \emph{gcc}
+to produce an executable binary. Additionally, as part of the extension, an
+assembly file with extension \texttt{.arm} is produced that can be assembled
+to run on an ARM chip.
+
+The group ensured at every stage of development that the product produced
+was functionally correct and matched the specification. After completion of
+Milestone 2, the parser and semantic analysis components were tested against
+all test cases, as well as some custom written test files, to ensure invalid
+code raised the appropriate error messages. After completion of Milestone 3, it
+was also ensured that the assembly code produced led to the correct result 
+for all test cases, with the group fixing bugs and issues where appropriate.
+
+Due to decisions made in regard to design, discussed further in the next
+section, the group ensured the product performed effeciently. The language
+choice for the project, C++, helps to promote such effeciency, and the group
+also made an effort to prevent memory leaks and free memory where required. 
+Additionally, for each data structure used, the team considered what would be
+best for the situation, such as choosing between a \emph{std::vector} or a
+\emph{std::deque}. Finally, we made use of design patterns such as the visitor
+pattern to aid further extensions and provide a solid base for future work.
+
 \section{The Design Choices}
+
+\subsection{Language Choice - C++}
+% TODO - Maybe expand on this?
+The majority of the project was implemented using the C++ language. This
+decision was made due to many advantages C++ offers - most of the speed and
+effeciency of the C language with the addition of useful data structures such
+as \emph{std::deque}s. The group did consider other languages, such as Java (as
+recommended in the specification), but decided that the benefits of speed and
+low level operations outweighed Java's advantages (e.g. garbage collection) in
+this instance.
+
+\subsection{Flex and Bison}
 
 When implementation began during Milestone 2, the group carefully considered
 many options for lexical analysis and parser generation. The choice for making 
 use of tools for this milestone was made due to the difficulty associated with
 creating a parser generator for an LALR grammar. After looking at the
-pros and cons of many packages, {\bf\emph{Flex}} was chosen for lexical analysis
-and {\bf\emph{Bison}} chosen as the parser generator. This decision was made as 
+pros and cons of many packages, \emph{Flex} was chosen for lexical analysis
+and \emph{Bison} chosen as the parser generator. This decision was made as 
 these two packages are arguably the most stable and well documented tools for 
 aiding in the creation of a compiler front end.
+
+\subsection{Code Generation - Visitor Pattern}
+
+
+
+\subsection{Future Work}
 
 \section{Beyond the Specification}
 
