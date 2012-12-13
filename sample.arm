@@ -33,8 +33,8 @@ regToReg:
 immToMem:
 	ldr r2, =100		@ R2 = 100, put imm to register
 	mov r3, sp			@ R3 = SP (address), load addr to register
-	str r2, [r3, #0]	@ [R3+0] = R2, store register in mem
-	ldr r1, [r3, #0]	@ R1 = [R3+0], access mem
+	str r2, [r3]		@ [R3+0] = R2, store register in mem
+	ldr r1, [r3]		@ R1 = [R3+0], access mem
 	ldr r0, =printNum
 	bl printf
 	bl printNewLine

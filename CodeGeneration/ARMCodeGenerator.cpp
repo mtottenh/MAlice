@@ -26,12 +26,12 @@ ARMCodeGenerator::ARMCodeGenerator()
 	instrTable[ANEG] = "neg";
 	instrTable[ANOT] = "mvn";
 	instrTable[ARET] = "ret"; /* Not needed - no ret in ARM! */
-	instrTable[SETE] = "sete";
-	instrTable[SETLE] = "setle";
-	instrTable[SETL] = "setl";
-	instrTable[SETG] = "setg";
-	instrTable[SETGE] = "setge";
-	instrTable[SETNE] = "setne";
+	instrTable[SETE] = "moveq";
+	instrTable[SETLE] = "movle";
+	instrTable[SETL] = "movl";
+	instrTable[SETG] = "movg";
+	instrTable[SETGE] = "movge";
+	instrTable[SETNE] = "movne";
 }
 
 void ARMCodeGenerator::printInstruction(Instr instr, string ret, string nxt)
@@ -64,35 +64,95 @@ void ARMCodeGenerator::printInstruction(Instr instr, string ret, string nxt)
 				text << "\tpop rdx" << endl;
 				text << "\tpop rax" << endl;
 			break;
+		case AMOVE:
+				evalMove(ret, nxt);
+			break;
 		default:
 				CodeGenerator::printInstruction(instr, ret, nxt); 
 	}
 }
 
+void ARMCodeGenerator::evalMove(string ret, string nxt) {
+	/* Is the first char of the return val a memory address? */
+	if(ret[0] == '[') {
+		string addrReg = nxt.substr(1, nxt.length()-1);
+
+		/* Is the next reg a register? i.e. mov [sp+4], r2 */
+		if(isReg(nxt)) {
+			
+			generator.printInstruction(APUSH, "r0, r1");
+			text << "\tmov r0, " << addrReg << endl;
+			text << "\tstr " << r0 << ", ret" << endl;
+			generator.printInstruction(APOP, "r0, r1");
+		}
+
+		/* Okay, so next is immediate. Same as above but ldr the imm value. */
+		else {
+			generator.printInstruction(APUSH, "r2");
+			text << "\tldr r2, =" << nxt << endl;
+			evalMove(ret, r2);
+			generator.printInstruction(APOP, "r2");
+		}
+			
+		}
+
+	/* ret is a register */
+	else {
+		/* Is nxt a register? */
+		if(isReg(nxt)) {
+			text << "\tmov " << ret << ", " << nxt << endl;
+		}
+
+		/* Is nxt a memory access? */
+		else if(nxt[0] == '[') {
+			text << "\tldr " << ret << ", " << nxt << endl;
+		}
+
+		/* Otherwise immediate. */
+		else {
+			text << "\tldr " << ret << ", =" << nxt << endl;
+		}
+	}
+	}
+}
+
+void ARMCodeGenerator::isReg(string reg) {
+	return (nxt == "sp" || mov == "pc" || nxt == "r0" || nxt == "r12" ||
+				find(allRegs.begin(), allRegs.end(), nxt) != allRegs.end());
+}
+
+void ARMCodeGenerator::printInstruction(Instr instr, string reg) {
+	switch(instr) {
+		case APUSH:
+			text << "\t" << instrTable[APUSH] << " {" << reg << "}" << endl;
+			break;
+		case APOP:
+			text << "\t" << instrTable[APOP] << " {" << reg << "}" << endl;
+			break;
+		default:
+			CodeGenerator::printInstruction(instr, reg);
+	}
+}
+
 void ARMCodeGenerator::printInitial()
 {
-	data << "%include\t\'system.inc\'\n\n";
-	data << "section .data\n\n";  
+	data << ".data" << endl;  
 }
 
 void ARMCodeGenerator::printData(string label, string size)
 {
-	data << "common\t" << label << " " << size << endl;
+	data << ".comm\t" << label << " " << size << endl;
 }
 
 void ARMCodeGenerator::printStringLitData(string label, string s)
 {
-	data << label << ": db " << s << ",0x0" << endl;
+	data << label << ":\n\t .asciz \"" s << "\"" << endl;
 }
 
 void ARMCodeGenerator::printExtern()
 {
-	text << "section .text\n";                                             
-	text << "global main\n";                                               
-	text << "extern exit\n";                                               
-	text << "extern scanf\n";                                              
-	text << "extern printf\n";  
-	text << "extern malloc\n";                                          
+	text << ".text\n";                                             
+	text << ".global main\n";                                               
 	text << "main:\n";  
 }
 
@@ -100,35 +160,33 @@ deque<string> ARMCodeGenerator::getAllGeneralRegs()
 {
 	deque<string> allRegs;
 	allRegs.clear();
- 	allRegs.push_back("r8");                                            
-	allRegs.push_back("r9");                                         
-	allRegs.push_back("r10");                                          
-	allRegs.push_back("r11");                                          
-	allRegs.push_back("r12");                                          
-	allRegs.push_back("r13");                                           
-	allRegs.push_back("r14");                                           
-	allRegs.push_back("r15");                                           
-	allRegs.push_back("rbx");                                           
-	allRegs.push_back("rcx");                                           
-	allRegs.push_back("rdx");                                           
-	allRegs.push_back("rsi");                                           
-	allRegs.push_back("rdi");	
+	allRegs.push_back("r1");
+	allRegs.push_back("r2");                                         
+	allRegs.push_back("r3");                                          
+	allRegs.push_back("r4");                                          
+	allRegs.push_back("r5");                                          
+	allRegs.push_back("r6");                                           
+	allRegs.push_back("r7");                                           
+	allRegs.push_back("r8");                                           
+	allRegs.push_back("r9");                                           
+	allRegs.push_back("r10");                                           
+	allRegs.push_back("r11");                                           
 	return allRegs;
 }
 
 string ARMCodeGenerator::getBasePointer()
 {
-	return "rbp";
+	return "r12";
 }
 
 string ARMCodeGenerator::getStackPointer()
 {
-	return "rsp";
+	return "sp";
 }
 
 string ARMCodeGenerator::getReturnRegister()
 {
-	return "rax";
+	return "r0";
 }
 
 void ARMCodeGenerator::generatePrintInstruction
@@ -144,49 +202,48 @@ void ARMCodeGenerator::generatePrintInstruction
 			break; 
 		case TSTRING:
 			printStringLitData(label, "\"%s\"");
-		//TODO: ADD MORE CASES! 
 	}
-	printInstruction(APUSH, "r9");
-	printInstruction(APUSH, "r8");
-	printInstruction(APUSH, "rax");
-	printInstruction(APUSH, "rdi");
-	printInstruction(APUSH, "rsi");
+	printInstruction(APUSH, "r0");
+	printInstruction(APUSH, "r1");
+	printInstruction(APUSH, "r2");
+	printInstruction(APUSH, "r3");
+	printInstruction(APUSH, "r4");
 
 	if (reg.size() != 0)
 	{
 		if (ref)
 		{
-			printInstruction(AMOVE, "rsi", "[" + reg + "]");
+			printInstruction(ALDR, "r1", "[" + reg + "]");
 		}                                             
 		else
 		{
-			printInstruction(AMOVE, "rsi", reg);
+			printInstruction(AMOVE, "r1", reg);
 		}
 	}
-	printInstruction(AMOVE, "rdi", label);
-	printInstruction(AMOVE, "rax", "0");
+	printInstruction(ALDR, "r0", "=" + label);
 	printInstruction(ACALL, "printf");
 	                                   
-	printInstruction(APOP, "rsi");
-	printInstruction(APOP, "rdi");
-	printInstruction(APOP, "rax");
-	printInstruction(APOP, "r8");
-	printInstruction(APUSH, "r9");
+	printInstruction(APOP, "r4");
+	printInstruction(APOP, "r3");
+	printInstruction(APOP, "r2");
+	printInstruction(APOP, "r1");
+	printInstruction(APOP, "r0");
 }
 
 void ARMCodeGenerator::printReturnFromProgram()
 {
-	printInstruction(AMOVE, "rdi", "0");
-	printInstruction(ACALL, "exit");
+	printInstruction(ALDR, "r0", "=0");
+	printInstruction(AJMP, "exit");
 }
 
 void ARMCodeGenerator::comparePredicate(Instr instr, string res, string nxt)
 {
-	printInstruction(ACMP, res, nxt);
-	printInstruction(APUSH, "rax");
-	printInstruction(instr, "al");
-	printInstruction(AMOVEXTEND, res, "al");
-	printInstruction(APOP, "rax"); 
+	printInstruction(APUSH, "r0");
+	printInstruction(AMOVE, "r0", 0);
+	printInstruction(ACMP, res, next);
+	printInstruction(instr, res, 1);
+	printInstruction(AMOVE, res, "r0");
+	printInstruction(APOP, "r0");
 }
 
 void ARMCodeGenerator::generateAccessInstruction(string addrReg, 
