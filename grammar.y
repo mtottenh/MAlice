@@ -493,14 +493,15 @@ int main(int argc, char* argv[]) {
 	//Check that the AST is semantically valid.
 	isValid &= root->check();
     
-    ASTVisitor *rc = new RefCountGenerator();
-    ASTVisitor *t = new TreeOptimiser();
-    ASTVisitor *v = new x86Visitor();
+    RefCountGenerator *rc = new RefCountGenerator();
+    TreeOptimiser *t = new TreeOptimiser();
+    x86Visitor *v = new x86Visitor();
     /* optimise generated code by pruning tree */
     root->accept(rc);
     root->accept(t);
+    cerr << "\n\n  **Finished Optimisations** \n\n";
     /* generate code using x86Visitor*/
-//    v->init(root);
+    v->init(root);
     root->accept(v);
 	// TODO
 	// There may be a cleaner way to encapsulate this
@@ -508,7 +509,7 @@ int main(int argc, char* argv[]) {
      * call  init, then do normal visit 
      * then call genfuncDefs
      */
-//	v->generateFunctionDefinitions();
+	v->generateFunctionDefinitions();
 
     /*create the output file*/
     string outputFname(argv[1]);

@@ -67,7 +67,7 @@ public:
     virtual void visit(NVariableDeclaration*);
     void init(Node*); 
 	void generateFunctionDefinitions();
-	 string getAssembly();
+	 virtual string getAssembly();
 
 };
 

@@ -237,3 +237,9 @@ int Node::getRefCount() {
 void Node::incRefCount() {
     refCount++;
 }
+
+void Node::removeChild(int i) {
+    children.erase(children.begin()+i);
+
+}
+

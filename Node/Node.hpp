@@ -121,6 +121,8 @@ public:
 	int isRoot();
     /* sets the node to be the root node */
     int setRoot();
+    /* remove child */
+    void removeChild(int);
 	/*
 	 * Checks whether the node has an associated symbol table. Returns
 	 * SUCCESS if one exists, FAILURE otherwise.
