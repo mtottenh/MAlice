@@ -12,6 +12,7 @@ Node::Node() : loc(), label("") {
 	type = INVALIDTYPE;
 	nodeType = GENERIC_NODE;
 	children.clear();
+    refCount = 0;
 }
 
 /* As above, but add the child parameter to the list of children. */
@@ -22,6 +23,7 @@ Node::Node(Node *child) {
 	type = INVALIDTYPE;
 	nodeType = GENERIC_NODE;
 	loc = NULL;
+    refCount = 0;
 }
 
 /* Delete all the children and set them to null. */
@@ -224,4 +226,14 @@ string Node::getLabel() {
 
 void Node::setLabel(string label) {
 	this->label = label;
+}
+
+
+int Node::getRefCount() {
+    return refCount;
+}
+
+
+void Node::incRefCount() {
+    refCount++;
 }
