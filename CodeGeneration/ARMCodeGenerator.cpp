@@ -84,7 +84,7 @@ void ARMCodeGenerator::evalMove(string ret, string nxt) {
 			
 			printInstruction(APUSH, "r0, r1");
 			text << "\tmov r0, " << addrReg << endl;
-			text << "\tstr r0, ret" << endl;
+			text << "\tstr r0, " << ret << endl;
 			printInstruction(APOP, "r0, r1");
 		}
 
