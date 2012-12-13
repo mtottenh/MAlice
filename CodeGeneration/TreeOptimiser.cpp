@@ -44,6 +44,19 @@ void TreeOptimiser::visit(NDeclarationBlock *node){
     for (int i = 0; i < node->getChildrenSize(); i++)
     {
         node->getChild(i)->accept(this);
+        switch(node->getChild(i)->getNodeType()) {
+            case FUNC:
+            case PROCEDURE:
+                cerr << "Testing function for removal candidate\n";
+                if (node->getChild(i)->getRefCount() == 0 && node->getChild(i)->getID() != "hatta") {
+                    cerr << "Function: "<< node->getChild(i)->getID() << " removed from AST\n";   
+                    node->removeChild(i);
+
+                }
+
+            break;
+        }
+
     }
 
 }
