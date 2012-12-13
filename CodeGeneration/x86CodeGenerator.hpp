@@ -2,7 +2,6 @@
 #define _X86CODEGENERATOR_H_
 
 #include "CodeGenerator.hpp"
-#include <boost/lexical_cast.hpp>
 
 class x86CodeGenerator : public CodeGenerator
 {

@@ -1,5 +1,6 @@
 #include "x86CodeGenerator.hpp"
 #include "../Node/NodeIncludes.hpp"
+#include <boost/lexical_cast.hpp>
 
 x86CodeGenerator::x86CodeGenerator()
 {

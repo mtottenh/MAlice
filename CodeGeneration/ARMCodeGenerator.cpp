@@ -1,10 +1,11 @@
 #include "ARMCodeGenerator.hpp"
 #include "../Node/NodeIncludes.hpp"
+#include <boost/lexical_cast.hpp>
 
 ARMCodeGenerator::ARMCodeGenerator()
 {
 	allRegs.clear();	
-
+	wordSize = 4;
 	instrTable[ALEA] = "lea"; /* Maybe not needed? */
 	instrTable[AMOVE] = "mov";
 	instrTable[ALDR] = "ldr"; /* Additional ARM instruction */
@@ -292,5 +293,6 @@ void ARMCodeGenerator::generateInputFunction(string scanf, string addr)
 
 string ARMCodeGenerator::generateMemoryOffset(string reg, int numElements)
 {
-
+	return "[" + reg + ", #" + 
+			boost::lexical_cast<string>(numElements * wordSize) + "]";
 }
