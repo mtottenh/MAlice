@@ -495,8 +495,20 @@ int main(int argc, char* argv[]) {
 	isValid &= root->check();
     /* generate code using x86Visitor*/
     ASTVisitor *v = new GenericASTVisitor();
-	x86CodeGenerator *x86generator = new x86CodeGenerator();
-    v->init(root, x86generator);
+	CodeGenerator *generator;
+	bool generatingARM = false;
+
+	if((argc == 3 && (strcmp(argv[2], "-arm") == 0))
+			|| (argc >= 4 && (strcmp(argv[3], "-arm") == 0))) {
+		generator = new ARMCodeGenerator();	
+		generatingARM = true;
+	}
+	
+	else {
+		generator = new x86CodeGenerator();
+	}
+
+    v->init(root, generator);
     root->accept(v);
 	// TODO
 	// There may be a cleaner way to encapsulate this
@@ -506,32 +518,38 @@ int main(int argc, char* argv[]) {
     string outputFname(argv[1]);
     size_t pos = outputFname.find(".alice");
     outputFname = outputFname.substr(0,pos);
-    outputFname = outputFname + ".asm";
+	if(generatingARM) {
+		outputFname = outputFname + ".arm";
+	} else {
+    	outputFname = outputFname + ".asm";
+	}
     FILE *output = fopen(outputFname.c_str(),"w");
     if (output != NULL) {
         fputs(v->getAssembly().c_str(),output);
        // fputs("\n\n\tpop rbp\n\tsys.exit\n",output);
         fclose(output);
-        /* assemble with nasm */
-        /* TODO - Ask mark whether it would be easier
-         * to just create a shell script, ie not relying
-         * on nasm/ld to be under /usr/bin
-         */
-        cerr << "Assembling with nasm, output filename: " << outputFname << endl;
-        if (fork() == 0) {
-            execl("/usr/bin/nasm","/usr/bin/nasm", "-f elf64",  "-g -F stabs",
-                    outputFname.c_str(),(char *) 0);
-        } else {
-            int status;
-            wait(&status);
-            /* link with ld */
-            pos = outputFname.find(".asm");
-            string objFname = outputFname.substr(0,pos) + ".o";
-            outputFname = "-o" + outputFname.substr(0,pos);
-		    cerr << "\nOutput filename:  " << outputFname << "\t" << objFname <<endl;
-            execl("/usr/bin/gcc","/usr/bin/gcc","-g",objFname.c_str(),
-                        outputFname.c_str(),(char*)0);
-        }
+		if(!generatingARM) {
+        	/* assemble with nasm */
+        	/* TODO - Ask mark whether it would be easier
+        	 * to just create a shell script, ie not relying
+         	 * on nasm/ld to be under /usr/bin
+        	 */
+        	cerr << "Assembling with nasm, output filename: " << outputFname << endl;
+        	if (fork() == 0) {
+        	    execl("/usr/bin/nasm","/usr/bin/nasm", "-f elf64",  "-g -F stabs",
+        	            outputFname.c_str(),(char *) 0);
+        	} else {
+        	    int status;
+        	    wait(&status);
+        	    /* link with ld */
+        	    pos = outputFname.find(".asm");
+        	    string objFname = outputFname.substr(0,pos) + ".o";
+        	    outputFname = "-o" + outputFname.substr(0,pos);
+			    cerr << "\nOutput filename:  " << outputFname << "\t" << objFname <<endl;
+        	    execl("/usr/bin/gcc","/usr/bin/gcc","-g",objFname.c_str(),
+        	                outputFname.c_str(),(char*)0);
+        	}
+		}
     } else {
         cerr << "error opening output file for writing: " << outputFname << endl;
     }
@@ -539,7 +557,6 @@ int main(int argc, char* argv[]) {
 	delete root;
     delete v;
 	fclose(input);
-    fclose(output);
 	yylex_destroy();
 	return isValid ? EXIT_SUCCESS : EXIT_FAILURE;
 }
