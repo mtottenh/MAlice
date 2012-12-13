@@ -1,5 +1,5 @@
-#ifndef _TREE_OPTIMISER__
-#define _TREE_OPTIMISER__
+#ifndef _REF_COUNT_GEN__
+#define _REF_COUNT_GEN__
 
 
 #include "ASTVisitor.hpp"

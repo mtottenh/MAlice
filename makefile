@@ -11,7 +11,7 @@ NIdentifier.o NInc.o NInput.o NInteger.o NLoop.o NMethodCall.o Node.o\
 NNullToken.o NParamBlock.o NParamDeclarationBlock.o NPrint.o NReturn.o\
 NStatementList.o NStringLit.o NUnaryOp.o NVariableDeclaration.o TypeMap.o\
 SemanticErrors.o TreePrinter.o SymbolTableGenerator.o SymbolTable.o\
-FileLocation.o x86Visitor.o LabelMaker.o\
+FileLocation.o x86Visitor.o LabelMaker.o TreeOptimiser.o RefCountGenerator.o\
 # Messy but cant find a nicer way at present
 
 OBJ=$(patsubst %,$(ODIR)/%,$(OBJS))

@@ -11,6 +11,8 @@
 #include "TreeUtils/SymbolTableGenerator.hpp"
 #include "CodeGeneration/ASTVisitor.hpp"
 #include "CodeGeneration/x86Visitor.hpp"
+#include "CodeGeneration/RefCountGenerator.hpp"
+#include "CodeGeneration/TreeOptimiser.hpp"
     
 extern int yylex();
 extern void yylex_destroy();
@@ -490,13 +492,23 @@ int main(int argc, char* argv[]) {
 
 	//Check that the AST is semantically valid.
 	isValid &= root->check();
+    
+    ASTVisitor *rc = new RefCountGenerator();
+    ASTVisitor *t = new TreeOptimiser();
+    ASTVisitor *v = new x86Visitor();
+    /* optimise generated code by pruning tree */
+    root->accept(rc);
+    root->accept(t);
     /* generate code using x86Visitor*/
-    x86Visitor *v = new x86Visitor();
-    v->init(root);
+//    v->init(root);
     root->accept(v);
 	// TODO
 	// There may be a cleaner way to encapsulate this
-	v->generateFunctionDefinitions();
+    /* check if is root in VarDecList node if so
+     * call  init, then do normal visit 
+     * then call genfuncDefs
+     */
+//	v->generateFunctionDefinitions();
 
     /*create the output file*/
     string outputFname(argv[1]);

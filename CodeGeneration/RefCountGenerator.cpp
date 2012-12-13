@@ -8,62 +8,110 @@
  * a ref count of 0
  */
 
+RefCountGenerator::RefCountGenerator() {
+
+}
+
 void RefCountGenerator::visit(NArrayAccess *node) {
 
-};
+}
 
 void RefCountGenerator::visit(NAssignment *node){ 
+    for (int i = 0; i < node->getChildrenSize(); i++)
+    {
+        node->getChild(i)->accept(this);
+    }
 
-};
+}
 
 void RefCountGenerator::visit(NBinOp *node){
+    for (int i = 0; i < node->getChildrenSize(); i++)
+    {
+        node->getChild(i)->accept(this);
+    }
 
 
-};
+}
 
 void RefCountGenerator::visit(NCharLit *node){
+    for (int i = 0; i < node->getChildrenSize(); i++)
+    {
+        node->getChild(i)->accept(this);
+    }
 
-};
+}
 
 
 void RefCountGenerator::visit(NCodeBlock *node){
+    for (int i = 0; i < node->getChildrenSize(); i++)
+    {
+        node->getChild(i)->accept(this);
+    }
 
-};
+}
 
 
 void RefCountGenerator::visit(NConditional *node){
+    for (int i = 0; i < node->getChildrenSize(); i++)
+    {
+        node->getChild(i)->accept(this);
+    }
 
-};
+}
 
 
 void RefCountGenerator::visit(NDec *node){
+    for (int i = 0; i < node->getChildrenSize(); i++)
+    {
+        node->getChild(i)->accept(this);
+    }
 
-};
+}
 
 
 void RefCountGenerator::visit(NDeclarationBlock *node){
+    for (int i = 0; i < node->getChildrenSize(); i++)
+    {
+        node->getChild(i)->accept(this);
+    }
 
-};
+}
 
 
 void RefCountGenerator::visit(NEndIf *node){
+    for (int i = 0; i < node->getChildrenSize(); i++)
+    {
+        node->getChild(i)->accept(this);
+    }
 
-};
+}
 
 
 void RefCountGenerator::visit(NFunctionDeclaration *node){
+    for (int i = 0; i < node->getChildrenSize(); i++)
+    {
+        node->getChild(i)->accept(this);
+    }
 
-};
+}
 
 
 void RefCountGenerator::visit(NIdentifier *node){
+    for (int i = 0; i < node->getChildrenSize(); i++)
+    {
+        node->getChild(i)->accept(this);
+    }
 
-};
+}
 
 
 void RefCountGenerator::visit(NInc *node){
+    for (int i = 0; i < node->getChildrenSize(); i++)
+    {
+        node->getChild(i)->accept(this);
+    }
 
-};
+}
 
 
 void RefCountGenerator::visit(NInput *node){
@@ -71,14 +119,14 @@ void RefCountGenerator::visit(NInput *node){
     {
         node->getChild(i)->accept(this);
     }
-};
+}
 
 void RefCountGenerator::visit(NInteger *node){
     for (int i = 0; i < node->getChildrenSize(); i++)
     {
         node->getChild(i)->accept(this);
     }
-};
+}
 
 
 void RefCountGenerator::visit(NLoop *node){
@@ -86,7 +134,7 @@ void RefCountGenerator::visit(NLoop *node){
     {
         node->getChild(i)->accept(this);
     }
-};
+}
 
 
 void RefCountGenerator::visit(NMethodCall *node){
@@ -96,12 +144,12 @@ void RefCountGenerator::visit(NMethodCall *node){
     {
         node->getChild(i)->accept(this);
     }
-};
+}
 
 
 void RefCountGenerator::visit(NNullToken *node){
 
-};
+}
 
 
 void RefCountGenerator::visit(Node *node){
@@ -109,7 +157,7 @@ void RefCountGenerator::visit(Node *node){
     {
         node->getChild(i)->accept(this);
     }
-};
+}
 
 
 void RefCountGenerator::visit(NParamBlock *node){
@@ -117,7 +165,7 @@ void RefCountGenerator::visit(NParamBlock *node){
     {
         node->getChild(i)->accept(this);
     }
-};
+}
 
 
 void RefCountGenerator::visit(NParamDeclarationBlock *node){
@@ -125,7 +173,7 @@ void RefCountGenerator::visit(NParamDeclarationBlock *node){
     {
         node->getChild(i)->accept(this);
     }
-};
+}
 
 
 void RefCountGenerator::visit(NPrint *node){
@@ -133,7 +181,7 @@ void RefCountGenerator::visit(NPrint *node){
     {
         node->getChild(i)->accept(this);
     }
-};
+}
 
 
 void RefCountGenerator::visit(NReturn *node){
@@ -141,7 +189,7 @@ void RefCountGenerator::visit(NReturn *node){
     {
         node->getChild(i)->accept(this);
     }
-};
+}
 
 
 void RefCountGenerator::visit(NStatementList *node){
@@ -149,12 +197,12 @@ void RefCountGenerator::visit(NStatementList *node){
     {
         node->getChild(i)->accept(this);
     }
-};
+}
 
 
 void RefCountGenerator::visit(NStringLit *node){
 
-};
+}
 
 
 void RefCountGenerator::visit(NUnaryOp *node){
@@ -162,7 +210,7 @@ void RefCountGenerator::visit(NUnaryOp *node){
     {
         node->getChild(i)->accept(this);
     }
-};
+}
 
 
 void RefCountGenerator::visit(NVariableDeclaration *node){
@@ -170,12 +218,12 @@ void RefCountGenerator::visit(NVariableDeclaration *node){
     {
         node->getChild(i)->accept(this);
     }
-};
+}
 
 
-void init(Node *node){
+void RefCountGenerator::init(Node *node){
 
-}; 
+        } 
 
 
 

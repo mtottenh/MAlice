@@ -55,6 +55,7 @@ public:
     virtual void visit(NStringLit*) = 0;
     virtual void visit(NUnaryOp*) = 0;
     virtual void visit(NVariableDeclaration*) = 0;
+    virtual string getAssembly(){ return "";};
 };
 
 #endif
