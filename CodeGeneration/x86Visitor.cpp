@@ -543,16 +543,11 @@ void x86Visitor::visit(NPrint *node) {
 		generator.generatePrintInstruction(reg, printlabel, true, type);
 		restoreStore(reg);
     }
-	//TODO: This doesn't work, a label isn't being set somewhere!
     if(type == TSTRING) {
       	node->getChild(0)->accept(this);   
 		string reg = getNextReg();
 	if (decNode != NULL) {
-            if (decNode->getLevel() == 1)
-				generator.generatePrintInstruction(reg,
-										printlabel, true, type);
-            else
-				generator.generatePrintInstruction(reg,
+				generator.generatePrintInstruction(decNode->getLabel(),
 										printlabel, false, type);
 	}
 		restoreStore(reg);
