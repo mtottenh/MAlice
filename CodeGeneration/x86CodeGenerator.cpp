@@ -27,9 +27,9 @@ x86CodeGenerator::x86CodeGenerator()
 	instrTable[ARET] = "ret";
 	instrTable[SETE] = "sete";
 	instrTable[SETLE] = "setle";
-	instrTable[SETL] = "setle";
+	instrTable[SETL] = "setl";
 	instrTable[SETG] = "setg";
-	instrTable[SETGE] = "sete";
+	instrTable[SETGE] = "setge";
 	instrTable[SETNE] = "setne";
 }
 
