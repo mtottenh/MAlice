@@ -175,7 +175,7 @@ void x86Visitor::visit(NBinOp *node) {
 	
 	if (node->getChild(0)->getNodeType() == ARRAYACCESS)
 	{
-		generator.printInstruction(AMOVE, resultReg, "[" + resultReg + "]");	
+		generator.printInstruction(AMOVE, resultReg, "[" + resultReg + "]");
 	}
 	if (node->getChild(1)->getNodeType() == ARRAYACCESS)
 	{
