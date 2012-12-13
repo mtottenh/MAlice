@@ -10,7 +10,10 @@
 #include "Errors/TypeMap.hpp"
 #include "TreeUtils/SymbolTableGenerator.hpp"
 #include "CodeGeneration/ASTVisitor.hpp"
-#include "CodeGeneration/x86Visitor.hpp"
+#include "CodeGeneration/GenericASTVisitor.hpp"
+#include "CodeGeneration/x86CodeGenerator.hpp"
+#include "CodeGeneration/ARMCodeGenerator.hpp"
+    
     
 extern int yylex();
 extern void yylex_destroy();
@@ -491,8 +494,9 @@ int main(int argc, char* argv[]) {
 	//Check that the AST is semantically valid.
 	isValid &= root->check();
     /* generate code using x86Visitor*/
-    x86Visitor *v = new x86Visitor();
-    v->init(root);
+    ASTVisitor *v = new GenericASTVisitor();
+	x86CodeGenerator *x86generator = new x86CodeGenerator();
+    v->init(root, x86generator);
     root->accept(v);
 	// TODO
 	// There may be a cleaner way to encapsulate this

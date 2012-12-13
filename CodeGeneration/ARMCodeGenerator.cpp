@@ -3,9 +3,11 @@
 
 ARMCodeGenerator::ARMCodeGenerator()
 {
+	allRegs.clear();	
+
 	instrTable[ALEA] = "lea"; /* Maybe not needed? */
 	instrTable[AMOVE] = "mov";
-	instrTable[ALDR] = "ldr" /* Additional ARM instruction */
+	instrTable[ALDR] = "ldr"; /* Additional ARM instruction */
 	instrTable[AMALLOC] = "malloc";
 	instrTable[ASUB] = "sub";
 	instrTable[AADD] = "add";
@@ -80,18 +82,18 @@ void ARMCodeGenerator::evalMove(string ret, string nxt) {
 		/* Is the next reg a register? i.e. mov [sp+4], r2 */
 		if(isReg(nxt)) {
 			
-			generator.printInstruction(APUSH, "r0, r1");
+			printInstruction(APUSH, "r0, r1");
 			text << "\tmov r0, " << addrReg << endl;
-			text << "\tstr " << r0 << ", ret" << endl;
-			generator.printInstruction(APOP, "r0, r1");
+			text << "\tstr r0, ret" << endl;
+			printInstruction(APOP, "r0, r1");
 		}
 
 		/* Okay, so next is immediate. Same as above but ldr the imm value. */
 		else {
-			generator.printInstruction(APUSH, "r2");
+			printInstruction(APUSH, "r2");
 			text << "\tldr r2, =" << nxt << endl;
-			evalMove(ret, r2);
-			generator.printInstruction(APOP, "r2");
+			evalMove(ret, "r2");
+			printInstruction(APOP, "r2");
 		}
 			
 		}
@@ -113,12 +115,11 @@ void ARMCodeGenerator::evalMove(string ret, string nxt) {
 			text << "\tldr " << ret << ", =" << nxt << endl;
 		}
 	}
-	}
 }
 
-void ARMCodeGenerator::isReg(string reg) {
-	return (nxt == "sp" || mov == "pc" || nxt == "r0" || nxt == "r12" ||
-				find(allRegs.begin(), allRegs.end(), nxt) != allRegs.end());
+int ARMCodeGenerator::isReg(string reg) {
+	return (reg == "sp" || reg == "pc" || reg == "r0" || reg == "r12" ||
+				find(allRegs.begin(), allRegs.end(), reg) != allRegs.end());
 }
 
 void ARMCodeGenerator::printInstruction(Instr instr, string reg) {
@@ -146,7 +147,7 @@ void ARMCodeGenerator::printData(string label, string size)
 
 void ARMCodeGenerator::printStringLitData(string label, string s)
 {
-	data << label << ":\n\t .asciz \"" s << "\"" << endl;
+	data << label << ":\n\t .asciz \"" << s << "\"" << endl;
 }
 
 void ARMCodeGenerator::printExtern()
@@ -158,19 +159,20 @@ void ARMCodeGenerator::printExtern()
 
 deque<string> ARMCodeGenerator::getAllGeneralRegs()
 {
-	deque<string> allRegs;
-	allRegs.clear();
-	allRegs.push_back("r1");
-	allRegs.push_back("r2");                                         
-	allRegs.push_back("r3");                                          
-	allRegs.push_back("r4");                                          
-	allRegs.push_back("r5");                                          
-	allRegs.push_back("r6");                                           
-	allRegs.push_back("r7");                                           
-	allRegs.push_back("r8");                                           
-	allRegs.push_back("r9");                                           
-	allRegs.push_back("r10");                                           
-	allRegs.push_back("r11");                                           
+	if(this->allRegs.empty()) {
+		allRegs.push_back("r1");
+		allRegs.push_back("r2");                                         
+		allRegs.push_back("r3");                                          
+		allRegs.push_back("r4");                                          
+		allRegs.push_back("r5");                                          
+		allRegs.push_back("r6");                                           
+		allRegs.push_back("r7");                                           
+		allRegs.push_back("r8");                                           
+		allRegs.push_back("r9");                                           
+		allRegs.push_back("r10");                                           
+		allRegs.push_back("r11");
+	}
+
 	return allRegs;
 }
 
@@ -239,9 +241,9 @@ void ARMCodeGenerator::printReturnFromProgram()
 void ARMCodeGenerator::comparePredicate(Instr instr, string res, string nxt)
 {
 	printInstruction(APUSH, "r0");
-	printInstruction(AMOVE, "r0", 0);
-	printInstruction(ACMP, res, next);
-	printInstruction(instr, res, 1);
+	printInstruction(AMOVE, "r0", "0");
+	printInstruction(ACMP, res, nxt);
+	printInstruction(instr, res, "1");
 	printInstruction(AMOVE, res, "r0");
 	printInstruction(APOP, "r0");
 }
