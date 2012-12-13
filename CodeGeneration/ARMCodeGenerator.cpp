@@ -69,6 +69,9 @@ void ARMCodeGenerator::printInstruction(Instr instr, string ret, string nxt)
 		case AMOVE:
 				evalMove(ret, nxt);
 			break;
+		case ASUB:
+				CodeGenerator::printInstruction(instr, ret, "#" + nxt);
+				break;
 		default:
 				CodeGenerator::printInstruction(instr, ret, nxt); 
 	}
@@ -77,14 +80,14 @@ void ARMCodeGenerator::printInstruction(Instr instr, string ret, string nxt)
 void ARMCodeGenerator::evalMove(string ret, string nxt) {
 	/* Is the first char of the return val a memory address? */
 	if(ret[0] == '[') {
-		string addrReg = nxt.substr(1, nxt.length()-1);
+		string addrReg = ret.substr(1, ret.length()-2);
 
 		/* Is the next reg a register? i.e. mov [sp+4], r2 */
 		if(isReg(nxt)) {
 			
 			printInstruction(APUSH, "r0, r1");
 			text << "\tmov r0, " << addrReg << endl;
-			text << "\tstr r0, " << ret << endl;
+			text << "\tstr " << nxt << ", [r0]" << endl;
 			printInstruction(APOP, "r0, r1");
 		}
 
@@ -103,6 +106,7 @@ void ARMCodeGenerator::evalMove(string ret, string nxt) {
 		/* Is nxt a register? */
 		if(isReg(nxt)) {
 			text << "\tmov " << ret << ", " << nxt << endl;
+			text << "\t@WE HAS REGISTER nxt" << endl;
 		}
 
 		/* Is nxt a memory access? */
@@ -284,4 +288,9 @@ void ARMCodeGenerator::generateInputFunction(string scanf, string addr)
 	text << "\tmov " << addr << ", rax\n";
 	text << "\tpop rax" << endl;                                      
 	text << "\tpop rdi" << endl;        
+}
+
+string ARMCodeGenerator::generateMemoryOffset(string reg, int numElements)
+{
+
 }

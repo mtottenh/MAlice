@@ -2,6 +2,7 @@
 #define _X86CODEGENERATOR_H_
 
 #include "CodeGenerator.hpp"
+#include <boost/lexical_cast.hpp>
 
 class x86CodeGenerator : public CodeGenerator
 {
@@ -23,6 +24,7 @@ using CodeGenerator::printInstruction;
 	void printHeapAllocationInstruction(string, string);
 	virtual void generateAccessInstruction(string, string, string, string);
 	virtual void generateInputFunction(string, string);
+	virtual string generateMemoryOffset(string, int) ;
 };
 
 #endif

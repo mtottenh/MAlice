@@ -22,6 +22,7 @@ protected:
 	stringstream data;
 	map<Instr, string> instrTable;
 	void printTab();
+	int wordSize;
 public:
 	CodeGenerator();
 	void printLabel(string);
@@ -44,6 +45,7 @@ public:
 	virtual void printHeapAllocationInstruction(string, string) = 0 ;
 	virtual void generateAccessInstruction(string, string, string, string) = 0 ;
 	virtual void generateInputFunction(string, string) = 0 ;
+	virtual string generateMemoryOffset(string, int) = 0;
 };
 
 #endif

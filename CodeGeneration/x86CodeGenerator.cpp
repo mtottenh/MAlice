@@ -3,6 +3,7 @@
 
 x86CodeGenerator::x86CodeGenerator()
 {
+	wordSize = 8;
 	instrTable[ALEA] = "lea";
 	instrTable[AMOVE] = "mov";
 	instrTable[AMALLOC] = "malloc";
@@ -225,3 +226,9 @@ void x86CodeGenerator::generateInputFunction(string scanf, string addr)
 	text << "\tpop rax" << endl;                                      
 	text << "\tpop rdi" << endl;        
 }
+
+string x86CodeGenerator::generateMemoryOffset(string reg, int elements)
+{
+	return "[" + reg + boost::lexical_cast<string>(elements * wordSize) + "]";
+}
+

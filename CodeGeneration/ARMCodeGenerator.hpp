@@ -28,6 +28,7 @@ using CodeGenerator::printInstruction;
 	void printHeapAllocationInstruction(string, string);
 	virtual void generateAccessInstruction(string, string, string, string);
 	virtual void generateInputFunction(string, string);
+	virtual string generateMemoryOffset(string, int);
 };
 
 #endif
