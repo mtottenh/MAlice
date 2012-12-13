@@ -4,6 +4,7 @@
 
 #include "ASTVisitor.hpp"
 #include "LabelMaker.hpp"
+#include "x86CodeGenerator.hpp"
 #include <deque>
 #include <vector>
 #include <queue>
@@ -30,7 +31,7 @@ protected:
     stringstream text; 
     stringstream data;
 	LabelMaker labelMaker;
-
+	x86CodeGenerator generator;
 	std::deque< std::deque<string> > callStackRegs;
     std::deque<string> freeRegs;
     std::deque<string> allRegs;
