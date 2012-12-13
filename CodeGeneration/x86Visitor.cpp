@@ -74,7 +74,11 @@ void x86Visitor::visit(NAssignment *node) {
 					storeAddr = getNextReg();
 					generator.printInstruction(AMOVE, "[" + storeAddr + "]",
 															value);
-				} else {
+				} else if (declarationNode->getType() == TSTRING)
+					{
+						declarationNode->setLabel(node->getChild(rval)->getLabel());
+					}
+				else {
 				/* check if in local or global scope */
 					if (nestingLevel == node->getLevel() || nestingLevel == 1) {
 							if (nestingLevel == 1)
