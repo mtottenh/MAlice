@@ -483,7 +483,6 @@ void GenericASTVisitor::visit(Node *node) {}
 void GenericASTVisitor::visit(NParamBlock *node) {
     unsigned int numChildren =  node->getChildrenSize();
     string label;
-    std::deque<string>::iterator it = allRegs.begin();
     /*
 	 * Push params onto the stack in reverse order so that the caller has 
 	 * access to the first paramater in the first position above its access
@@ -517,7 +516,6 @@ void GenericASTVisitor::visit(NParamDeclarationBlock *node) {
     unsigned int offset = 24;
 
     string label;
-    std::deque<string>::iterator it = allRegs.begin();
     /* Put params onto the stack */
     for (unsigned int i = 0; i < numChildren; i++) {
 		label = "[" + generator->getBasePointer() + "+";

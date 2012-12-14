@@ -166,7 +166,7 @@ void Node::accept(ASTVisitor* v) {
     cerr << "Generic Node" << endl;
     v->visit(this);
 }
-/* TODO - do something with this.... it might nto be needed*/
+
 int Node::getSize() {
     switch(this->getType()) {
         case TNUMBER:
