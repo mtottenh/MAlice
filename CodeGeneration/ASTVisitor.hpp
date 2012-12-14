@@ -1,5 +1,5 @@
-#ifndef _BASE_VISITOR_H_
-#define _BASE_VISITOR_H_
+#ifndef _AST_VISITOR_H_
+#define _AST_VISITOR_H_
 #include "../Node/NArrayAccess.hpp" 
 #include "../Node/NAssignment.hpp" 
 #include "../Node/NBinOp.hpp" 

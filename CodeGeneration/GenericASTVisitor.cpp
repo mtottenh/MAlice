@@ -4,106 +4,106 @@
 #include "../Node/NodeIncludes.hpp"
 #include "x86CodeGenerator.hpp"
 
-/* Register conventions -
- * RAX stores the result of any procedure or function
- * a function can have an arbitrary number of paramters which are stored on the
- * stack in reverse order
- */
-
 string convertInt(int);
-
 
 GenericASTVisitor::GenericASTVisitor() : labelMaker() {
     offset = 0;
 }
 
-
-void GenericASTVisitor::printRegDeq(std::deque<string> regs) {
-       
-    std::deque<string>::iterator it = regs.begin();
-    int i = 0;
-    for (; it != regs.end(); it++) {
-        cerr << "index[" << i << "]: " << *it << endl;
-        i++;
-    }
-}
-
 void GenericASTVisitor::visit(NArrayAccess *node) {
-    cerr << "Node: Array Access" << endl;
-    Node* offsetExp = node->getChild(1);
+	Node* offsetExp = node->getChild(1);
     Node* arrName = node->getTable()->lookup(node->getChild(0)->getID());
-    offsetExp->accept(this);
+    /*
+	 * Evaluate the offset and get its value from the register at the
+	 * front of the free list.
+	 */
+	offsetExp->accept(this);
     string offset = getNextReg();
     string addrReg = getNextReg();
     string result = getNextReg();
 
+	/*
+	 * Delegate to the code generator to create an array access 
+	 * instruction 
+	 */
 	generator->generateAccessInstruction(addrReg, offset, result,
 												arrName->getLabel());
 
+	/* Restore the registers to the free list */
 	restoreStore(offset);
 	restoreStore(addrReg);
 	restoreStore(result);
-
-    cerr << "End: Array Access" << endl;   
-
 }
 
 void GenericASTVisitor::visit(NAssignment *node) {
-			cerr << "Node: Assignment" << endl;
-			int rval = node->getChildrenSize() - 1;
-			int lval = rval-1;
-			string storeAddr;
-			node->getChild(rval)->accept(this);
-			string value = getNextReg();
-			if (node->getChildrenSize() > 1) {
-				Node* leftChildID = node->getChild(lval);
-				Node* declarationNode = node->getTable()->lookup(leftChildID->getID());
-				int nestingLevel = declarationNode->getLevel();
-				int numJumps = node->getLevel() - nestingLevel;
-				string label = declarationNode->getLabel();
-
-				if (declarationNode->getType() == REFNUMBER ||
-					declarationNode->getType() == REFCHAR) {
-					leftChildID->accept(this);
-					storeAddr = getNextReg();
-					generator->printInstruction(AMOVE, "[" + storeAddr + "]",
-															value);
-				} else if (declarationNode->getType() == TSTRING)
-					{
-						declarationNode->setLabel(node->getChild(rval)->getLabel());
+	int rval = node->getChildrenSize() - 1;
+	int lval = rval-1;
+	string storeAddr;
+	/* Evaluate the rval and get the result from the front of the free regs */
+	node->getChild(rval)->accept(this);
+	string value = getNextReg();
+	/* If it isn't a dummy assignment for procedure calls */
+	if (node->getChildrenSize() > 1) {
+		/*
+		 * Get the declaration node, work out its nesting level and the
+		 * difference in nesting level from the assignment so that we can
+		 * follow access links to its place on the stack.
+		 */
+		Node* leftChildID = node->getChild(lval);
+		Node* declarationNode = node->getTable()->lookup(leftChildID->getID());
+		int nestingLevel = declarationNode->getLevel();
+		int numJumps = node->getLevel() - nestingLevel;
+		string label = declarationNode->getLabel();
+		/*
+		 * If the declaration was a reference then we need to get the value
+		 * from the address.
+		 */
+		if (declarationNode->getType() == REFNUMBER ||
+			declarationNode->getType() == REFCHAR) {
+			/*
+			 * Evaluate the left child, get its result reg from the free 
+			 * list. 
+			 */
+			leftChildID->accept(this);
+			storeAddr = getNextReg();
+			/* Move the value into the the address pointed to by storeAddr */
+			generator->printInstruction(AMOVE, "[" + storeAddr + "]", value);
+			} else if (declarationNode->getType() == TSTRING) {
+				/* 
+				 * Set the label to point to the string lit declared in the
+				 * data section.
+				 */
+				declarationNode->setLabel(node->getChild(rval)->getLabel());
+			} else {
+				/* Check if in local or global scope */
+				if (nestingLevel == node->getLevel() || nestingLevel == 1) {
+					/* If global just use data from label section. */
+					if (nestingLevel == 1)
+						label = "[" + label + "]";
+					generator->printInstruction(AMOVE, label, value);
+				} else {
+					generator->printInstruction
+							(APUSH, generator->getBasePointer());
+					while(numJumps > 0) {
+					/* Follow the access link back overwriting rbp */
+						string bp = generator->getBasePointer();
+						generator->printInstruction
+								(AMOVE, bp, "[" + bp + "+16" + "]");
+						numJumps--;
 					}
-				else {
-				/* check if in local or global scope */
-					if (nestingLevel == node->getLevel() || nestingLevel == 1) {
-							if (nestingLevel == 1)
-								label = "[" + label + "]";
-							generator->printInstruction(AMOVE, label, value);
-					} else {
-						/* push rbp */
-						generator->printInstruction(APUSH, generator->getBasePointer());
-					/* TODO :- write an assembly loop to stop generated code being bad */
-						while(numJumps > 0) {
-						/* follow the access link back overwriting rbp */
-							string bp = generator->getBasePointer();
-							generator->printInstruction(AMOVE, bp, "[" + bp + "+16" + "]");
-							numJumps--;
-						}
-						/* mov from label into freeRegs.front() */
-						generator->printInstruction(AMOVE, label, value);
-						/* pop rbp */
-						generator->printInstruction(APOP, generator->getBasePointer());
+					/* Mov the result into the correct location. */
+					generator->printInstruction(AMOVE, label, value);
+					/* pop rbp */
+					generator->printInstruction
+						(APOP, generator->getBasePointer());
+					}
 				}
-			}}
+			}
 			restoreStore(storeAddr);
 			restoreStore(value);
-			
-			cerr << "End: Assignment" << endl;
 		}
-		/* TODO: still need to implement a register saving mechanism 
-		 * maybe paramerterise visit with a list of reg's it can use
-		 * like the tutorial.
-		 */
-		void GenericASTVisitor::generateBinOpInstr(int op, string returnReg, string nxtReg) {
+void GenericASTVisitor::generateBinOpInstr(int op, string returnReg, string nxtReg) 
+{
 			switch(op) {
 				case OR:
 				case LOR:
@@ -154,13 +154,11 @@ void GenericASTVisitor::visit(NAssignment *node) {
 void GenericASTVisitor::visit(NBinOp *node) {
     string resultReg, nxtReg;
     if (node->getChild(0)->getWeight() > node->getChild(1)->getWeight()) {
-        printRegDeq(freeRegs);
         node->getChild(0)->accept(this);
         resultReg = getNextReg();
         node->getChild(1)->accept(this);
         nxtReg = getNextStore();
     } else {
-        printRegDeq(freeRegs);
         node->getChild(1)->accept(this);
         nxtReg = getNextStore();
         node->getChild(0)->accept(this);
@@ -471,7 +469,6 @@ void GenericASTVisitor::visit(NParamBlock *node) {
 		}
         generator->printInstruction(APUSH, reg);  
     }
-    printRegDeq(freeRegs);
     cerr << "End: Param Block " << endl;
 }
 /* labels paramaters as in registers or on stack */
@@ -492,7 +489,6 @@ void GenericASTVisitor::visit(NParamDeclarationBlock *node) {
     string label;
     std::deque<string>::iterator it = allRegs.begin();
     unsigned int i = 0;
-    printRegDeq(freeRegs);
     /* put params onto the stack */
     for (; i < numChildren; i++) {
 		label = "[" + generator->getBasePointer() + "+";
@@ -728,7 +724,6 @@ void GenericASTVisitor::unfoldedFunctionVisitor(NFunctionDeclaration* node) {
     freeRegs = allRegs;
 	    this->ret();
     cerr << "\n*Unfolded: " << node->getID() << "*" << endl;
-    printRegDeq(freeRegs);
 }
 
 void GenericASTVisitor::init(Node* root, CodeGenerator* gen) {
@@ -816,7 +811,6 @@ void GenericASTVisitor::pushRegs() {
     callStackRegs.push_front(freeRegs);
     freeRegs = allRegs;
     cerr << "\t\t**New freeRegs deque**" << endl;
-    printRegDeq(freeRegs);
 }
 
 /* Pops registers that are 'in use' */
