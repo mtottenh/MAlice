@@ -1,7 +1,6 @@
 #include "NStatementList.hpp"
 #include "TypeDefs.hpp"
 #include "../CodeGeneration/ASTVisitor.hpp"
-/* TODO Check grammar.y and see if this is needed */
 NStatementList::NStatementList() 
 { 
 	name = "StatList"; 

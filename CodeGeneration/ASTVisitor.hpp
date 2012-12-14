@@ -1,5 +1,5 @@
-#ifndef _BASE_VISITOR_H_
-#define _BASE_VISITOR_H_
+#ifndef _AST_VISITOR_H_
+#define _AST_VISITOR_H_
 #include "../Node/NArrayAccess.hpp" 
 #include "../Node/NAssignment.hpp" 
 #include "../Node/NBinOp.hpp" 
@@ -26,9 +26,15 @@
 #include "../Node/NStringLit.hpp" 
 #include "../Node/NUnaryOp.hpp" 
 #include "../Node/NVariableDeclaration.hpp"
+#include "CodeGenerator.hpp"
  
 class ASTVisitor {
-public:    
+protected:
+	CodeGenerator *generator;
+public:  
+	virtual string getAssembly() = 0; 
+	virtual void generateFunctionDefinitions() = 0;
+	virtual void init(Node*, CodeGenerator*) = 0;
     virtual void visit(NArrayAccess*) = 0;
     virtual void visit(NAssignment*) = 0;
     virtual void visit(NBinOp*) = 0;

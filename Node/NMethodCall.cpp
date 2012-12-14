@@ -37,8 +37,8 @@ int NMethodCall::getType() {
 	return resolveType();
 }
 
-/* TODO refactor this check function
- */
+
+
 int NMethodCall::check() {
 	int isValid = 1;
 

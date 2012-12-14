@@ -12,7 +12,7 @@ NStringLit::NStringLit(char* literal) {
 	this->type = resolveType();
 	this->name = literal;
 	this->weight = -1;
-	if (name.find("\\n") != -1)
+	if (name.find("\\n") != name.npos)
 		name.replace(name.find("\\n"), 2, "\", 0xA, \"");
 }
 
@@ -27,7 +27,6 @@ int NStringLit::resolveType() {
 }
 
 void NStringLit::accept(ASTVisitor *v) {
-    cerr << "Node: String Literal" << endl;
     v->visit(this);
 }
 

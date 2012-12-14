@@ -10,7 +10,7 @@ NFunctionDeclaration::NFunctionDeclaration() {
 
 /* Declaring a procedure with no arguments */
 NFunctionDeclaration::NFunctionDeclaration (NIdentifier* ID, Node *block) {
-        this->type = VOID;
+    this->type = VOID;
     children.push_back(block);
     name = ID->getID(); 
     nodeType = PROCEDURE;
@@ -48,9 +48,6 @@ NFunctionDeclaration::NFunctionDeclaration (NIdentifier* ID,
     delete ID;
 }
 
-/* TODO remove print and gettype
- * these should be inherited from Node anyway
- */
 int NFunctionDeclaration::print() const {
     cout << name ;                                                   
     return 1;                                                        
@@ -170,10 +167,7 @@ std::deque<Node *>  NFunctionDeclaration::returnNodeList(Node* statlist) {
 }
 
 void NFunctionDeclaration::accept(ASTVisitor* v) {
-	cerr << "Name: Functoin Declaration Node" << endl;
     v->visit(this);
 }
-
-/* TODO  finish check function */
 
 #endif

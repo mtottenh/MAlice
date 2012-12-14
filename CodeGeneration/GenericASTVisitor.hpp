@@ -1,6 +1,5 @@
-#ifndef _X86_VISITOR_
-#define _X86_VISITOR_
-
+#ifndef _GENERIC_AST_VISITOR_
+#define _GENERIC_AST_VISITOR_
 
 #include "ASTVisitor.hpp"
 #include "LabelMaker.hpp"
@@ -8,20 +7,19 @@
 #include <vector>
 #include <queue>
 #include <sstream>
-class x86Visitor : public ASTVisitor {
+
+class GenericASTVisitor : public ASTVisitor {
 private:
-    void printRegDeq(std::deque<string>);
     string getReg(int);
+   	string getNextReg();
+	string getNextStore();
 	void comparePredicate(string, string, string);
 	void generateBinOpInstr(int, string, string);
 	void pushRegs();
 	void popRegs();
-
     void createSubroutine(string);
     void deallocVar();
     void ret();
-   	string getNextReg();
-	string getNextStore();
 	void unfoldedFunctionVisitor(NFunctionDeclaration*);
 	void restoreStore(string);
 	void restoreStore();
@@ -30,15 +28,13 @@ protected:
     stringstream text; 
     stringstream data;
 	LabelMaker labelMaker;
-
 	std::deque< std::deque<string> > callStackRegs;
     std::deque<string> freeRegs;
     std::deque<string> allRegs;
 	std::deque<string> regsToRestore;
-
 	std::queue<NFunctionDeclaration*> funcDecQueue;
 public:
-    x86Visitor();
+    GenericASTVisitor();
     virtual void visit(NArrayAccess*);
     virtual void visit(NAssignment*);
     virtual void visit(NBinOp*);
@@ -65,10 +61,9 @@ public:
     virtual void visit(NStringLit*);
     virtual void visit(NUnaryOp*);
     virtual void visit(NVariableDeclaration*);
-    void init(Node*); 
+    void init(Node*, CodeGenerator*); 
 	void generateFunctionDefinitions();
-	 string getAssembly();
-
+	string getAssembly();
 };
 
 #endif

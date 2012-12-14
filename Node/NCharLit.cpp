@@ -35,7 +35,6 @@ int NCharLit::calculateWeight() {
 }
 
 void NCharLit::accept(ASTVisitor *v) {
-	cerr << "Node: Character Literal" << endl;
 	v->visit(this);
 }
 
