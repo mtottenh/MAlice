@@ -52,6 +52,27 @@ void TreeOptimiser::visit(NAssignment *node){
                          node->removeChild(1);
                          node->addChild(replacement);
                         break;
+
+
+                    case MULT:
+                    replacement = new NInteger( ((NInteger *)lexp)->getValue() 
+                                            * ((NInteger *)rexp)->getValue());
+                         node->removeChild(1);
+                         node->addChild(replacement);
+                        break;
+                    case DIV:
+                    replacement = new NInteger( ((NInteger *)lexp)->getValue() 
+                                            / ((NInteger *)rexp)->getValue());
+                         node->removeChild(1);
+                         node->addChild(replacement);
+                        break;
+                    case MOD:
+                    replacement = new NInteger( ((NInteger *)lexp)->getValue() 
+                                            % ((NInteger *)rexp)->getValue());
+                         node->removeChild(1);
+                         node->addChild(replacement);
+                        break;
+
                }
 
            }
