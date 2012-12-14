@@ -118,6 +118,7 @@ int NAssignment::check() {
 			if(!compareTypes(lhsType, rhsType)) {
 				printErrorHeader("assignment");
 				error_type_mismatch(lvalID, lhsType, rhsType);
+                isValid = 0;
 			}
 			
 		}

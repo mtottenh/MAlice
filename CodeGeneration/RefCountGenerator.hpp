@@ -1,40 +1,15 @@
-#ifndef _GENERIC_AST_VISITOR_
-#define _GENERIC_AST_VISITOR_
+#ifndef _REF_COUNT_GEN__
+#define _REF_COUNT_GEN__
+
 
 #include "ASTVisitor.hpp"
-#include "LabelMaker.hpp"
-#include <deque>
-#include <vector>
-#include <queue>
-#include <sstream>
 
-class GenericASTVisitor : public ASTVisitor {
+
+class RefCountGenerator : public ASTVisitor {
 private:
-    string getReg(int);
-   	string getNextReg();
-	string getNextStore();
-	void comparePredicate(string, string, string);
-	void generateBinOpInstr(int, string, string);
-	void pushRegs();
-	void popRegs();
-    void createSubroutine(string);
-    void deallocVar();
-    void ret();
-	void unfoldedFunctionVisitor(NFunctionDeclaration*);
-	void restoreStore(string);
-	void restoreStore();
-protected:
-    int offset;
-    stringstream text; 
-    stringstream data;
-	LabelMaker labelMaker;
-	std::deque< std::deque<string> > callStackRegs;
-    std::deque<string> freeRegs;
-    std::deque<string> allRegs;
-	std::deque<string> regsToRestore;
-	std::queue<NFunctionDeclaration*> funcDecQueue;
+
 public:
-    GenericASTVisitor();
+    RefCountGenerator();
     virtual void visit(NArrayAccess*);
     virtual void visit(NAssignment*);
     virtual void visit(NBinOp*);
@@ -61,9 +36,8 @@ public:
     virtual void visit(NStringLit*);
     virtual void visit(NUnaryOp*);
     virtual void visit(NVariableDeclaration*);
-    void init(Node*, CodeGenerator*); 
-	void generateFunctionDefinitions();
-	 string getAssembly();
+    void init(Node*, CodeGenerator*){};
+    void generateFunctionDefinitions(){}
 
 };
 

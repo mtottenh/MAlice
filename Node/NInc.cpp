@@ -13,7 +13,7 @@ NInc::NInc(Node* child) {
 /* Public methods. */
 
 int NInc::check() {
-	int isValid;
+	int isValid = 1;
 
 	/* Get the type of the node. */
 	this->type = resolveType();

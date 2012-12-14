@@ -13,7 +13,7 @@ NDec::NDec(Node* child) {
 /* Public methods. */
 
 int NDec::check() {
-	int isValid;
+	int isValid = 1;
 
 	/* Get the type of the node. */
 	this->type = resolveType();

@@ -14,6 +14,8 @@
 #include "CodeGeneration/x86CodeGenerator.hpp"
 #include "CodeGeneration/ARMCodeGenerator.hpp"
     
+#include "CodeGeneration/RefCountGenerator.hpp"
+#include "CodeGeneration/TreeOptimiser.hpp"
     
 extern int yylex();
 extern void yylex_destroy();
@@ -480,7 +482,6 @@ int main(int argc, char* argv[]) {
 	SymbolTableGenerator s(root);
 	/* Generate symbol table. */
 	int isValid = s.generateTable();
-
 	// Print the AST if debug flag enabled
 	if(argc >= 3 && strcmp(argv[2], "-d") == 0) {
 		cout << endl << "##### Printing AST via TreePrinter #####" << endl;
@@ -493,6 +494,9 @@ int main(int argc, char* argv[]) {
 
 	//Check that the AST is semantically valid.
 	isValid &= root->check();
+    if (!isValid) {
+        return EXIT_FAILURE;
+    }
     /* generate code using x86Visitor*/
     ASTVisitor *v = new GenericASTVisitor();
 	CodeGenerator *generator;
@@ -507,6 +511,11 @@ int main(int argc, char* argv[]) {
 	else {
 		generator = new x86CodeGenerator();
 	}
+
+    RefCountGenerator *rc = new RefCountGenerator();
+    TreeOptimiser *t = new TreeOptimiser();
+    root->accept(rc);
+    root->accept(t);
 
     v->init(root, generator);
     root->accept(v);

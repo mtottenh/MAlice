@@ -32,7 +32,7 @@ class ASTVisitor {
 protected:
 	CodeGenerator *generator;
 public:  
-	virtual string getAssembly() = 0; 
+	//virtual string getAssembly() = 0; 
 	virtual void generateFunctionDefinitions() = 0;
 	virtual void init(Node*, CodeGenerator*) = 0;
     virtual void visit(NArrayAccess*) = 0;
@@ -61,6 +61,7 @@ public:
     virtual void visit(NStringLit*) = 0;
     virtual void visit(NUnaryOp*) = 0;
     virtual void visit(NVariableDeclaration*) = 0;
+    virtual string getAssembly(){ return "";};
 };
 
 #endif

@@ -1,6 +1,7 @@
 #include "ARMCodeGenerator.hpp"
-#include "../Node/NodeIncludes.hpp"
 #include <boost/lexical_cast.hpp>
+
+#include "../Node/NodeIncludes.hpp"
 
 ARMCodeGenerator::ARMCodeGenerator()
 {

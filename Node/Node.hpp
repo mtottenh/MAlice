@@ -64,6 +64,9 @@ protected:
 
 	/* Field for the weight of the node (number of registers required). */
 	int weight; 
+    
+    /* reference count used for code optimisation */
+    int refCount;
 
 	/* Calculate the weight of the node. */
 	virtual int calculateWeight();
@@ -118,6 +121,8 @@ public:
 	int isRoot();
     /* sets the node to be the root node */
     int setRoot();
+    /* remove child */
+    void removeChild(int);
 	/*
 	 * Checks whether the node has an associated symbol table. Returns
 	 * SUCCESS if one exists, FAILURE otherwise.
@@ -178,6 +183,9 @@ public:
     int getSize();
 	/* returns the 'nesting level' of the node */
 	int getLevel();
+    /* getters and setters for the reference count */
+    int getRefCount();
+    void incRefCount();
 };
 
 #endif
