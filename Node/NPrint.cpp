@@ -47,6 +47,5 @@ int NPrint::check() {
 
 
 void NPrint::accept(ASTVisitor *v) {
-    cerr << "Node: Print" << endl;
     v->visit(this);
 }
