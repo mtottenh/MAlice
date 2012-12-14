@@ -28,6 +28,8 @@ ARMCodeGenerator::ARMCodeGenerator()
 	instrTable[ACALL] = "bl";
 	instrTable[ANEG] = "neg";
 	instrTable[ANOT] = "mvn";
+	instrTable[AMOD] = "mod";
+	instrTable[ADIV] = "div";
 	instrTable[ARET] = "ret"; /* Not needed - no ret in ARM! */
 	instrTable[SETE] = "moveq";
 	instrTable[SETLE] = "movle";
@@ -41,35 +43,9 @@ void ARMCodeGenerator::printInstruction(Instr instr, string ret, string nxt)
 {
 	switch(instr)	
 	{
-		case ADIV:
-				text << "\tpush rax" << endl;                              
-				text << "\tpush rdx" << endl;                             
-				/* not sure if rax or rdx... see intel documentation */
-				text << "\txor rdx, rdx" << endl;
-				text << "\tmov " << "rax, " << ret << endl;
-				text << "\tcqo" << endl;
-				text << "\tidiv " << nxt << endl;
-				/* quotient lives in rax, move to resultReg */
-				text << "\tmov " << ret << ", rax" << endl;
-				text << "\tpop rdx" << endl;
-				text << "\tpop rax" << endl;         
-			break;
-		case AMOD:
-				text << "\tpush rax" << endl;                              
-				text << "\tpush rdx" << endl;                             
-				/* not sure if rax or rdx... see intel documentation */
-				text << "\txor rdx, rdx" << endl;
-				text << "\tmov " << "rax, " << ret << endl;
-				text << "\tcqo" << endl;
-				text << "\tidiv " << nxt << endl;
-				/* quotient lives in rax, move to resultReg */
-				text << "\tmov " << ret << ", rdx" << endl;
-				text << "\tpop rdx" << endl;
-				text << "\tpop rax" << endl;
-			break;
 		case AMOVE:
 				evalMove(ret, nxt);
-			break;
+				break;
 		case ASUB:
 				CodeGenerator::printInstruction(instr, ret, "#" + nxt);
 				break;
@@ -107,7 +83,6 @@ void ARMCodeGenerator::evalMove(string ret, string nxt) {
 		/* Is nxt a register? */
 		if(isReg(nxt)) {
 			text << "\tmov " << ret << ", " << nxt << endl;
-			text << "\t@WE HAS REGISTER nxt" << endl;
 		}
 
 		/* Is nxt a memory access? */
@@ -152,7 +127,7 @@ void ARMCodeGenerator::printData(string label, string size)
 
 void ARMCodeGenerator::printStringLitData(string label, string s)
 {
-	data << label << ":\n\t .asciz \"" << s << "\"" << endl;
+	data << label << ":\n\t .asciz " << s << endl;
 }
 
 void ARMCodeGenerator::printExtern()
