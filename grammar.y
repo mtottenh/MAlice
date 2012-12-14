@@ -555,6 +555,7 @@ int main(int argc, char* argv[]) {
     }
 	//Finish up with a bit of memory management.
 	delete root;
+	delete generator;
     delete v;
 	fclose(input);
 	yylex_destroy();

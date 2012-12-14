@@ -10,7 +10,7 @@ NFunctionDeclaration::NFunctionDeclaration() {
 
 /* Declaring a procedure with no arguments */
 NFunctionDeclaration::NFunctionDeclaration (NIdentifier* ID, Node *block) {
-        this->type = VOID;
+    this->type = VOID;
     children.push_back(block);
     name = ID->getID(); 
     nodeType = PROCEDURE;
@@ -170,10 +170,7 @@ std::deque<Node *>  NFunctionDeclaration::returnNodeList(Node* statlist) {
 }
 
 void NFunctionDeclaration::accept(ASTVisitor* v) {
-	cerr << "Name: Functoin Declaration Node" << endl;
     v->visit(this);
 }
-
-/* TODO  finish check function */
 
 #endif

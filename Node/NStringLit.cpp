@@ -27,7 +27,6 @@ int NStringLit::resolveType() {
 }
 
 void NStringLit::accept(ASTVisitor *v) {
-    cerr << "Node: String Literal" << endl;
     v->visit(this);
 }
 

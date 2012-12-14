@@ -5,6 +5,7 @@
 x86CodeGenerator::x86CodeGenerator()
 {
 	wordSize = 8;
+	/* Initialises a default map of instructions to assembly */
 	instrTable[ALEA] = "lea";
 	instrTable[AMOVE] = "mov";
 	instrTable[AMALLOC] = "malloc";
