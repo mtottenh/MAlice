@@ -5,8 +5,7 @@ TreeOptimiser::TreeOptimiser() {
 }
 
 void TreeOptimiser::visit(NArrayAccess *node){
-    for (int i = 0; i < node->getChildrenSize(); i++)
-    {
+    for (int i = 0; i < node->getChildrenSize(); i++) {
         node->getChild(i)->accept(this);
     }
 
@@ -25,8 +24,7 @@ void TreeOptimiser::visit(NCharLit *node){
 }
 
 void TreeOptimiser::visit(NCodeBlock *node){
-    for (int i = 0; i < node->getChildrenSize(); i++)
-    {
+    for (int i = 0; i < node->getChildrenSize(); i++) {
         node->getChild(i)->accept(this);
     }
 
@@ -42,8 +40,8 @@ void TreeOptimiser::visit(NDec *node){
 
 void TreeOptimiser::visit(NDeclarationBlock *node){
     int i = 0;
-    for (; i < node->getChildrenSize(); i++)
-    {
+    int size = node->getChildrenSize();
+    while(i < size) {
         
         Node *child = node->getChild(i);
         cerr << "Testing Node[" << i << "] : " << child->getID() << endl;
@@ -60,13 +58,18 @@ void TreeOptimiser::visit(NDeclarationBlock *node){
                          << " removed from AST\n";   
                     node->removeChild(i);
                     i = 0;
+                } else {
+                    i++;
                 }
                 break;
             default:
-                cerr << "node is not a function, continuing" << endl;
+                cerr << "Node is not a function, continuing" << endl;
+                i++;
                 
         }
-        cerr << "Node children count : " << node->getChildrenSize() << endl;
+        size = node->getChildrenSize();
+
+        cerr << "Node children count : " << size << endl;
         cerr << "value of index: " << i << endl;
 
     }
@@ -78,20 +81,8 @@ void TreeOptimiser::visit(NEndIf *node){
 }
 
 void TreeOptimiser::visit(NFunctionDeclaration *node){
-    for (int i = 0; i < node->getChildrenSize(); i++)
-    {
+    for (int i = 0; i < node->getChildrenSize(); i++) {
         node->getChild(i)->accept(this);
-        switch(node->getChild(i)->getNodeType()) {
-            case FUNC:
-            case PROCEDURE:
-                cerr << "Testing function for removal candidate in Func Dec Node\n";
-                if (node->getChild(i)->getRefCount() == 0 && node->getChild(i)->getID() != "hatta") {
-                    cerr << "Function: "<< node->getChild(i)->getID() << " removed from AST\n";   
-                    node->removeChild(i);
-
-                }
-
-        }
 
     }
 
@@ -150,17 +141,6 @@ void TreeOptimiser::visit(NStatementList *node){
     for (int i = 0; i < node->getChildrenSize(); i++)
     {
         node->getChild(i)->accept(this);
-        switch(node->getChild(i)->getNodeType()) {
-            case FUNC:
-            case PROCEDURE:
-                cerr << "Testing function for removal candidate\n";
-                if (node->getChild(i)->getRefCount() == 0 && node->getChild(i)->getID() != "hatta") {
-                    cerr << "Function: "<< node->getChild(i)->getID() << " removed from AST\n";   
-                    node->removeChild(i);
-
-                }
-
-        }
     }
 
 }
