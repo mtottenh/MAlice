@@ -1,0 +1,215 @@
+\documentclass[a4wide, 11pt]{article}
+\usepackage{a4, fullpage}
+\usepackage{graphicx}
+\usepackage{verbatim}
+\usepackage[margin=1.0in]{geometry}
+\setlength{\parskip}{0.3cm}
+\setlength{\parindent}{0cm}
+\newcommand{\tab}{\hspace*{2em}}
+
+\begin{document}
+
+\begin{center}
+{\huge MAlice Report} \\ [0.4cm]
+{\large Sean Allan, Max Tottenham and Mitchell Allison} \\ [0.2cm]
+\vspace{1cm}
+\end{center}
+
+% sections as given in the spec.
+\section{The Product}
+The compiler the group has produced takes code written in the MAlice language
+and produces x86-64 assembly code, as well as calling \emph{nasm} and \emph{gcc}
+to produce an executable binary. If the compiler is ran with the \texttt{-arm} 
+flag then, as part of the extension, an assembly file with extension 
+\texttt{.arm} is produced containing code targetted at the ARM architecture.
+
+The group ensured at every stage of development that the product produced
+was functionally correct and matched the specification. After completion of
+Milestone 2, the parser and semantic analysis components were tested against
+all test cases, as well as some custom written test files, to ensure invalid
+code raised the appropriate error messages. After completion of Milestone 3, it
+was also ensured that the assembly code produced led to the correct result 
+for most test cases, with the group fixing bugs and issues where appropriate.
+
+Despite this, however, a minority of test cases 
+(\texttt{bubbleSort.alice} and \texttt{vectorFunctions.alice}) do
+not pass. The group made every effort to correct the bugs that caused these
+tests to perform incorrectly and prevent segmentation faults, but due to time
+constraints, this was not possible. Both of these cases fail due to an 
+incomplete implementation of array handling. Additionally, as part of the
+extension, the generated ARM code is not fully correct. This is discussed
+in further detail in Section 3.
+
+Due to decisions made in regard to design, discussed further in the next
+section, the group ensured the product performed efficiently. The language
+choice for the project, C++, helps to promote such efficiency, and the group
+also made an effort to prevent memory leaks and free memory where required. 
+Additionally, for each data structure used, the team considered what would be
+best for the situation, such as choosing between a \emph{std::vector} or a
+\emph{std::deque}. Finally, we made use of design patterns such as the visitor
+pattern to aid further extensions and provide a solid base for future work.
+
+\section{The Design Choices}
+
+\subsection{Language Choice - C++}
+The majority of the project was implemented using the C++ language. This
+decision was made due to many advantages C++ offers - most of the speed and
+efficiency of the C language with the addition of useful data structures such
+as \emph{std::deque}s. The group did consider other languages, such as Java (as
+recommended in the specification), but decided that the benefits of speed and
+low level operations outweighed Java's advantages (e.g. garbage collection) in
+this instance. A small amount of C is also used in order to better interface
+with the Flex and Bison tools we used, described below.
+
+\subsection{Parser - Flex and Bison}
+
+When implementation began during Milestone 2, the group carefully considered
+many options for lexical analysis and parser generation. The choice for making 
+use of tools for this milestone was made due to the difficulty associated with
+creating a parser generator for an LALR grammar. After looking at the
+pros and cons of many packages, \emph{Flex} was chosen for lexical analysis
+and \emph{Bison} chosen as the parser generator. This decision was made as 
+these two packages are arguably the most stable and well documented tools for 
+aiding in the creation of a compiler front end.
+
+\subsection{Code Generation - Visitor Pattern}
+
+For the code generation stage of the project, the visitor pattern was used, 
+seperating the logic of code generation from the nodes contained within the
+abstract syntax tree. For the generation of x86-64 code, the \texttt{x86CodeGenerator}
+class calls \texttt{accept} on the root node of the abstract syntax tree, which
+in turn calls the the visitor's \texttt{visit} function on itself (to match
+the required specialisation of the node type). From there, the visitor decides
+which nodes to visit next, generating code for each node in the correct order. 
+
+To support future development, \texttt{x86CodeGenerator} extends a base class,
+\texttt{CodeGenerator}, which in turn makes use of a generic \texttt{ASTVisitor}
+As part of the extension, the \texttt{ARMCodeGenerator} class was
+created that also extends this base class. The use of the visitor pattern
+would greatly increase the ease of adding a new code generator for an additional
+target language. This is discussed in further detail in Section 3.
+
+\subsection{Linking with the C Standard Library}
+Initially, the group made use of native Linux system calls for functions such
+as printing to \texttt{stdout} and taking user input from \texttt{stdin}. 
+However, this proved difficult and was prone to errors and bugs, and also
+the group realised that this was detrimental to portability - the system calls
+would be different on other platforms, such as Windows. Due to this, the 
+decision was made to make use of C library functions. The MAlice compiler links,
+via \emph{gcc}, with the C library and makes use of \texttt{printf} for output
+and \texttt{scanf} for input. \texttt{malloc} is also used to allocate memory
+on the heap for dynamically-allocated arrays, where the size of the array
+cannot be known at compile time. 
+
+Additionally, at the end of a MAlice assembly program, the C \texttt{exit} 
+method is called rather than an exit system call. This ensures that 
+\texttt{stdout} and \texttt{stderr} correctly have their buffers cleared at the
+end of execution of the MAlice program.
+
+\subsection{Future Work}
+
+Although the group considered very heavily the design and how classes would
+interact throughout Milestone 3, more could have been done during Milestone 2.
+The group was perhaps a little too quick to begin writing code without 
+considering how classes and objects would interact, and this led to the team 
+running into problems that cost time. A future improvement to increase 
+productivity would be to draw UML diagrams or class diagrams and to write
+pseudocode in order to identify design issues before they occur in code.
+
+Moreover, further consideration could be given to how MAlice stores data. 
+Currently, for ease of code generation in x86-64, all variables are given
+64 bits of storage, regardless of whether the variable contains a character,
+number, or string. This is wasteful of memory at runtime. Additionally, in the
+ARM extension (again, for ease of code generation), all variables are given
+32 bits of storage. This introduces inconsistencies that may hinder a MAlice
+developer who chose to use our compiler.
+
+Finally, a potential area for future improvement could be to make use of
+\emph{LLVM}. The use of this tool would allow the group to produce highly
+optimised assembly code beyond the simple optimisations completed in the time
+available. The use of LLVM would also give the group experience in a tool that
+would likely be used in industry in compiler creation.
+
+\section{Beyond the Specification}
+
+\subsection{Optimisations}
+
+\subsubsection{Binary Operators - Weight Function}
+
+When a binary operator node has its code generated, a weight function is used
+in order to enforce efficient use of registers. Each node is given a weight,
+which represents the number of registers required to evaluate and store the
+result of the computation. For example, constants and identifiers require a 
+single register to store, hence they have a weight of 1. In a binary operator
+expression, the weight function calculates how many registers will be required 
+to evaluate each subexpression. It is then the job of the code generator to 
+evaluate the expression with the largest weight first in order allow it one more
+register than its companion.
+
+\subsubsection{Tree Optimisations}
+
+Another optimisation the group implemented was to identify unreachable MAlice 
+methods. This is done prior to code generation in the abstract syntax tree,
+and prevents unnecessary code being produced in the assembly file. This makes
+the compiler more efficient, as well as leading to smaller executable file
+sizes.
+
+\subsection{Refactored Visitor Pattern and ARM Code Generation}
+
+For the extension, the group split the \texttt{ASTVisitor} base class into two
+seperate classes. It became apparent when considering extending the project to
+support another target language that there would be a significant amount of 
+code duplication between the visitor class for x86 and other platforms. 
+Therefore, \texttt{ASTVisitor} was converted from an interface to a base class. 
+The functionality that the group determined would differ between x86 and ARM 
+(and potentially further target platforms) was moved to another base class, 
+\texttt{CodeGenerator}.
+
+To demonstrate this refactored visitor pattern, and the ease of implementing
+cross-compilation, the group decided to compile MAlice programs into ARM
+assembly code in addition to x86-64 code. This would allow MAlice developers
+to theoretically write code that would run on a wide variety of additional
+devices, such as Android smartphones and tablets. To do this, a new class, 
+\texttt{ARMCodeGenerator} was implemented, that extends \texttt{CodeGenerator}.
+
+Running the MAlice compiler with the \texttt{-arm} flag uses the abstract syntax
+tree and the \texttt{ARMCodeGenerator} class to generate ARM code. However, unlike 
+as with the x86-64 code generation step, the ARM code is not assembled or linked
+with the C standard library, due to the lack of tools available for this on the
+standard lab machine install. Despite this, members of the group installed the 
+\texttt{arm-linux-gnueabihf} (providing versions of \emph{gcc} and \emph{as} for 
+ARM) and \texttt{qemu-user} (providing a user mode ARM emulator) packages on 
+their local machines to test the extension.
+
+Unfortunately, it became apparent that the code generation step for an 
+additional target language was not as simple as initially thought. ARM is a 
+'load/store' language, and the way in which data is stored in memory (as opposed
+to registers) is very different to x86. Additionally, the syntax differences
+proved to be too large to deal with in the time available for the project. 
+Despite this, ARM 'pseudocode' is produced and demonstrates as a proof of 
+concept what would be possible with the \texttt{ASTVisitor}, 
+\texttt{CodeGenerator} and a sufficient amount of time.
+
+\subsection{Future Work: C Library Functions}
+
+One extension that would make MAlice a much more powerful language for 
+developers would be to introduce a language construct that allows a developer 
+to call C library methods. For example, this would allow developers to use 
+things such as file I/O, which are not supported natively in MAlice. Since 
+MAlice code is already linked with the C standard library upon compilation
+(as mentioned earlier, for \texttt{printf}, \texttt{scanf} and \texttt{exit}),
+it would be relatively easy to implement this extension if additional time
+were available.
+
+\subsection{Future Work: Other Target Languages}
+In a similar fashion to how the ARM extension was implemented, it would be 
+possible to extend the compiler to produce machine code for other target 
+languages using the visitor pattern and a class extending \texttt{ASTVisitor} -
+for example, MIPS, Java bytecode or .NET CIL. 
+
+One particularly interesting potential target language would be IMPS - a subset
+of MIPS for which the group created an assembler and emulator for as part of the
+first year C lab. This would mean the group had a complete set of tools for
+each stage of compilation and execution of a MAlice program.
+
+\enddocument
