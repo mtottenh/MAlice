@@ -5,6 +5,7 @@
 x86CodeGenerator::x86CodeGenerator()
 {
 	wordSize = 8;
+	/* Initialises a default map of instructions to assembly */
 	instrTable[ALEA] = "lea";
 	instrTable[AMOVE] = "mov";
 	instrTable[AMALLOC] = "malloc";
@@ -145,7 +146,6 @@ void x86CodeGenerator::generatePrintInstruction
 			break; 
 		case TSTRING:
 			printStringLitData(label, "\"%s\"");
-		//TODO: ADD MORE CASES! 
 	}
 	printInstruction(APUSH, "r9");
 	printInstruction(APUSH, "r8");

@@ -59,7 +59,6 @@ int NDeclarationBlock::checkRoot() {
 }
 
 void NDeclarationBlock::accept(ASTVisitor* v) {
-    cerr << "Node: " << name << endl;
     v->visit(this);
 }
 

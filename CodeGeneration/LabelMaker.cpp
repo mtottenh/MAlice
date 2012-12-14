@@ -6,6 +6,7 @@ using namespace std;
 
 LabelMaker::LabelMaker() : currentLabelNumber(1), endLabel(NULL) {} 
 
+/* Prints a generic label */
 string LabelMaker::getNewLabel() 
 {
 	stringstream s;
@@ -13,6 +14,7 @@ string LabelMaker::getNewLabel()
 	return s.str();
 }
 
+/* Prints a label for an end conditional */
 string LabelMaker::getEndCondLabel()
 {
 	if (this->needsNewEndCondLabel())
@@ -22,11 +24,13 @@ string LabelMaker::getEndCondLabel()
 	return *(this->endLabel);
 }
 
+/* Ensures that next time an end cond label is gathered, it is created new */
 bool LabelMaker::needsNewEndCondLabel()
 {
 	return !(this->endLabel);
 }
 
+/* Pushes the end condition label onto a stack so it is not overwritten. */
 void LabelMaker::pushEndCondLabel()
 {
 	this->endCondLabelStack.push(this->endLabel);
@@ -40,6 +44,7 @@ void LabelMaker::popEndCondLabel()
 	this->endCondLabelStack.pop();
 }
 
+/* Deletes the label and sets its pointer to NULL. */
 void LabelMaker::resetEndCondLabel()
 {
 	delete this->endLabel;

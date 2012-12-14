@@ -510,8 +510,6 @@ int main(int argc, char* argv[]) {
 
     v->init(root, generator);
     root->accept(v);
-	// TODO
-	// There may be a cleaner way to encapsulate this
 	v->generateFunctionDefinitions();
 
     /*create the output file*/
@@ -530,10 +528,6 @@ int main(int argc, char* argv[]) {
         fclose(output);
 		if(!generatingARM) {
         	/* assemble with nasm */
-        	/* TODO - Ask mark whether it would be easier
-        	 * to just create a shell script, ie not relying
-         	 * on nasm/ld to be under /usr/bin
-        	 */
         	cerr << "Assembling with nasm, output filename: " << outputFname << endl;
         	if (fork() == 0) {
         	    execl("/usr/bin/nasm","/usr/bin/nasm", "-f elf64",  "-g -F stabs",
@@ -552,9 +546,11 @@ int main(int argc, char* argv[]) {
 		}
     } else {
         cerr << "error opening output file for writing: " << outputFname << endl;
+		isValid = 0;
     }
 	//Finish up with a bit of memory management.
 	delete root;
+	delete generator;
     delete v;
 	fclose(input);
 	yylex_destroy();

@@ -118,7 +118,6 @@ closed		{ tokenpos += yyleng; yylval.values.string = yytext;  return CBRACE; }
 
  /* Integer and bitwise expressions */
 {integer}	{ tokenpos += yyleng; yylval.values.token = atoi(yytext); 
-              printf( "yytext: %s\nyylval.values.token: %d\n",yytext,yylval.values.token);
               return INTEGER; }
 \+			{ tokenpos += yyleng; yylval.values.string = yytext;  return PLUS; }
 \*			{ tokenpos += yyleng; yylval.values.string = yytext;  return MULT; }

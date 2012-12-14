@@ -157,7 +157,6 @@ int Node::check() {
 	return isValid;
 }
 
-/* TODO Remove this, and replace all occurances in derived classes. */
 int Node::compareTypes(int t1, int t2) const {
 	return (t1 == t2);
 }
@@ -166,7 +165,7 @@ void Node::accept(ASTVisitor* v) {
     cerr << "Generic Node" << endl;
     v->visit(this);
 }
-/* TODO - do something with this.... it might nto be needed*/
+
 int Node::getSize() {
     switch(this->getType()) {
         case TNUMBER:

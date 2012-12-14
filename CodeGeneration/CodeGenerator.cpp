@@ -30,8 +30,6 @@ void CodeGenerator::printInstruction(Instr instr, string op1, string op2)
 	text << instrTable.find(instr)->second << " " << op1 << ", " << op2 << endl;
 }
 
-//private
-
 void CodeGenerator::printTab()
 {
 	text << "\t";

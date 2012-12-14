@@ -1,6 +1,5 @@
-#ifndef _GENERIC_VISITOR_
-#define _GENERIC_VISITOR_
-
+#ifndef _GENERIC_AST_VISITOR_
+#define _GENERIC_AST_VISITOR_
 
 #include "ASTVisitor.hpp"
 #include "LabelMaker.hpp"
@@ -8,10 +7,12 @@
 #include <vector>
 #include <queue>
 #include <sstream>
+
 class GenericASTVisitor : public ASTVisitor {
 private:
-    void printRegDeq(std::deque<string>);
     string getReg(int);
+   	string getNextReg();
+	string getNextStore();
 	void comparePredicate(string, string, string);
 	void generateBinOpInstr(int, string, string);
 	void pushRegs();
@@ -19,8 +20,6 @@ private:
     void createSubroutine(string);
     void deallocVar();
     void ret();
-   	string getNextReg();
-	string getNextStore();
 	void unfoldedFunctionVisitor(NFunctionDeclaration*);
 	void restoreStore(string);
 	void restoreStore();

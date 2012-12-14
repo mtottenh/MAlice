@@ -12,7 +12,6 @@ NInteger::NInteger() {
 NInteger::NInteger(int value) {
 	this->value = value;
 	this->type = resolveType();
-    cerr << "Value: " << value << "\n";
 	/* Cast the int to a string to get a representation of its value. */
 	this->name = boost::lexical_cast<string>(value);
 
