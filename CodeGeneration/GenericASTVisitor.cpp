@@ -410,7 +410,6 @@ void GenericASTVisitor::visit(NInteger *node) {
 }
 
 void GenericASTVisitor::visit(NLoop *node) {
-    cerr << "Node: Loop " << endl;
     /* Get a label for the start and end of the while loop. Print start label.*/
     string startLabel = labelMaker.getNewLabel();
     string endLabel = labelMaker.getNewLabel();
@@ -430,24 +429,20 @@ void GenericASTVisitor::visit(NLoop *node) {
    	generator->printInstruction(AJMP, startLabel);
     /* Print end label finish. */
     generator->printLabel(endLabel);
-    cerr << "End: Loop" << endl;
 }
 
 void GenericASTVisitor::visit(NMethodCall *node) {
-     cerr << "Node: Function or Procedure Call" << endl;   
-    /* Push paramaters onto the stack in reverse order */
+    /* Save registers currently in use */
     pushRegs();
     if (node->getChildrenSize() > 0) {
         node->getChild(0)->accept(this);
     } 
-    /* Save registers currently in use */
 
     Node* MethodDec = node->getTable()->lookup(node->getID());
-    
 	int numJumps = node->getLevel() - MethodDec->getLevel();
-
 	string freeReg = getNextReg();
 
+	/* Generate access link */
 	generator->printInstruction(AMOVE, freeReg, generator->getBasePointer());
 	while (numJumps > 0)
 	{
@@ -455,13 +450,15 @@ void GenericASTVisitor::visit(NMethodCall *node) {
 		numJumps--;
 	}
 
+	/* Push the access link */
 	generator->printInstruction(APUSH, freeReg); 
     /* call the method */
 	generator->printInstruction(ACALL, "_" + MethodDec->getLabel());
 	restoreStore(freeReg);
     /* Remove the access link from the stack */
 	generator->printInstruction(AADD, generator->getStackPointer(), "8");    
-    if (node->getChildrenSize() > 0 ) {
+    /* Remove paramaters from stack */
+	if (node->getChildrenSize() > 0 ) {
     	    int numParams = node->getChild(0)->getChildrenSize();
 		generator->printInstruction(AADD, generator->getStackPointer(),
 							convertInt(numParams * 8));	
@@ -469,26 +466,29 @@ void GenericASTVisitor::visit(NMethodCall *node) {
 
     /* Restore registers we were using */
     popRegs();
+	
+	/* Move the result of the function into the next free reg in the list */
     string reg = getNextReg();
     generator->printInstruction(AMOVE, reg, generator->getReturnRegister());
     restoreStore(reg);
-     cerr << "End: Function or Procedure Call" << endl;   
 }
 
-void GenericASTVisitor::visit(NNullToken *node) {
-}
+void GenericASTVisitor::visit(NNullToken *node) {} /* No operation */
+/* 
+ * If a case isn't implemented, it will fall through to an empty 
+ * implementation. 
+ */
+void GenericASTVisitor::visit(Node *node) {} 
 
-void GenericASTVisitor::visit(Node *node) {
-
-}
-
-/* puts paramtaters into registers or stack */
 void GenericASTVisitor::visit(NParamBlock *node) {
-    cerr << "Node: Param Block " << endl;      
     unsigned int numChildren =  node->getChildrenSize();
     string label;
     std::deque<string>::iterator it = allRegs.begin();
-    /* push params onto the stack*/   
+    /*
+	 * Push params onto the stack in reverse order so that the caller has 
+	 * access to the first paramater in the first position above its access
+	 * link, and so forth.
+	 */   
     for (int i = numChildren - 1; i >= 0; i--) {
         node->getChild(i)->accept(this);
 		string reg = getNextReg();
@@ -497,11 +497,13 @@ void GenericASTVisitor::visit(NParamBlock *node) {
 		}
         generator->printInstruction(APUSH, reg);  
     }
-    cerr << "End: Param Block " << endl;
 }
-/* labels paramaters as in registers or on stack */
+
+/*
+ * Labels the position of parameters, i.e. allocates them stack space or
+ * global space
+ */
 void GenericASTVisitor::visit(NParamDeclarationBlock *node) {
-    cerr << "Node: Param Declaration block " << endl;
     /* offset to first param starts at 24:
      *      rbp         +  8
      *      ret         +  8
@@ -516,19 +518,21 @@ void GenericASTVisitor::visit(NParamDeclarationBlock *node) {
 
     string label;
     std::deque<string>::iterator it = allRegs.begin();
-    unsigned int i = 0;
-    /* put params onto the stack */
-    for (; i < numChildren; i++) {
+    /* Put params onto the stack */
+    for (unsigned int i = 0; i < numChildren; i++) {
 		label = "[" + generator->getBasePointer() + "+";
         label = label + boost::lexical_cast<string>(offset) + "]";
         node->getChild(i)->setLabel(label);
         offset+=8;
     }
-    cerr << "End: Param Declaration block " << endl;   
 }
-/*TODO: change this from output char to output string or something..*/
+
+/* 
+ * Generic print function that checks the type of the node that you wish
+ * to print and delegates the correct parameters to the specific target 
+ * language code generator as necessary.
+ */
 void GenericASTVisitor::visit(NPrint *node) {
-    cerr << "Node: Print" << endl;
     int type,nodeType;
     nodeType = node->getChild(0)->getNodeType();
     type = node->getChild(0)->getType();
@@ -554,8 +558,7 @@ void GenericASTVisitor::visit(NPrint *node) {
 		   generator->generatePrintInstruction(reg, printlabel, false, type);
 		   restoreStore(reg);
     }
-	if (decType == REFCHAR || decType == REFNUMBER)
-	{
+	if (decType == REFCHAR || decType == REFNUMBER)	{
 		node->getChild(0)->accept(this);
 		string reg = getNextReg();
 		generator->generatePrintInstruction(reg, printlabel, true, type);
@@ -570,18 +573,15 @@ void GenericASTVisitor::visit(NPrint *node) {
 	}
 		restoreStore(reg);
     }
-    cerr << "Node Type: " << nodeType << "\tType: " << type << endl;
-    cerr << "End Print" << endl;
 }
-/* RAX is used as the 'return register' */
+
 void GenericASTVisitor::visit(NReturn *node) {
-    cerr << "Node: Return" << endl;
-    Node *retVal = node->getChild(0);
+    /* Move the return value into the result register and call return. */
+	Node *retVal = node->getChild(0);
     retVal->accept(this);
     string reg = getNextReg();
 	generator->printInstruction(AMOVE, generator->getReturnRegister(), reg);
     restoreStore(reg);
-    cerr << "End: Return" << endl;   
     ret();
 }
 
@@ -593,25 +593,21 @@ void GenericASTVisitor::visit(NStatementList *node) {
 }
 
 void GenericASTVisitor::visit(NStringLit *node) {
-    /* Add strings to the .data section 
-     * TODO: We still need to find a way
-     * of labeling stringlits and their sizes
-     *
-     */
-    cerr << "Node: String Literal" << endl;
+	/* 
+	 * Store the literal in the data section and point the node's label 
+	 * to the label.
+ 	 */
     string label = this->labelMaker.getNewLabel();
 	generator->printStringLitData(label, node->getID()); 
     node->setLabel(label);
     string reg = getNextReg();
 	generator->printInstruction(AMOVE, reg, label);
     restoreStore(reg);
-    cerr << "End: String Literal" << endl;
 }
 
 void GenericASTVisitor::visit(NUnaryOp *node) {
-    cerr << "Node: Unary Op" << endl;
     node->getChild(0)->accept(this);
-    string resultReg =  getNextReg();
+    string resultReg = getNextReg();
     switch(node->getOp()) {
         case DASH:
 			generator->printInstruction(ANEG, resultReg);
@@ -621,26 +617,24 @@ void GenericASTVisitor::visit(NUnaryOp *node) {
 			generator->printInstruction(ANOT, resultReg);
             break;
         case PLUS:
+			/* Empty implementation, PLUS does nothing. */
             break;
     }
     restoreStore(resultReg);
-    cerr << "End: Unary Op" << endl;
 }
 /* Variables are allocated on the stack, and are given
- * an address as [rbp +/- offset] TODO: Replace 4 with offset
+ * an address as [rbp +/- offset]
  */
 void GenericASTVisitor::visit(NVariableDeclaration *node) {
-    cerr << "\nNode: VarDec" << endl;
     int type = node->getType();
-   stringstream debuglabel ;
 	stringstream numElementsStr;
 	Node *lengthNode;
 	string label;
     int numElements; 
     stringstream convert;
     switch(type) {
+		/* Reserve 8 bytes for a character or number */
         case TNUMBER:
-            /* reserve 8 bytes for an integer */
         case TCHAR:
             offset += 8;
 			generator->printInstruction(ASUB, 
@@ -649,6 +643,7 @@ void GenericASTVisitor::visit(NVariableDeclaration *node) {
 	    if (node->getLevel() != 1)
 	        node->setLabel(convert.str());           
 		break;
+		/* For a reference reserve a number of elements as neccessary */
     	case REFCHAR:
     	case REFNUMBER:
             lengthNode = node->getChild(0);
@@ -664,41 +659,29 @@ void GenericASTVisitor::visit(NVariableDeclaration *node) {
 			label = "arr" + labelMaker.getNewLabel();
 			generator->printHeapAllocationInstruction(label,
 										numElementsStr.str());	
-			/* reserve numelements * 8 bytes worth of space on the stack */
-            /* set the label to be a pointer to the offest of the 1st element */
+			/* Reserve numelements * 8 bytes worth of space on the stack */
+            /* Set the label to be a pointer to the offest of the 1st element */
             convert << "[" << label << "]";
-            /* set the offest to take into account the entire array */
+            /* Set the offest to take into account the entire array */
 			if (lengthNode->getNodeType() == INTEGER) {
 				offset+= numElements;
 			}
             node->setLabel(convert.str());
         break;
         case TSTRING:
-            
         break;
-        default:
-            debuglabel << type;
-            node->setLabel(debuglabel.str());
     }
-    cerr << "\n End: VarDec" << endl;
 }
 
+/* Print the label of the subroutine, push the base pointer. */
 void GenericASTVisitor::createSubroutine(string name) {
 	generator->printLabel("_" + name);
 	generator->printInstruction(APUSH, generator->getBasePointer());
 	generator->printInstruction(AMOVE, generator->getBasePointer(),
 								generator->getStackPointer());    
 }
-    /* Create label and save ebp/esp */
-    /* Allocate space on stack for local variables */
-    /* Callee saved registers */
-    /* Body of subroutine 
-     * subroutine must leave result in rax
-     */
-    /* Restore callee saved registers */
-    /* Deallocate local variables */
-    /* Restore EBP  and return */
 
+/* Similar to before, restore the base pointer and return from function. */
 void GenericASTVisitor::ret() {
 	generator->printInstruction(AMOVE, generator->getStackPointer(), 
 										generator->getBasePointer());
@@ -706,52 +689,54 @@ void GenericASTVisitor::ret() {
 	generator->printInstruction(ARET);
 }
 
+/* Return the assembly generated from the code generator */
 string GenericASTVisitor::getAssembly() {
 	return generator->getAssembly();
 }
 
+/* 
+ * Pop functions from the queue to generate code for, also print the hatta
+ * label as the entry point.
+ */
 void GenericASTVisitor::generateFunctionDefinitions()
 {
 	generator->printInstruction(ACALL, "_hattalabel1");
-    /* Move EXIT_SUCCESS into rdi and call exit() */
 	generator->printReturnFromProgram();
     
     while (!funcDecQueue.empty()) {
-        cerr << "Generating Function Body for : " 
-             << funcDecQueue.front()->getID();
         unfoldedFunctionVisitor(funcDecQueue.front());
         funcDecQueue.pop();
-        
     }
 }
 
+/* Unfolds functions so that nested functions are not printed inline but are
+ * instead printed sequentially in a file. To print functions inline would
+ * produce jump instructions preceeding the function to ensure code 
+ * does not fall through, this is thus a nicer approach!
+ */
 void GenericASTVisitor::unfoldedFunctionVisitor(NFunctionDeclaration* node) {
-    cerr << "\nUnfolding: " << node->getID() << endl;
-    /* Sets up our function label and base pointer*/
+    /* Sets up our function label and base pointer.*/
     createSubroutine(node->getLabel());
     int numChildren = node->getChildrenSize();
     
     if (numChildren == 2) {
-        /* we have paramaters */
-        /* TODO get dat stuff from the stack and put into regs son*/
-        NParamDeclarationBlock* params = (NParamDeclarationBlock*) node->getChild(numChildren - 1);
+        /* Store the parameters into locations. */
+        NParamDeclarationBlock* params = 
+			(NParamDeclarationBlock*) node->getChild(numChildren - 1);
         params->accept(this);
     }
     NCodeBlock* codeblock = (NCodeBlock*)node->getChild(0);
     NStatementList* statlist = (NStatementList*)codeblock->getChild(0);
     if (codeblock->getChildrenSize() == 2) {
-        /* we have local variables*/
+        /* We have local variables*/
         NDeclarationBlock* decblock = (NDeclarationBlock*)codeblock->getChild(0);
         statlist = (NStatementList*)codeblock->getChild(1);
-        /* reserve space on stack from them */
-        /*TODO should probably get some way of total size of local vars*/
-        /* ratheri than just assuming they are all 32bits */
+        /* Reserve space on stack from them */
         decblock->accept(this);
     } 
     statlist->accept(this);    
     freeRegs = allRegs;
-	    this->ret();
-    cerr << "\n*Unfolded: " << node->getID() << "*" << endl;
+	ret();
 }
 
 void GenericASTVisitor::init(Node* root, CodeGenerator* gen) {
@@ -765,24 +750,27 @@ void GenericASTVisitor::init(Node* root, CodeGenerator* gen) {
 
 	generator->printInitial();
 
-    /* get all global variables and string literals used in ext...*/
+    /* Get all global variables and string literals used in ext...*/
     boost::shared_ptr<SymbolTable> t = root->getTable();
     table_t::iterator it;
 
     string labelSuffix = this->labelMaker.getNewLabel();
 
-    /* global vars, reserve space for em init" */
+    /* Reserve space for global variables." */
     for(it = t->start(); it != t->end(); it++) {
         string label = it->first + labelSuffix;
 		generator->printData(label, convertInt(it->second->getSize()));
         it->second->setLabel(label);
     }
 
+	/* Print any extern functions we need */
 	generator->printExtern(); 
 }
 
-/* private helper functions */
-
+/* 
+ * Returns the next store, this could be a register or a location on the
+ * stack.
+ */
 string GenericASTVisitor::getNextStore() {
     string res;
     if (freeRegs.size() == 1) {
@@ -793,6 +781,13 @@ string GenericASTVisitor::getNextStore() {
     return res;
 }
 
+/*
+ * Returns the next free scratch register to use. If we have exhausted all
+ * registers, we use the last one as an accumulator. Convention is that we
+ * always restore the result of an evaluation into the first position in
+ * the free regs list, so after visiting a child, calling getNextReg() will
+ * get the resultant evaluation.
+ */
 string GenericASTVisitor::getNextReg() {
     string res;
     if (freeRegs.size() == 1) {
@@ -800,37 +795,19 @@ string GenericASTVisitor::getNextReg() {
     } else {
         res = freeRegs.front();
         freeRegs.pop_front();
-        cerr << "\t Removing register from list: " << res << endl;
     }
     return res;
 }
 
 void GenericASTVisitor::restoreStore(string store) {
     if (find(allRegs.begin(), allRegs.end(), store) != allRegs.end()) {
-        /* allRegs contains store */
-        cerr << "\t Restoring register: " << store << endl;
         freeRegs.push_front(store);
     }
 
 }
 
-void GenericASTVisitor::restoreStore() {
-    for (unsigned int i = 0; i < regsToRestore.size(); i++) {
-        restoreStore(regsToRestore[i]);
-        
-    }
-    regsToRestore.clear();
-}
-
-
-/* list of avalible registers for GP computation 
- * rax, rbx rcx, rdx, rdi, rsi, r8, r9, r10, r11, r12, r13, r14, r15,
- */
-
-
-/* pushes registers that are 'in use' */
+/* Pushes registers that are 'in use' */
 void GenericASTVisitor::pushRegs() {
-    cerr << "\t\t**Pushing regsiters in use**" << endl;
     std::deque<string>::iterator it;
     for (it = allRegs.begin(); it != allRegs.end(); it++ ) {
         if (find(freeRegs.begin(),freeRegs.end(),(*it)) == freeRegs.end())
@@ -838,7 +815,6 @@ void GenericASTVisitor::pushRegs() {
     }
     callStackRegs.push_front(freeRegs);
     freeRegs = allRegs;
-    cerr << "\t\t**New freeRegs deque**" << endl;
 }
 
 /* Pops registers that are 'in use' */
@@ -851,12 +827,11 @@ void GenericASTVisitor::popRegs() {
         if (find(freeRegs.begin(),freeRegs.end(),(*it)) == freeRegs.end())
     		generator->printInstruction(APOP, (*it));
     }
-
 }
 
 string convertInt(int number)
 {
-   stringstream ss;//create a stringstream
-   ss << number;//add number to the stream
-   return ss.str();//return a string with the contents of the stream
+   stringstream ss;
+   ss << number;
+   return ss.str();
 }
