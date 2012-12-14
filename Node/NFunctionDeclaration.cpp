@@ -48,9 +48,6 @@ NFunctionDeclaration::NFunctionDeclaration (NIdentifier* ID,
     delete ID;
 }
 
-/* TODO remove print and gettype
- * these should be inherited from Node anyway
- */
 int NFunctionDeclaration::print() const {
     cout << name ;                                                   
     return 1;                                                        

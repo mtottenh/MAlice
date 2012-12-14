@@ -5,7 +5,6 @@
 
 #ifndef __TYPEDEFS_HPP__
 #define __TYPEDEFS_HPP__
-/* TODO Insert Ascii trollface */
 #define YYSTYPE int
 #include "../y.tab.h"
 #undef YYSTYPE

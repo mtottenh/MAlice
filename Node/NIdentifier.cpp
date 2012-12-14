@@ -27,7 +27,6 @@ string NIdentifier::getID() {
 	return name;
 }
 
-/*  TODO Double check if this needs more too it or not */
 int NIdentifier::check() {
 	/* Does the identifier exist in the table? Valid if this is the case. */
 	if (table->lookup(name) != NULL) {

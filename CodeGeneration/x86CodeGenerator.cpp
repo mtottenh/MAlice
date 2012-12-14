@@ -146,7 +146,6 @@ void x86CodeGenerator::generatePrintInstruction
 			break; 
 		case TSTRING:
 			printStringLitData(label, "\"%s\"");
-		//TODO: ADD MORE CASES! 
 	}
 	printInstruction(APUSH, "r9");
 	printInstruction(APUSH, "r8");
