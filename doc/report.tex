@@ -17,11 +17,11 @@
 
 % sections as given in the spec.
 \section{The Product}
-The compiler the group has produced takes code written in the MAlice language
+The compiler that the group has developed takes code described using the MAlice language
 and produces x86-64 assembly code, as well as calling \emph{nasm} and \emph{gcc}
 to produce an executable binary. If the compiler is ran with the \texttt{-arm} 
 flag then, as part of the extension, an assembly file with extension 
-\texttt{.arm} is produced containing code targetted at the ARM architecture.
+\texttt{.arm} is produced containing code targeted at the ARM architecture.
 
 The group ensured at every stage of development that the product produced
 was functionally correct and matched the specification. After completion of
@@ -40,8 +40,8 @@ incomplete implementation of array handling. Additionally, as part of the
 extension, the generated ARM code is not fully correct. This is discussed
 in further detail in Section 3.
 
-Due to decisions made in regard to design, discussed further in the next
-section, the group ensured the product performed efficiently. The language
+Due to decisions made in regard to design, \footnote{Discussed further in
+Section 2} the group ensured the product performed efficiently. The language
 choice for the project, C++, helps to promote such efficiency, and the group
 also made an effort to prevent memory leaks and free memory where required. 
 Additionally, for each data structure used, the team considered what would be
@@ -53,13 +53,13 @@ pattern to aid further extensions and provide a solid base for future work.
 
 \subsection{Language Choice - C++}
 The majority of the project was implemented using the C++ language. This
-decision was made due to many advantages C++ offers - most of the speed and
-efficiency of the C language with the addition of useful data structures such
+decision was made due to many advantages C++ offers - the speed and
+efficiency of the C language combined with the useful data structures such
 as \emph{std::deque}s. The group did consider other languages, such as Java (as
 recommended in the specification), but decided that the benefits of speed and
 low level operations outweighed Java's advantages (e.g. garbage collection) in
 this instance. A small amount of C is also used in order to better interface
-with the Flex and Bison tools we used, described below.
+with the Flex and Bison tools.
 
 \subsection{Parser - Flex and Bison}
 
@@ -76,16 +76,18 @@ aiding in the creation of a compiler front end.
 
 For the code generation stage of the project, the visitor pattern was used, 
 seperating the logic of code generation from the nodes contained within the
-abstract syntax tree. For the generation of x86-64 code, the \texttt{x86CodeGenerator}
+abstract syntax tree. For the generation of x86-64 code, the
+\texttt{GenericASTVisitor}
 class calls \texttt{accept} on the root node of the abstract syntax tree, which
 in turn calls the the visitor's \texttt{visit} function on itself (to match
 the required specialisation of the node type). From there, the visitor decides
 which nodes to visit next, generating code for each node in the correct order. 
 
 To support future development, \texttt{x86CodeGenerator} extends a base class,
-\texttt{CodeGenerator}, which in turn makes use of a generic \texttt{ASTVisitor}
+\texttt{CodeGenerator}, which is provided to the \texttt{ASTVisitor} to
+generate specific code.
 As part of the extension, the \texttt{ARMCodeGenerator} class was
-created that also extends this base class. The use of the visitor pattern
+created that also extends this base class. The use of the 'plug-in CodeGenerator' modules
 would greatly increase the ease of adding a new code generator for an additional
 target language. This is discussed in further detail in Section 3.
 
@@ -103,7 +105,7 @@ cannot be known at compile time.
 
 Additionally, at the end of a MAlice assembly program, the C \texttt{exit} 
 method is called rather than an exit system call. This ensures that 
-\texttt{stdout} and \texttt{stderr} correctly have their buffers cleared at the
+\texttt{stdout} and \texttt{stderr} correctly have their buffers flushed at the
 end of execution of the MAlice program.
 
 \subsection{Future Work}
@@ -204,7 +206,7 @@ were available.
 \subsection{Future Work: Other Target Languages}
 In a similar fashion to how the ARM extension was implemented, it would be 
 possible to extend the compiler to produce machine code for other target 
-languages using the visitor pattern and a class extending \texttt{ASTVisitor} -
+languages by extending \texttt{CodeGenerator} -
 for example, MIPS, Java bytecode or .NET CIL. 
 
 One particularly interesting potential target language would be IMPS - a subset
