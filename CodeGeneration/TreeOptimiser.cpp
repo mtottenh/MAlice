@@ -12,7 +12,52 @@ void TreeOptimiser::visit(NArrayAccess *node){
 }
 
 void TreeOptimiser::visit(NAssignment *node){
+    Node  *replacement, *lexp, *rexp;
+    NBinOp *value;
+    if (node->getChildrenSize() > 1) {
+        value = (NBinOp *)node->getChild(1);
+        if (value->getNodeType() == BINOP) {
+            lexp = value->getChild(0);
+            rexp = value->getChild(1);
+           if ( (lexp->getNodeType() == INTEGER ) 
+               && (rexp->getNodeType() == INTEGER) ) {
+               switch(value->getOp()) {
+                    case AND:
+                         replacement = new NInteger( ((NInteger *)lexp)->getValue() 
+                                            & ((NInteger *)rexp)->getValue());
+                         node->removeChild(1);
+                         node->addChild(replacement);
+                         break;
+                    case OR:
+                    replacement = new NInteger( ((NInteger *)lexp)->getValue() 
+                                            | ((NInteger *)rexp)->getValue());
+                         node->removeChild(1);
+                         node->addChild(replacement);
+                        break;
+                    case XOR:
+                    replacement = new NInteger( ((NInteger *)lexp)->getValue() 
+                                            ^ ((NInteger *)rexp)->getValue());
+                         node->removeChild(1);
+                         node->addChild(replacement);
+                        break;
+                    case PLUS:
+                    replacement = new NInteger( ((NInteger *)lexp)->getValue() 
+                                            + ((NInteger *)rexp)->getValue());
+                         node->removeChild(1);
+                         node->addChild(replacement);
+                        break;
+                    case DASH:
+                    replacement = new NInteger( ((NInteger *)lexp)->getValue() 
+                                            - ((NInteger *)rexp)->getValue());
+                         node->removeChild(1);
+                         node->addChild(replacement);
+                        break;
+               }
 
+           }
+        }   
+
+    }
 }
 
 void TreeOptimiser::visit(NBinOp *node){
@@ -44,13 +89,13 @@ void TreeOptimiser::visit(NDeclarationBlock *node){
     while(i < size) {
         
         Node *child = node->getChild(i);
-        cerr << "Testing Node[" << i << "] : " << child->getID() << endl;
+//        cerr << "Testing Node[" << i << "] : " << child->getID() << endl;
         switch(child->getNodeType()) {
             case FUNC:
             case PROCEDURE:
-                cerr << "Testing function for removal candidate in DecBlock\n";
-                cerr << "Function Reference Count: " << child->getRefCount() << endl;
-                cerr << "Testing Function body" << endl;
+          //      cerr << "Testing function for removal candidate in DecBlock\n";
+        //        cerr << "Function Reference Count: " << child->getRefCount() << endl;
+      //          cerr << "Testing Function body" << endl;
                 child->accept(this);
                 if (child->getRefCount() == 0 
                     && child->getID() != "hatta") {
@@ -63,14 +108,14 @@ void TreeOptimiser::visit(NDeclarationBlock *node){
                 }
                 break;
             default:
-                cerr << "Node is not a function, continuing" << endl;
+//                cerr << "Node is not a function, continuing" << endl;
                 i++;
                 
         }
         size = node->getChildrenSize();
 
-        cerr << "Node children count : " << size << endl;
-        cerr << "value of index: " << i << endl;
+  //      cerr << "Node children count : " << size << endl;
+    //    cerr << "value of index: " << i << endl;
 
     }
 
