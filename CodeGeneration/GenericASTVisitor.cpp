@@ -104,54 +104,60 @@ void GenericASTVisitor::visit(NAssignment *node) {
 		}
 void GenericASTVisitor::generateBinOpInstr(int op, string returnReg, string nxtReg) 
 {
-			switch(op) {
-				case OR:
-				case LOR:
-					generator->printInstruction(AOR, returnReg, nxtReg);
-					break;
-				case AND:
-				case LAND:
-					generator->printInstruction(AAND, returnReg, nxtReg);
-					break;
-				case LEQU:
-					generator->comparePredicate(SETE, returnReg, nxtReg); 
-					break; 
-				case LLTHAN:
-					generator->comparePredicate(SETL, returnReg, nxtReg); 
-					break;
-				case LLTHANEQ:
-					generator->comparePredicate(SETLE, returnReg, nxtReg); 
-					break;
-				case LGTHAN:
-					generator->comparePredicate(SETG, returnReg, nxtReg); 
-					break;
-				case LGTHANEQ:
-					generator->comparePredicate(SETGE, returnReg, nxtReg); 
-					break;
-				case LNOTEQU:
-					generator->comparePredicate(SETNE, returnReg, nxtReg); 
-					break;
-				case XOR:
-					generator->printInstruction(AXOR, returnReg, nxtReg);
-					break;
-				case PLUS:
-					generator->printInstruction(AADD, returnReg, nxtReg);
-					break;
-				case DASH:
-					generator->printInstruction(ASUB, returnReg, nxtReg);
-					break;
-				case MULT:
-					generator->printInstruction(AIMUL, returnReg, nxtReg);
-					break;
-				case DIV:
-					generator->printInstruction(ADIV, returnReg, nxtReg);
-					break;
-				case MOD:
-					generator->printInstruction(AMOD, returnReg, nxtReg);
+	/* Delegate printing to the specific code generator */
+	switch(op) {
+		case OR:
+		case LOR:
+			generator->printInstruction(AOR, returnReg, nxtReg);
+			break;
+		case AND:
+		case LAND:
+			generator->printInstruction(AAND, returnReg, nxtReg);
+			break;
+		case LEQU:
+			generator->comparePredicate(SETE, returnReg, nxtReg); 
+			break; 
+		case LLTHAN:
+			generator->comparePredicate(SETL, returnReg, nxtReg); 
+			break;
+		case LLTHANEQ:
+			generator->comparePredicate(SETLE, returnReg, nxtReg); 
+			break;
+		case LGTHAN:
+			generator->comparePredicate(SETG, returnReg, nxtReg); 
+			break;
+		case LGTHANEQ:
+			generator->comparePredicate(SETGE, returnReg, nxtReg); 
+			break;
+		case LNOTEQU:
+			generator->comparePredicate(SETNE, returnReg, nxtReg); 
+			break;
+		case XOR:
+			generator->printInstruction(AXOR, returnReg, nxtReg);
+			break;
+		case PLUS:
+			generator->printInstruction(AADD, returnReg, nxtReg);
+			break;
+		case DASH:
+			generator->printInstruction(ASUB, returnReg, nxtReg);
+			break;
+		case MULT:
+			generator->printInstruction(AIMUL, returnReg, nxtReg);
+			break;
+		case DIV:
+			generator->printInstruction(ADIV, returnReg, nxtReg);
+			break;
+		case MOD:
+			generator->printInstruction(AMOD, returnReg, nxtReg);
 			break;
     }
 }
 void GenericASTVisitor::visit(NBinOp *node) {
+	/*
+	 * Use the weight function to give more registers to the weightier
+	 * of the two binary expressions. This optimisation is an example of
+	 * the register allocation scheme seen in the lecture notes.
+	 */
     string resultReg, nxtReg;
     if (node->getChild(0)->getWeight() > node->getChild(1)->getWeight()) {
         node->getChild(0)->accept(this);
@@ -165,36 +171,39 @@ void GenericASTVisitor::visit(NBinOp *node) {
         resultReg = getNextReg();
     }
 	
-	if (node->getChild(0)->getNodeType() == ARRAYACCESS)
-	{
+	/*
+	 * If either are an array access, access the location pointed to by 
+	 * result reg as they point to a space on the heap.
+	 */
+	if (node->getChild(0)->getNodeType() == ARRAYACCESS) {
 		generator->printInstruction(AMOVE, resultReg, "[" + resultReg + "]");
 	}
-	if (node->getChild(1)->getNodeType() == ARRAYACCESS)
-	{
+	if (node->getChild(1)->getNodeType() == ARRAYACCESS) {
 		generator->printInstruction(AMOVE, nxtReg, "[" + nxtReg + "]");	
 	}
+		
+	/* Delegate to the specific generator to print the relevant output. */
     generateBinOpInstr(node->getOp(), resultReg, nxtReg);   
     restoreStore(nxtReg);
     restoreStore(resultReg); 
-    cerr << "End: Bin Op " << endl;
 }
 
-/* TODO: As we have an output charlit macro I'm sure that we
- * no longer need to store this in the data segment
- * i.e the only reason we wanted to store it in .data was
- * because we didnt have a way of printing it before
- */
 void GenericASTVisitor::visit(NCharLit *node) {
-    cerr << "Node: Char Lit " << endl;
-    string reg = getNextReg();
+    /*
+	 * Give the generator a scratch register, followed by the char literal
+	 * stored within the NCharLit node. 
+	 */
+	string reg = getNextReg();
 	generator->printInstruction(AMOVE, reg, "'" + node->getID() + "'");
-    cerr << "End: Char Lit " << endl;
     restoreStore(reg);
 }
 
 void GenericASTVisitor::visit(NCodeBlock *node) {
-    /* Visit the statement list, and declaration list if it exists. */
-    cerr << "Node: CodeBlock" << endl;
+	/*
+	 * Push the base pointer three times to emulate the behaviour of 
+	 * a function when pushing its return address and access link. This
+	 * is a somewhat hacky solution, however it does work!
+	 */
 	generator->printInstruction(APUSH, generator->getBasePointer());
 	generator->printInstruction(APUSH, generator->getBasePointer());
 	generator->printInstruction(APUSH, generator->getBasePointer());
@@ -205,63 +214,76 @@ void GenericASTVisitor::visit(NCodeBlock *node) {
 	for(int i = 0; i < node->getChildrenSize(); ++i) {
         node->getChild(i)->accept(this);
     }
+
+	/* Return from the scope */
 	generator->printInstruction(AMOVE, generator->getStackPointer(),
 										generator->getBasePointer());
 	
 	generator->printInstruction(APOP, generator->getBasePointer());
 	generator->printInstruction(APOP, generator->getBasePointer());
 	generator->printInstruction(APOP, generator->getBasePointer());
-    cerr << "End: CodeBlock" << endl;
 }
 
 void GenericASTVisitor::visit(NConditional *node) {
-    cerr << "Node: Coditional " << endl;
+ 	/*
+	 * If we are at the very top of a conditional, we must ask the
+	 * label maker for a new end conditional node. This is so that
+	 * if then else statements can always point towards the end of
+	 * an arbitrarily long conditional.
+	 */
     bool startConditional = this->labelMaker.needsNewEndCondLabel();
     string endLabel = this->labelMaker.getEndCondLabel();
     string elseLabel = this->labelMaker.getNewLabel();
 
-    // Visit the predicate to print out condition
+    /* Visit the predicate to evaluate the expression */
 
     node->getChild(0)->accept(this);
     string resultReg = this->getNextReg();
 
-    // If condition is false, jump to next condition
+    /* If condition is false, jump to next condition */
 
 	generator->printInstruction(ACMP, resultReg, "1");
 	generator->printInstruction(AJNE, elseLabel);    
     restoreStore(resultReg);
 
-    // Otherwise, execute the statement list, first pushing
-    // the end condition label onto the stack
+	/*
+	 * We might need to generate a new end label for a nested condition, so
+	 * we push the end label. Then the statement list is evaluated.
+	 */
     this->labelMaker.pushEndCondLabel();
     node->getChild(1)->accept(this);
-
+	/* Once accepting the child, we pop the end label. */
     this->labelMaker.popEndCondLabel();
 
-    // Return to end of conditional
+    /* Return to end of conditional */
     generator->printInstruction(AJMP, endLabel);
 
-    // Print out code for rest of cases
+    /* 
+	 * In the case where the condition is false, print the else label and
+	 * evaluate the statement list.
+	 */
 	generator->printLabel(elseLabel);
     node->getChild(2)->accept(this);
 
-
+	/* If this is the top level conditional, print the end label at the 
+	 * bottom.
+	 */
     if (startConditional)  {
 		generator->printLabel(endLabel);
         this->labelMaker.resetEndCondLabel();
     }
-    cerr << "End: Coditional " << endl;
 }
 
-void GenericASTVisitor::visit(NEndIf *node) {
-}
+void GenericASTVisitor::visit(NEndIf *node) {} /* Blank node */
 
 /* NDeclarationBlock is our 'entry' point - its not exclusve though, ie every 
  * function has one
  */
 void GenericASTVisitor::visit(NDeclarationBlock *node) {
-    cerr << "Node: Declaration Block" << endl;
-    /* if we have a delcaration block just visit every child*/
+    /* 
+	 * If we have a delcaration block just visit every child, set the offset
+	 * to the access point to be 0.
+	 */
     offset = 0;
     if (!node->isRoot()) {
         for (int i = 0; i < node->getChildrenSize(); i++) {
@@ -269,18 +291,18 @@ void GenericASTVisitor::visit(NDeclarationBlock *node) {
         }
     } else {
         for (int i = 0; i < node->getChildrenSize(); i++) {
-            if (node->getChild(i)->getNodeType() == VARDEC) {
-                cerr << "I CANNE HOLD EM CAP'N " << endl;
-            } else {
+            if (node->getChild(i)->getNodeType() != VARDEC) {
                 node->getChild(i)->accept(this);
             }
         }
-
     }
-     cerr << "End: Declaration Block" << endl;   
 }
 
 void GenericASTVisitor::visit(NFunctionDeclaration *node) {
+	/* 
+	 *Store the label of the function in its identifier and add it to a
+	 * queue of functions to prevent functions being declared inline.
+	 */
     if (node->getLevel() != 1) {
         string label = "_" + node->getID() + this->labelMaker.getNewLabel();
         node->setLabel(label);
@@ -289,44 +311,46 @@ void GenericASTVisitor::visit(NFunctionDeclaration *node) {
 }
 
 void GenericASTVisitor::visit(NIdentifier *node) {
-    cerr << "Node: Identifier" << endl;
+	/* 
+	 * Find where the node was declared and find the difference between its
+	 * nesting level and the nesting level of its caller.
+	 */
     Node *declarationNode = node->getTable()->lookup(node->getID());
     int nestingLevel = declarationNode->getLevel();
     int numJumps = node->getLevel() - nestingLevel;
     string storage = getNextReg();
-    /* check if in local or global scope */
+    /* Check if in local or global scope */
     if (nestingLevel == node->getLevel() || nestingLevel == 1) {
-        /* just use the label */
-        /* move from label into freeRegs.front() */
-	if (nestingLevel == 1)
-			generator->printInstruction(AMOVE, 
+	if (nestingLevel == 1) {
+		/* Use the label from the global scope */		
+		generator->printInstruction(AMOVE, 
 					storage, "[" + declarationNode->getLabel() + "]");
-	else
-			generator->printInstruction(AMOVE, storage,
+	} else {
+		generator->printInstruction(AMOVE, storage,
 					declarationNode->getLabel());
+	}
     } else {
+		/*
+		 * Follow the access link to find the base pointer corresponding 
+		 * to the declared variable's scope. 
+		 */
         generator->printInstruction(APUSH, generator->getBasePointer());
-        /* TODO :- write an assembly loop to stop generated code being bad */
         while(numJumps > 0) {
             /* follow the access link back overwriting rbp */
 			string bp = generator->getBasePointer();
             generator->printInstruction(AMOVE, bp, "[" + bp + "+16" + "]");
             numJumps--;
         }
-        /* mov from label into freeRegs.front() */
+        /* Move from label into the correct location. */
 			generator->printInstruction(AMOVE, storage,
 				declarationNode->getLabel());
-        /* pop rbp */
+        /* Pop rbp */
 			generator->printInstruction(APOP, generator->getBasePointer());
     }
     restoreStore(storage);
-    cerr << "End: Identifier" << endl;
 }
 
-/* DOUBLE CHECK RESTORING REGS*/
 void GenericASTVisitor::visit(NInc *node) {
-    cerr << "Node: Inc " << endl;
-
     /* Visit the node containing the expression to be incremented. */
     node->getChild(0)->accept(this);
     boost::shared_ptr<SymbolTable> table = node->getTable();
@@ -337,11 +361,9 @@ void GenericASTVisitor::visit(NInc *node) {
 	generator->printInstruction(AINC, store);
     generator->printInstruction(AMOVE, childDeclarationNode->getLabel(), store);
     restoreStore(store);
-    cerr << "End: Inc " << endl;
 }
 
 void GenericASTVisitor::visit(NDec *node) {
-    cerr << "Node: Decrement" << endl;
     /* Visit the node containing the expression to be decremented. */
     node->getChild(0)->accept(this);
     boost::shared_ptr<SymbolTable> table = node->getTable();
@@ -352,11 +374,12 @@ void GenericASTVisitor::visit(NDec *node) {
 	generator->printInstruction(ADEC, store);
     generator->printInstruction(AMOVE, childDeclarationNode->getLabel(), store);
     restoreStore(store);
-    cerr << "End: Decrement" << endl;
 }
-/* TODO : - add input cases for other valid input types */
 void GenericASTVisitor::visit(NInput *node) {
-    cerr << "Node: Input \n";
+	/* Call the C Standard Library scanf function. If the variable is at
+	 * global scope reference it directly. Pass the scanfstring and the
+	 * address at where to store the input to the generator.
+	 */
     Node* identifier = node->getChild(0);
     Node *var = node->getTable()->lookup(identifier->getID());
     string scanfstring = "scanf" + labelMaker.getNewLabel();
@@ -369,16 +392,21 @@ void GenericASTVisitor::visit(NInput *node) {
         case TNUMBER:
 			generator->generateInputFunction(scanfstring, addr);
             break;
+		/*
+		 * Could do with implementing this for strings and characters, but
+		 * time constraints have prevented this!
+		 */
     }
-    cerr << "End: Input" << endl;
 }
 
 void GenericASTVisitor::visit(NInteger *node) {
-    cerr << "Node: Integer" << endl;
+	/*
+	 * Evaluate the node and store its direct value into the first free reg
+	 * from the free list.
+	 */
     string store = getNextReg();
 	generator->printInstruction(AMOVE, store, convertInt(node->getValue()));
     restoreStore(store);
-    cerr << "End: Integer" << endl;
 }
 
 void GenericASTVisitor::visit(NLoop *node) {
