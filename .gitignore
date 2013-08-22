@@ -41,3 +41,6 @@ compile
 
 #test stuff
 test*
+
+#ignore arm example code
+arm/*
