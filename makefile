@@ -33,6 +33,8 @@ y.tab.c: grammar.y
 compile: lex.yy.c y.tab.c $(OBJ)
 	$(CC) $(CFLAGS) $^ -o $@ -lfl -lboost_graph
 
+graph: graph.gv
+	dot -v -Tpdf graph.gv -o graph.pdf
 
 #Each Subdirectory makes all its files and places them in obj
 $(ODIR)/%.o: TreeUtils/%.cpp
@@ -66,5 +68,5 @@ clean:
 	rm -f y.tab.c
 	rm -f y.output
 	rm -f y.tab.h
-
+	rm -f graph.*
 .PHONY: clean all

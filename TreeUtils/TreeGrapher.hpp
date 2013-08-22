@@ -7,9 +7,11 @@ class TreeGrapher : public ASTVisitor {
 private:
 
     Graph g;
+    ofstream outf;
     void conditional_add(Node*);
 public:
-    TreeGrapher();  
+    TreeGrapher();
+    TreeGrapher(string );
     string getAssembly() { return NULL; };
     void generateFunctionDefinitions(){} ; 
     void init(Node*, CodeGenerator*){} ; 
