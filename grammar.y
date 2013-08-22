@@ -1,5 +1,4 @@
 %{
-#include <boost/graph/adjacency_list.hpp>
 #include <string>
 #include <iostream>
 #include <cstdarg>
@@ -8,7 +7,6 @@
 #include <unistd.h>
 #include "Node/NodeIncludes.hpp"
 #include "TreeUtils/TreePrinter.hpp"
-
 #include "Errors/TypeMap.hpp"
 #include "TreeUtils/SymbolTableGenerator.hpp"
 #include "CodeGeneration/ASTVisitor.hpp"
@@ -522,6 +520,8 @@ int main(int argc, char* argv[]) {
     root->accept(t);
     TreeGrapher *grapher = new TreeGrapher();
     root->accept(grapher);
+    grapher->outputGraph();
+    delete(grapher);
     v->init(root, generator);
     root->accept(v);
 	v->generateFunctionDefinitions();

@@ -1,117 +1,275 @@
+#include "../Errors/TypeMap.hpp"
 #include "TreeGrapher.hpp"
-#include <boost/graph/adjacency_list.hpp>
 
 TreeGrapher::TreeGrapher() {
  
 }
  
 void TreeGrapher::visit(NArrayAccess* node)  {
-         
+     conditional_add(node);
+   /* next create its children and the edges between them 
+     * and accept each one
+     */
+    for (int i = 0; i < node->getChildrenSize(); i++) {
+        Node* child = node->getChild(i);
+        conditional_add(child);
+        boost::add_edge(node->getGraphNode(),child->getGraphNode(),this->g);
+        node->getChild(i)->accept(this);
+    }
+        
 
 }
 
 void TreeGrapher::visit(NAssignment* node) {
+    conditional_add(node);
+   /* next create its children and the edges between them 
+     * and accept each one
+     */
+    for (int i = 0; i < node->getChildrenSize(); i++) {
+        Node* child = node->getChild(i);
+        conditional_add(child);
+        boost::add_edge(node->getGraphNode(),child->getGraphNode(),this->g);
+        node->getChild(i)->accept(this);
+    }
 
 }
 
 void TreeGrapher::visit(NBinOp* node) {
+    conditional_add(node);
+   /* next create its children and the edges between them 
+     * and accept each one
+     */
+    for (int i = 0; i < node->getChildrenSize(); i++) {
+        Node* child = node->getChild(i);
+        conditional_add(child);
+        boost::add_edge(node->getGraphNode(),child->getGraphNode(),this->g);
+        node->getChild(i)->accept(this);
+    }
 
 }
 
 void TreeGrapher::visit(NCharLit* node) {
+    conditional_add(node);
+   /* next create its children and the edges between them 
+     * and accept each one
+     */
+    for (int i = 0; i < node->getChildrenSize(); i++) {
+        Node* child = node->getChild(i);
+        conditional_add(child);
+        boost::add_edge(node->getGraphNode(),child->getGraphNode(),this->g);
+        node->getChild(i)->accept(this);
+    }
 
 }
 
 void TreeGrapher::visit(NCodeBlock* node) {
+    conditional_add(node);
+   /* next create its children and the edges between them 
+     * and accept each one
+     */
+    for (int i = 0; i < node->getChildrenSize(); i++) {
+        Node* child = node->getChild(i);
+        conditional_add(child);
+        boost::add_edge(node->getGraphNode(),child->getGraphNode(),this->g);
+        node->getChild(i)->accept(this);
+    }
 
 }
 
 void TreeGrapher::visit(NConditional* node) {
+    conditional_add(node);
+   /* next create its children and the edges between them 
+     * and accept each one
+     */
+    for (int i = 0; i < node->getChildrenSize(); i++) {
+        Node* child = node->getChild(i);
+        conditional_add(child);
+        boost::add_edge(node->getGraphNode(),child->getGraphNode(),this->g);
+        node->getChild(i)->accept(this);
+    }
 
 }
 
 void TreeGrapher::visit(NDec* node) {
+    conditional_add(node);
+   /* next create its children and the edges between them 
+     * and accept each one
+     */
+    for (int i = 0; i < node->getChildrenSize(); i++) {
+        Node* child = node->getChild(i);
+        conditional_add(child);
+        boost::add_edge(node->getGraphNode(),child->getGraphNode(),this->g);
+        node->getChild(i)->accept(this);
+    }
 
 }
 
 void TreeGrapher::visit(NDeclarationBlock* node) {
-    std::cout << "Visited node" << std::endl;
-    
-    vertex_t current_node = boost::add_vertex(this->g);
-
+    conditional_add(node);
+   /* next create its children and the edges between them 
+     * and accept each one
+     */
+    for (int i = 0; i < node->getChildrenSize(); i++) {
+        Node* child = node->getChild(i);
+        conditional_add(child);
+        boost::add_edge(node->getGraphNode(),child->getGraphNode(),this->g);
+        node->getChild(i)->accept(this);
+    }
 }
 
 void TreeGrapher::visit(NEndIf* node) {
+    conditional_add(node);
+   /* next create its children and the edges between them 
+     * and accept each one
+     */
+    for (int i = 0; i < node->getChildrenSize(); i++) {
+        Node* child = node->getChild(i);
+        conditional_add(child);
+        boost::add_edge(node->getGraphNode(),child->getGraphNode(),this->g);
+        node->getChild(i)->accept(this);
+    }
 
 }
 
 void TreeGrapher::visit(NFunctionDeclaration* node) {
+    conditional_add(node);
+   /* next create its children and the edges between them 
+     * and accept each one
+     */
+    for (int i = 0; i < node->getChildrenSize(); i++) {
+        Node* child = node->getChild(i);
+        conditional_add(child);
+        boost::add_edge(node->getGraphNode(),child->getGraphNode(),this->g);
+        node->getChild(i)->accept(this);
+    }
 
 }
 
 void TreeGrapher::visit(NIdentifier* node) {
+    conditional_add(node);
+   /* next create its children and the edges between them 
+     * and accept each one
+     */
+    for (int i = 0; i < node->getChildrenSize(); i++) {
+        Node* child = node->getChild(i);
+        conditional_add(child);
+        boost::add_edge(node->getGraphNode(),child->getGraphNode(),this->g);
+        node->getChild(i)->accept(this);
+    }
 
 }
 
 void TreeGrapher::visit(NInc* node) {
+    conditional_add(node);
+   /* next create its children and the edges between them 
+     * and accept each one
+     */
+    for (int i = 0; i < node->getChildrenSize(); i++) {
+        Node* child = node->getChild(i);
+        conditional_add(child);
+        boost::add_edge(node->getGraphNode(),child->getGraphNode(),this->g);
+        node->getChild(i)->accept(this);
+    }
 
 }
 
 void TreeGrapher::visit(NInput* node) {
+    conditional_add(node);
+   /* next create its children and the edges between them 
+     * and accept each one
+     */
+    for (int i = 0; i < node->getChildrenSize(); i++) {
+        Node* child = node->getChild(i);
+        conditional_add(child);
+        boost::add_edge(node->getGraphNode(),child->getGraphNode(),this->g);
+        node->getChild(i)->accept(this);
+    }
 
 }
 
 void TreeGrapher::visit(NInteger* node) {
+    conditional_add(node);
+   /* next create its children and the edges between them 
+     * and accept each one
+     */
+    for (int i = 0; i < node->getChildrenSize(); i++) {
+        Node* child = node->getChild(i);
+        conditional_add(child);
+        boost::add_edge(node->getGraphNode(),child->getGraphNode(),this->g);
+        node->getChild(i)->accept(this);
+    }
 
 }
 
 void TreeGrapher::visit(NLoop* node) {
-    std::cout << "Visited node" << std::endl;
+
 }
 
 void TreeGrapher::visit(NMethodCall* node) {
-    std::cout << "Visited node" << std::endl;
+
 }
 
 void TreeGrapher::visit(NNullToken* node) {
-    std::cout << "Visited node" << std::endl;
+
 }
 
 void TreeGrapher::visit(Node* node) {
     
-    std::cout << "Visited node" << std::endl;
-
 }
 
 void TreeGrapher::visit(NParamBlock* node) {
-    std::cout << "Visited node" << std::endl;
 }
 
 void TreeGrapher::visit(NParamDeclarationBlock* node) {
-    std::cout << "Visited node" << std::endl;
+
 }
 
 void TreeGrapher::visit(NPrint* node) {
-    std::cout << "Visited node" << std::endl;
+
 }
 
 void TreeGrapher::visit(NReturn* node) {
-    std::cout << "Visited node" << std::endl;
+
 }
 
 void TreeGrapher::visit(NStatementList* node) {
-    std::cout << "Visited node" << std::endl;
+
 }
 
 void TreeGrapher::visit(NStringLit* node) {
-    std::cout << "Visited node" << std::endl;
+
 }
 
 void TreeGrapher::visit(NUnaryOp* node) {
-    std::cout << "Visited node" << std::endl;
+
 }
 
 void TreeGrapher::visit(NVariableDeclaration* node) {
-    std::cout << "Visited node" << std::endl;
+    conditional_add(node);
+   /* next create its children and the edges between them 
+     * and accept each one
+     */
+    for (int i = 0; i < node->getChildrenSize(); i++) {
+        Node* child = node->getChild(i);
+        conditional_add(child);
+        boost::add_edge(node->getGraphNode(),child->getGraphNode(),this->g);
+        node->getChild(i)->accept(this);
+    }
+
 }
 
+
+void TreeGrapher::outputGraph() {
+    ofstream outf("graph.gv");
+    write_graphviz(std::cout, this->g, boost::make_label_writer(boost::get(&Vertex::node_name, this->g)));
+}
+
+void TreeGrapher::conditional_add(Node* node) {
+    /* If the node hasn't been added to the graph then add it */
+   if (!node->graphed()) {
+       node->setGraphNode(boost::add_vertex(g));
+       g[node->getGraphNode()].node_name = node->getID();
+       g[node->getGraphNode()].node_type = typemap_get(node->getNodeType());
+   }
+ 
+}

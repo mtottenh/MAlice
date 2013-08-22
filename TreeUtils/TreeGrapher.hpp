@@ -1,23 +1,13 @@
 #ifndef __TREE_GRAPH_H__
 #define __TREE_GRAPH_H__
 #include "../CodeGeneration/ASTVisitor.hpp"
-#include <boost/graph/adjacency_list.hpp>
-
-	
-struct Vertex{ std::string node_name; std::string type;};
-
-//Define the graph using those classes
-typedef boost::adjacency_list<boost::listS, boost::listS, boost::directedS, Vertex> Graph;
-//Some typedefs for simplicity
-typedef boost::graph_traits<Graph>::vertex_descriptor vertex_t;
-typedef boost::graph_traits<Graph>::edge_descriptor edge_t;
-
-
+#include "GraphUtils.hpp"
 
 class TreeGrapher : public ASTVisitor {
 private:
 
     Graph g;
+    void conditional_add(Node*);
 public:
     TreeGrapher();  
     string getAssembly() { return NULL; };
@@ -49,6 +39,8 @@ public:
     void visit(NStringLit*);
     void visit(NUnaryOp*);
     void visit(NVariableDeclaration*);
+    void outputGraph();
+   
 };
 
 #endif
