@@ -261,7 +261,7 @@ void TreeGrapher::visit(NVariableDeclaration* node) {
 
 void TreeGrapher::outputGraph() {
     ofstream outf("graph.gv");
-    write_graphviz(std::cout, this->g, boost::make_label_writer(boost::get(&Vertex::node_name, this->g)));
+    write_graphviz(outf, this->g, boost::make_label_writer(boost::get(&Vertex::node_name, this->g)));
 }
 
 void TreeGrapher::conditional_add(Node* node) {
