@@ -12,8 +12,8 @@
 #include <algorithm>
 #include "../Errors/SemanticErrors.hpp"
 #include "../SymbolTable/SymbolTable.hpp"
-
 #include "../FileLocation/FileLocation.hpp"
+#include "../TreeUtils/GraphUtils.hpp"
 /*
  * Defines for method returns - it is (apparently) bad practice to use
  * EXIT_SUCCESS and EXIT_FAILURE from stdlib.
@@ -67,7 +67,9 @@ protected:
     
     /* reference count used for code optimisation */
     int refCount;
-
+    /* used by the TreeGrapher visitor to determin if a node has been graphed */
+    bool is_graphed;
+    vertex_t g_node;
 	/* Calculate the weight of the node. */
 	virtual int calculateWeight();
 
@@ -186,6 +188,9 @@ public:
     /* getters and setters for the reference count */
     int getRefCount();
     void incRefCount();
+    bool graphed() {return is_graphed;};
+    vertex_t getGraphNode();
+    void setGraphNode(unsigned long );   
 };
 
 #endif

@@ -13,6 +13,7 @@ NStatementList.o NStringLit.o NUnaryOp.o NVariableDeclaration.o TypeMap.o\
 SemanticErrors.o TreePrinter.o SymbolTableGenerator.o SymbolTable.o\
 FileLocation.o GenericASTVisitor.o LabelMaker.o CodeGenerator.o \
 x86CodeGenerator.o ARMCodeGenerator.o TreeOptimiser.o RefCountGenerator.o\
+TreeGrapher.o
 
 # Messy but cant find a nicer way at present
 
@@ -30,8 +31,10 @@ y.tab.c: grammar.y
 	yacc $(YFLAGS) grammar.y
 
 compile: lex.yy.c y.tab.c $(OBJ)
-	$(CC) $(CFLAGS) $^ -o $@ -lfl
+	$(CC) $(CFLAGS) $^ -o $@ -lfl -lboost_graph
 
+graph: graph.gv
+	dot -v -Tpdf graph.gv -o graph.pdf
 
 #Each Subdirectory makes all its files and places them in obj
 $(ODIR)/%.o: TreeUtils/%.cpp
@@ -65,5 +68,5 @@ clean:
 	rm -f y.tab.c
 	rm -f y.output
 	rm -f y.tab.h
-
+	rm -f graph.*
 .PHONY: clean all

@@ -13,6 +13,7 @@ Node::Node() : loc(), label("") {
 	nodeType = GENERIC_NODE;
 	children.clear();
     refCount = 0;
+    g_node = NULL;
 }
 
 /* As above, but add the child parameter to the list of children. */
@@ -24,6 +25,7 @@ Node::Node(Node *child) {
 	nodeType = GENERIC_NODE;
 	loc = NULL;
     refCount = 0;
+    g_node = NULL;
 }
 
 /* Delete all the children and set them to null. */
@@ -177,6 +179,8 @@ int Node::getSize() {
             return 90001;
         case REFNUMBER:
             return ((NInteger * )this->getChild(0))->getValue()*8;
+        default:
+            return -1;
     } 
 }
 
@@ -242,3 +246,11 @@ void Node::removeChild(int i) {
 
 }
 
+vertex_t Node::getGraphNode() {
+    return g_node;
+}
+
+void Node::setGraphNode(vertex_t vert)  {
+    g_node = vert;
+    is_graphed = true;
+}
