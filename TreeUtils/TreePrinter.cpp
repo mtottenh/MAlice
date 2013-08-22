@@ -14,8 +14,7 @@ int treePrinter::print() {
 	level.push(print_level);
 	printList.push(root);
 	while(!printList.empty()) {
-		cout << endl;
-		Node *temp = printList.front();
+	    Node *temp = printList.front();
 		printList.pop();
 		int current_level = level.front();
 		level.pop();

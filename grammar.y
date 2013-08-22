@@ -1,4 +1,5 @@
 %{
+#include <boost/graph/adjacency_list.hpp>
 #include <string>
 #include <iostream>
 #include <cstdarg>
@@ -7,13 +8,14 @@
 #include <unistd.h>
 #include "Node/NodeIncludes.hpp"
 #include "TreeUtils/TreePrinter.hpp"
+
 #include "Errors/TypeMap.hpp"
 #include "TreeUtils/SymbolTableGenerator.hpp"
 #include "CodeGeneration/ASTVisitor.hpp"
 #include "CodeGeneration/GenericASTVisitor.hpp"
 #include "CodeGeneration/x86CodeGenerator.hpp"
 #include "CodeGeneration/ARMCodeGenerator.hpp"
-    
+#include "TreeUtils/TreeGrapher.hpp"   
 #include "CodeGeneration/RefCountGenerator.hpp"
 #include "CodeGeneration/TreeOptimiser.hpp"
     
@@ -455,7 +457,9 @@ Procedure
 int initTypeMap();
 extern FILE * yyin;
 bool error_flag;
+
 int main(int argc, char* argv[]) {
+    int status;
 	if (argc < 2) {
 		cerr << "ERROR: Usage is: " << argv[0] << " FILENAME "
 			<< "[-d]" << endl;
@@ -516,7 +520,8 @@ int main(int argc, char* argv[]) {
     TreeOptimiser *t = new TreeOptimiser();
     root->accept(rc);
     root->accept(t);
-
+    TreeGrapher *grapher = new TreeGrapher();
+    root->accept(grapher);
     v->init(root, generator);
     root->accept(v);
 	v->generateFunctionDefinitions();
@@ -525,6 +530,8 @@ int main(int argc, char* argv[]) {
     string outputFname(argv[1]);
     size_t pos = outputFname.find(".alice");
     outputFname = outputFname.substr(0,pos);
+    pos = outputFname.find("src");
+    outputFname.replace(pos,3,"bin");
 	if(generatingARM) {
 		outputFname = outputFname + ".arm";
 	} else {
@@ -537,20 +544,19 @@ int main(int argc, char* argv[]) {
         fclose(output);
 		if(!generatingARM) {
         	/* assemble with nasm */
-        	cerr << "Assembling with nasm, output filename: " << outputFname << endl;
-        	if (fork() == 0) {
+        	cerr << "--- " << outputFname<< " ---" << endl;
+            status = fork();
+        	if (status == 0) {
         	    execl("/usr/bin/nasm","/usr/bin/nasm", "-f elf64",  "-g -F stabs",
         	            outputFname.c_str(),(char *) 0);
         	} else {
-        	    int status;
         	    wait(&status);
         	    /* link with ld */
         	    pos = outputFname.find(".asm");
-        	    string objFname = outputFname.substr(0,pos) + ".o";
-        	    outputFname = "-o" + outputFname.substr(0,pos);
-			    cerr << "\nOutput filename:  " << outputFname << "\t" << objFname <<endl;
-        	    execl("/usr/bin/gcc","/usr/bin/gcc","-g",objFname.c_str(),
-        	                outputFname.c_str(),(char*)0);
+        	    outputFname = outputFname.substr(0,pos);
+                string objFname = outputFname.substr(0,pos) + ".o";
+			    cerr << "--- "<< outputFname << " ---" << endl;
+                execl("/usr/bin/gcc","gcc","-g",objFname.c_str(), "-o", outputFname.c_str(),(char*)0);
         	}
 		}
     } else {

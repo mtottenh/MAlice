@@ -67,7 +67,8 @@ protected:
     
     /* reference count used for code optimisation */
     int refCount;
-
+    /* used by the TreeGrapher visitor to determin if a node has been graphed */
+    bool is_graphed = false;
 	/* Calculate the weight of the node. */
 	virtual int calculateWeight();
 
