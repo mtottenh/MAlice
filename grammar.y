@@ -455,14 +455,26 @@ Procedure
 int initTypeMap();
 extern FILE * yyin;
 bool error_flag;
+bool debug_mode;
 
-int main(int argc, char* argv[]) {
-    int status;
+FILE* parse_args(int argc, char* argv[]) {
 	if (argc < 2) {
 		cerr << "ERROR: Usage is: " << argv[0] << " FILENAME "
-			<< "[-d]" << endl;
+			 << "[-d]" << endl;
+             << "Try: " << argv[0] << " --help for more info"
 		return EXIT_FAILURE;
 	}
+
+    /* if --help */
+ 
+
+
+}
+int main(int argc, char* argv[]) {
+    int status;
+    /* parse commandline args and return a valid file descriptor if successful */
+    /* open input file */
+    /* parse input */
 	error_flag = false;
 	/* Open file from argv[1]. Quit if null. */
 	FILE *input = fopen(argv[1],"r");
@@ -481,10 +493,12 @@ int main(int argc, char* argv[]) {
 		return EXIT_FAILURE;
 	}	
 
-	SymbolTableGenerator s(root);
 	/* Generate symbol table. */
+
+	SymbolTableGenerator s(root);
 	int isValid = s.generateTable();
-	// Print the AST if debug flag enabled
+     
+	/* Print the AST if debug flag enabled */
 	if(argc >= 3 && strcmp(argv[2], "-d") == 0) {
 		cout << endl << "##### Printing AST via TreePrinter #####" << endl;
 		cout << "Types showing as INVALID? Don't panic!" << endl 
@@ -494,12 +508,12 @@ int main(int argc, char* argv[]) {
 		t.print();
 	}
 
-	//Check that the AST is semantically valid.
+	/* Check that the AST is semantically valid.*/
 	isValid &= root->check();
     if (!isValid) {
         return EXIT_FAILURE;
     }
-    /* generate code using x86Visitor*/
+    /* generate code an ASTVisitor*/
     ASTVisitor *v = new GenericASTVisitor();
 	CodeGenerator *generator;
 	bool generatingARM = false;
@@ -514,14 +528,17 @@ int main(int argc, char* argv[]) {
 		generator = new x86CodeGenerator();
 	}
 
+    /* Generate function reference counts and prune the AST */
     RefCountGenerator *rc = new RefCountGenerator();
     TreeOptimiser *t = new TreeOptimiser();
     root->accept(rc);
     root->accept(t);
+    /* print AST to graphviz file */
     TreeGrapher *grapher = new TreeGrapher();
     root->accept(grapher);
     grapher->outputGraph();
     delete(grapher);
+    /* Walk the AST with the code generator */
     v->init(root, generator);
     root->accept(v);
 	v->generateFunctionDefinitions();
