@@ -457,66 +457,62 @@ extern FILE * yyin;
 bool error_flag;
 bool debug_mode;
 
+int print_ast(Node* root) {
+    cout << endl << "Creating graphviz file graph.gv" << endl;
+    /* print AST to graphviz file */
+    TreeGrapher *graph = new TreeGrapher();
+    root->accept(graph);
+    graph->outputGraph();
+    delete(graph);
+    return 0;
+}
+
 FILE* parse_args(int argc, char* argv[]) {
-	if (argc < 2) {
-		cerr << "ERROR: Usage is: " << argv[0] << " FILENAME "
-			 << "[-d]" << endl;
-             << "Try: " << argv[0] << " --help for more info"
-		return EXIT_FAILURE;
-	}
-
-    /* if --help */
- 
-
-
+    FILE* source_file = NULL;
+	if ((argc < 2) ||  (argc == 2 && strcmp(argv[1], "--help") == 0)) {
+        cerr << "Usage: " << argv[0] << " input_file ";
+        cerr << "[--arm] [-o output_filename]";
+        cerr << endl;
+    } else {
+        source_file = fopen(argv[1], "r");
+    }
+    return source_file;
 }
 int main(int argc, char* argv[]) {
-    int status;
-    /* parse commandline args and return a valid file descriptor if successful */
-    /* open input file */
-    /* parse input */
-	error_flag = false;
-	/* Open file from argv[1]. Quit if null. */
-	FILE *input = fopen(argv[1],"r");
-	if (input == NULL) {
+    int status, node, isValid;
+	bool generatingARM = false;
+	error_flag = false;     /* error_flag: for yyerror */
+	FILE *yyin = parse_args(argc,argv);
+	
+    if (yyin == NULL) {
  		cerr << "ERROR: Could not open file " << argv[1] << endl;
  		return EXIT_FAILURE;
 	}
-
-	//Parse the input!
-	yyin = input;
-	initTypeMap();
-	int node = yyparse();
+	
+    initTypeMap();
+	node = yyparse();
 
 	if (root == NULL || node == 1 || error_flag) {
 		cerr << "ERROR: Parse tree broke, stopping compiler" << endl;
 		return EXIT_FAILURE;
 	}	
 
-	/* Generate symbol table. */
-
+	/* Generate symbol table from AST */
 	SymbolTableGenerator s(root);
-	int isValid = s.generateTable();
-     
+	isValid = s.generateTable();
+ 	isValid &= root->check();    
 	/* Print the AST if debug flag enabled */
-	if(argc >= 3 && strcmp(argv[2], "-d") == 0) {
-		cout << endl << "##### Printing AST via TreePrinter #####" << endl;
-		cout << "Types showing as INVALID? Don't panic!" << endl 
-			<< "Type resolution only occurs after check() has been "
-			<< "called :)" << endl;
-		treePrinter t(root);
-		t.print();
-	}
+    print_ast(root);
+
 
 	/* Check that the AST is semantically valid.*/
-	isValid &= root->check();
     if (!isValid) {
         return EXIT_FAILURE;
     }
     /* generate code an ASTVisitor*/
     ASTVisitor *v = new GenericASTVisitor();
 	CodeGenerator *generator;
-	bool generatingARM = false;
+
 
 	if((argc == 3 && (strcmp(argv[2], "-arm") == 0))
 			|| (argc >= 4 && (strcmp(argv[3], "-arm") == 0))) {
@@ -533,11 +529,6 @@ int main(int argc, char* argv[]) {
     TreeOptimiser *t = new TreeOptimiser();
     root->accept(rc);
     root->accept(t);
-    /* print AST to graphviz file */
-    TreeGrapher *grapher = new TreeGrapher();
-    root->accept(grapher);
-    grapher->outputGraph();
-    delete(grapher);
     /* Walk the AST with the code generator */
     v->init(root, generator);
     root->accept(v);
@@ -622,7 +613,7 @@ int initTypeMap() {
 	typemap_add(INC, "ate");
 	typemap_add(DEC, "drank");
 	typemap_add(SAID, "said Alice/spoke");
-	return 1;
+	return 0;
 }
 
 void yyerror(char *s, ...)
