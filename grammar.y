@@ -478,17 +478,59 @@ FILE* parse_args(int argc, char* argv[]) {
     }
     return source_file;
 }
+
+int malice_semantic_checks(bool debug, Node* ast) {
+    int semantically_valid;
+	SymbolTableGenerator s(ast);
+	semantically_valid = s.generateTable();
+ 	semantically_valid &= ast->check();    
+	/* Print the AST if debug flag enabled */
+    if (debug) {
+        print_ast(ast);
+    }
+
+    return semantically_valid;
+}
+
+int malice_optimizations(Node* ast) {
+    RefCountGenerator *rc = new RefCountGenerator();
+    TreeOptimiser *t = new TreeOptimiser();
+    ast->accept(rc);
+    ast->accept(t);
+    delete(rc);
+    delete(t);
+    return 0;
+}
+
+
+FILE* output_file(FILE* input, bool arm) {
+    strinig outputFname(input);
+    size_t pos = outputFname.find(".alice");    
+    outputFname = outputFname.substr(0,pos);
+    pos = outputFname.find("src");
+    outputFname.replace(pos,3,"bin");
+	if(arm) {
+		outputFname = outputFname + ".arm";
+	} else {
+    	outputFname = outputFname + ".asm";
+	}
+    FILE *output = fopen(outputFname.c_str(),"w");
+    return output;
+}
+
 int main(int argc, char* argv[]) {
     int status, node, isValid;
-	bool generatingARM = false;
+	bool arm = false;
+    bool debug_mode = false;
 	error_flag = false;     /* error_flag: for yyerror */
+    /**** COMANDLINE ARGS  ****/
 	FILE *yyin = parse_args(argc,argv);
-	
+    
     if (yyin == NULL) {
  		cerr << "ERROR: Could not open file " << argv[1] << endl;
  		return EXIT_FAILURE;
 	}
-	
+	/**** PARSE ****/
     initTypeMap();
 	node = yyparse();
 
@@ -496,62 +538,45 @@ int main(int argc, char* argv[]) {
 		cerr << "ERROR: Parse tree broke, stopping compiler" << endl;
 		return EXIT_FAILURE;
 	}	
-
+    /**** SYEMANTIC CHECKS ****/
 	/* Generate symbol table from AST */
-	SymbolTableGenerator s(root);
-	isValid = s.generateTable();
- 	isValid &= root->check();    
-	/* Print the AST if debug flag enabled */
-    print_ast(root);
-
-
-	/* Check that the AST is semantically valid.*/
+    isValid = malice_semantic_checks(debug_mode,root);
     if (!isValid) {
-        return EXIT_FAILURE;
+       return EXIT_FAILURE;
     }
-    /* generate code an ASTVisitor*/
-    ASTVisitor *v = new GenericASTVisitor();
+    /*** OPTIMIZATIONS ****/
+    /* Optimize AST */
+    malice_optimizations(root);
+
+    /**** CODEGEN ****/
+    /*  ARM / x86 */
+
+    ASTVisitor *code_gen = new GenericASTVisitor();
 	CodeGenerator *generator;
 
-
-	if((argc == 3 && (strcmp(argv[2], "-arm") == 0))
+  	if((argc == 3 && (strcmp(argv[2], "-arm") == 0))
 			|| (argc >= 4 && (strcmp(argv[3], "-arm") == 0))) {
 		generator = new ARMCodeGenerator();	
-		generatingARM = true;
+		arm = true;
 	}
 	
 	else {
 		generator = new x86CodeGenerator();
 	}
+   
 
-    /* Generate function reference counts and prune the AST */
-    RefCountGenerator *rc = new RefCountGenerator();
-    TreeOptimiser *t = new TreeOptimiser();
-    root->accept(rc);
-    root->accept(t);
     /* Walk the AST with the code generator */
-    v->init(root, generator);
-    root->accept(v);
-	v->generateFunctionDefinitions();
-
-    /*create the output file*/
-    string outputFname(argv[1]);
-    size_t pos = outputFname.find(".alice");
-    outputFname = outputFname.substr(0,pos);
-    pos = outputFname.find("src");
-    outputFname.replace(pos,3,"bin");
-	if(generatingARM) {
-		outputFname = outputFname + ".arm";
-	} else {
-    	outputFname = outputFname + ".asm";
-	}
-    FILE *output = fopen(outputFname.c_str(),"w");
-    if (output != NULL) {
-        fputs(v->getAssembly().c_str(),output);
-       // fputs("\n\n\tpop rbp\n\tsys.exit\n",output);
-        fclose(output);
-		if(!generatingARM) {
-        	/* assemble with nasm */
+    code_gen->init(root, generator);
+    root->accept(code_gen);
+	code_gen->generateFunctionDefinitions();
+    /**** FILE IO ****/
+    /*create the output file - argv[1] is the input filename+path*/
+     output = output_file(argv[1], arm);
+     if (output != NULL) {
+         fputs(code_gen->getAssembly().c_str(),output);
+         fclose(output);
+	     if(!arm) {
+            /* assemble with nasm */
         	cerr << "--- " << outputFname<< " ---" << endl;
             status = fork();
         	if (status == 0) {
@@ -564,18 +589,21 @@ int main(int argc, char* argv[]) {
         	    outputFname = outputFname.substr(0,pos);
                 string objFname = outputFname.substr(0,pos) + ".o";
 			    cerr << "--- "<< outputFname << " ---" << endl;
-                execl("/usr/bin/gcc","gcc","-g",objFname.c_str(), "-o", outputFname.c_str(),(char*)0);
+                execl("/usr/bin/gcc","gcc","-g",objFname.c_str(), "-o",
+                        outputFname.c_str(),(char*)0);
         	}
-		}
+		} else {
+            cerr << "compiling arm to flat binary not yet supported" << endl;
+        }
     } else {
         cerr << "error opening output file for writing: " << outputFname << endl;
 		isValid = 0;
     }
-	//Finish up with a bit of memory management.
+	/**** MEM MANAGEMENT ****/
 	delete root;
 	delete generator;
-    delete v;
-	fclose(input);
+    delete code_gen;
+	fclose(yyin);
 	yylex_destroy();
 	return isValid ? EXIT_SUCCESS : EXIT_FAILURE;
 }
