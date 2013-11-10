@@ -519,42 +519,42 @@ FILE* output_file(FILE* input, bool arm) {
 }
 
 int main(int argc, char* argv[]) {
-    int status, node, isValid;
+  int status, node, isValid;
 	bool arm = false;
-    bool debug_mode = false;
+  bool debug_mode = false;
 	error_flag = false;     /* error_flag: for yyerror */
-    /**** COMANDLINE ARGS  ****/
+  /**** COMANDLINE ARGS  ****/
 	FILE *yyin = parse_args(argc,argv);
     
-    if (yyin == NULL) {
+  if (yyin == NULL) {
  		cerr << "ERROR: Could not open file " << argv[1] << endl;
  		return EXIT_FAILURE;
 	}
 	/**** PARSE ****/
-    initTypeMap();
+  initTypeMap();
 	node = yyparse();
 
 	if (root == NULL || node == 1 || error_flag) {
 		cerr << "ERROR: Parse tree broke, stopping compiler" << endl;
 		return EXIT_FAILURE;
 	}	
-    /**** SYEMANTIC CHECKS ****/
+  /**** SYEMANTIC CHECKS ****/
 	/* Generate symbol table from AST */
-    isValid = malice_semantic_checks(debug_mode,root);
-    if (!isValid) {
+  isValid = malice_semantic_checks(debug_mode,root);
+  if (!isValid) {
        return EXIT_FAILURE;
-    }
-    /*** OPTIMIZATIONS ****/
-    /* Optimize AST */
-    malice_optimizations(root);
+  }
+  /*** OPTIMIZATIONS ****/
+  /* Optimize AST */
+  malice_optimizations(root);
 
-    /**** CODEGEN ****/
-    /*  ARM / x86 */
+  /**** CODEGEN ****/
+  /*  ARM / x86 */
 
-    ASTVisitor *code_gen = new GenericASTVisitor();
-	CodeGenerator *generator;
+  ASTVisitor *code_gen = new GenericASTVisitor();
+  CodeGenerator *generator;
 
-  	if((argc == 3 && (strcmp(argv[2], "-arm") == 0))
+  if((argc == 3 && (strcmp(argv[2], "-arm") == 0))
 			|| (argc >= 4 && (strcmp(argv[3], "-arm") == 0))) {
 		generator = new ARMCodeGenerator();	
 		arm = true;
@@ -565,44 +565,44 @@ int main(int argc, char* argv[]) {
 	}
    
 
-    /* Walk the AST with the code generator */
-    code_gen->init(root, generator);
-    root->accept(code_gen);
+  /* Walk the AST with the code generator */
+  code_gen->init(root, generator);
+  root->accept(code_gen);
 	code_gen->generateFunctionDefinitions();
-    /**** FILE IO ****/
-    /*create the output file - argv[1] is the input filename+path*/
-     output = output_file(argv[1], arm);
-     if (output != NULL) {
-         fputs(code_gen->getAssembly().c_str(),output);
-         fclose(output);
-	     if(!arm) {
-            /* assemble with nasm */
-        	cerr << "--- " << outputFname<< " ---" << endl;
-            status = fork();
-        	if (status == 0) {
-        	    execl("/usr/bin/nasm","/usr/bin/nasm", "-f elf64",  "-g -F stabs",
-        	            outputFname.c_str(),(char *) 0);
-        	} else {
-        	    wait(&status);
-        	    /* link with ld */
-        	    pos = outputFname.find(".asm");
-        	    outputFname = outputFname.substr(0,pos);
-                string objFname = outputFname.substr(0,pos) + ".o";
-			    cerr << "--- "<< outputFname << " ---" << endl;
-                execl("/usr/bin/gcc","gcc","-g",objFname.c_str(), "-o",
-                        outputFname.c_str(),(char*)0);
-        	}
+  /**** FILE IO ****/
+  /*create the output file - argv[1] is the input filename+path*/
+  output = output_file(argv[1], arm);
+  if (output != NULL) {
+    fputs(code_gen->getAssembly().c_str(),output);
+    fclose(output);
+    if(!arm) {
+         /* assemble with nasm */
+      cerr << "--- " << outputFname<< " ---" << endl;
+      status = fork();
+     	if (status == 0) {
+        execl("/usr/bin/nasm","/usr/bin/nasm", "-f elf64",  "-g -F stabs",
+              outputFname.c_str(),(char *) 0);
+      } else {
+        wait(&status);
+        /* link with ld */
+        pos = outputFname.find(".asm");
+        outputFname = outputFname.substr(0,pos);
+        string objFname = outputFname.substr(0,pos) + ".o";
+			  cerr << "--- "<< outputFname << " ---" << endl;
+        execl("/usr/bin/gcc","gcc","-g",objFname.c_str(), "-o",
+              outputFname.c_str(),(char*)0);
+      }
 		} else {
-            cerr << "compiling arm to flat binary not yet supported" << endl;
-        }
-    } else {
-        cerr << "error opening output file for writing: " << outputFname << endl;
-		isValid = 0;
+      cerr << "compiling arm to flat binary not yet supported" << endl;
     }
+  } else {
+    cerr << "error opening output file for writing: " << outputFname << endl;
+  	isValid = 0;
+  }
 	/**** MEM MANAGEMENT ****/
 	delete root;
 	delete generator;
-    delete code_gen;
+  delete code_gen;
 	fclose(yyin);
 	yylex_destroy();
 	return isValid ? EXIT_SUCCESS : EXIT_FAILURE;
