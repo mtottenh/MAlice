@@ -468,7 +468,7 @@ int print_ast(Node* root) {
 }
 
 FILE* parse_args(int argc, char* argv[]) {
-    FILE* source_file = NULL;
+  FILE* source_file = NULL;
 	if ((argc < 2) ||  (argc == 2 && strcmp(argv[1], "--help") == 0)) {
         cerr << "Usage: " << argv[0] << " input_file ";
         cerr << "[--arm] [-o output_filename]";
